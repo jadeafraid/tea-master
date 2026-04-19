@@ -224,6 +224,67 @@ footer a:hover { text-decoration: underline; }
   text-decoration: none !important;
 }
 .social-links svg { width: 16px; height: 16px; display: block; }
+
+/* ── FEEDBACK ── */
+.feedback-section {
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 56px 20px 64px;
+}
+.feedback-wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+.feedback-eyebrow {
+  font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 10px;
+}
+.feedback-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.35rem; font-weight: 700;
+  color: var(--text); margin-bottom: 8px;
+}
+.feedback-desc {
+  font-size: 0.83rem; color: var(--muted);
+  line-height: 1.7; margin-bottom: 28px;
+}
+.feedback-form { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.feedback-form textarea {
+  width: 100%; min-height: 120px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  font-family: inherit; font-size: 0.88rem; color: var(--text);
+  background: var(--bg); resize: vertical; outline: none;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.65;
+}
+.feedback-form textarea:focus { border-color: var(--green-500); background: #fff; }
+.feedback-form textarea::placeholder { color: #bab4aa; }
+.feedback-submit {
+  align-self: flex-end;
+  padding: 10px 30px;
+  background: var(--green-700); color: #fff;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 0.88rem; font-weight: 500;
+  cursor: pointer; transition: background 0.15s;
+}
+.feedback-submit:hover:not(:disabled) { background: var(--green-900); }
+.feedback-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+.feedback-success {
+  display: none;
+  padding: 22px 20px;
+  background: var(--green-100);
+  border: 1px solid #b4d8bf;
+  border-radius: 12px;
+  font-size: 0.88rem; color: var(--green-700);
+  line-height: 1.7;
+}
+.feedback-error {
+  font-size: 0.78rem; color: #b04040;
+  margin-top: 4px; display: none;
+}
 </style>
 </head>
 <body>
@@ -381,6 +442,27 @@ footer a:hover { text-decoration: underline; }
   </div>
 </div>
 
+<!-- FEEDBACK -->
+<section class="feedback-section">
+  <div class="feedback-wrap">
+    <div class="feedback-eyebrow">Feedback</div>
+    <h2 class="feedback-title">의견을 남겨주세요</h2>
+    <p class="feedback-desc">내용 오류, 개선 제안, 궁금한 점 —<br>무엇이든 환영합니다.</p>
+
+    <form class="feedback-form" id="feedbackForm"
+          action="https://formspree.io/f/YOUR_FORM_ID"
+          method="POST">
+      <textarea name="message" placeholder="자유롭게 작성해주세요..." required></textarea>
+      <div class="feedback-error" id="feedbackError">전송에 실패했습니다. 잠시 후 다시 시도해주세요.</div>
+      <button type="submit" class="feedback-submit" id="feedbackSubmit">보내기</button>
+    </form>
+
+    <div class="feedback-success" id="feedbackSuccess">
+      소중한 의견 감사합니다.<br>잘 받았습니다.
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer>
   <div class="author-row">
@@ -427,5 +509,38 @@ footer a:hover { text-decoration: underline; }
   </p>
 </footer>
 
+<script>
+(function () {
+  const form    = document.getElementById('feedbackForm');
+  const btn     = document.getElementById('feedbackSubmit');
+  const success = document.getElementById('feedbackSuccess');
+  const error   = document.getElementById('feedbackError');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = '전송 중...';
+    error.style.display = 'none';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        success.style.display = 'block';
+      } else {
+        throw new Error();
+      }
+    } catch (_) {
+      error.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '보내기';
+    }
+  });
+})();
+</script>
 </body>
 </html>
