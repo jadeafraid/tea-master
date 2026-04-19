@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>차 우리기 파라미터</title>
+<style>
+:root {
+  --bg: #faf8f3;
+  --card: #ffffff;
+  --border: #e8e2d9;
+  --text: #2c2c2c;
+  --muted: #7a7065;
+  --accent: #4a7055;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+header {
+  background: #1e2e20;
+  color: white;
+  padding: 26px 28px 22px;
+}
+header h1 { font-size: 1.2rem; font-weight: 600; letter-spacing: -0.3px; }
+header p { font-size: 0.8rem; color: rgba(255,255,255,0.55); margin-top: 4px; }
+
+.wrap { max-width: 820px; margin: 0 auto; padding: 24px 16px 80px; }
+
+.cat-row {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.cat-btn {
+  padding: 7px 15px; border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--card); cursor: pointer;
+  font-size: 0.85rem; font-weight: 500; color: var(--muted);
+  transition: all .15s;
+}
+.cat-btn:hover { border-color: var(--cat-color); color: var(--cat-color); }
+.cat-btn.on {
+  background: var(--cat-color); border-color: var(--cat-color);
+  color: white;
+}
+
+.sub-row {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 22px;
+}
+.sub-btn {
+  padding: 5px 13px; border-radius: 13px;
+  border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  font-size: 0.78rem; color: var(--muted);
+  transition: all .15s;
+}
+.sub-btn.on {
+  background: var(--cat-color); border-color: var(--cat-color);
+  color: white;
+}
+
+/* gongfu toggle */
+.gf-row {
+  display: none; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  width: fit-content; cursor: pointer; user-select: none;
+}
+.gf-row.show { display: flex; }
+.toggle {
+  width: 36px; height: 20px;
+  background: #d0ccc5; border-radius: 10px;
+  position: relative; transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--cat-color); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  background: white; border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: left .2s;
+}
+.toggle.on::after { left: 18px; }
+.gf-label { font-size: 0.82rem; color: var(--text); }
+.gf-badge {
+  font-size: 0.68rem; padding: 2px 7px;
+  background: #fff3cd; color: #856404;
+  border-radius: 8px; border: 1px solid #ffc107;
+}
+
+/* param cards */
+.params-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin-bottom: 14px;
+}
+@media(max-width:580px) { .params-grid { grid-template-columns: repeat(2,1fr); } }
+
+.p-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 10px; text-align: center;
+}
+.p-label {
+  font-size: 0.68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 7px;
+}
+.p-val {
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--cat-color); line-height: 1.2;
+}
+.p-sub { font-size: 0.68rem; color: var(--muted); margin-top: 3px; }
+
+/* temp bar */
+.temp-wrap {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px; margin-bottom: 12px;
+}
+.temp-top {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.temp-lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.temp-reading { font-size: 0.82rem; font-weight: 600; color: var(--cat-color); }
+.temp-track {
+  position: relative; height: 8px; border-radius: 4px;
+  background: linear-gradient(to right, #60a5fa,#34d399,#a3e635,#fbbf24,#f97316,#ef4444);
+  margin-bottom: 5px;
+}
+.temp-range {
+  position: absolute; top: 0; height: 100%;
+  background: rgba(255,255,255,0.4);
+  border-left: 2.5px solid white;
+  border-right: 2.5px solid white;
+  border-radius: 4px;
+  transition: all .3s ease;
+}
+.temp-dot {
+  position: absolute; top: -4px;
+  width: 16px; height: 16px;
+  background: white;
+  border: 2.5px solid var(--cat-color);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: left .3s ease;
+}
+.temp-axis {
+  display: flex; justify-content: space-between;
+  font-size: 0.65rem; color: #b0a898;
+}
+
+/* vessel row */
+.vessel-row {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;
+}
+.vessel-label { font-size: 0.7rem; color: var(--muted); }
+.vessel-chip {
+  font-size: 0.75rem; padding: 3px 10px;
+  border-radius: 8px;
+  background: #f0f7f1; color: #3d6645;
+  border: 1px solid #c8deca;
+}
+
+/* info cards */
+.info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+@media(max-width:480px) { .info-row { grid-template-columns: 1fr; } }
+
+.i-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px;
+}
+.i-title {
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--muted); margin-bottom: 5px;
+}
+.i-body { font-size: 0.82rem; line-height: 1.55; color: var(--text); }
+
+.sci-box {
+  background: #f0f7f1; border: 1px solid #c8deca;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 12px;
+}
+.sci-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: #4a7055; margin-bottom: 5px; }
+.sci-body { font-size: 0.8rem; line-height: 1.55; color: #3d5e40; }
+
+.water-box {
+  background: #f0f5fb; border: 1px solid #c5d8ed;
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 28px;
+}
+.water-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: #4270a0; margin-bottom: 5px; }
+.water-body { font-size: 0.8rem; line-height: 1.55; color: #2d4f70; }
+
+/* sources */
+.src-wrap {
+  border-top: 1px solid var(--border); padding-top: 18px;
+}
+.src-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 8px; }
+.src-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.src-list li { font-size: 0.68rem; color: #a09890; line-height: 1.4; padding-left: 14px; position: relative; }
+.src-list li::before { content: attr(data-n); position: absolute; left: 0; color: var(--cat-color); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>차 우리기 파라미터</h1>
+  <p>6대다류별 최적 온도 · 시간 · 투다량 — 지식베이스 기반</p>
+</header>
+
+<div class="wrap">
+
+  <!-- Category tabs -->
+  <div class="cat-row" id="cats"></div>
+
+  <!-- Sub-type pills -->
+  <div class="sub-row" id="subs"></div>
+
+  <!-- Gongfu toggle -->
+  <div class="gf-row" id="gfRow" onclick="toggleGf()">
+    <div class="toggle" id="gfToggle"></div>
+    <span class="gf-label">공부차(工夫茶) 방식</span>
+    <span class="gf-badge" id="gfBadge">소형 다호 · 단포 반복</span>
+  </div>
+
+  <!-- Parameter cards -->
+  <div class="params-grid">
+    <div class="p-card">
+      <div class="p-label">수온</div>
+      <div class="p-val" id="pTemp">—</div>
+      <div class="p-sub" id="pTempSub"></div>
+    </div>
+    <div class="p-card">
+      <div class="p-label">침출 시간</div>
+      <div class="p-val" id="pTime">—</div>
+      <div class="p-sub" id="pTimeSub"></div>
+    </div>
+    <div class="p-card">
+      <div class="p-label">투다량</div>
+      <div class="p-val" id="pAmt">—</div>
+      <div class="p-sub" id="pAmtSub"></div>
+    </div>
+    <div class="p-card">
+      <div class="p-label">재포 횟수</div>
+      <div class="p-val" id="pSteeps">—</div>
+      <div class="p-sub" id="pSteepsSub"></div>
+    </div>
+  </div>
+
+  <!-- Temperature bar -->
+  <div class="temp-wrap">
+    <div class="temp-top">
+      <span class="temp-lbl">온도 스펙트럼 (50°C — 100°C)</span>
+      <span class="temp-reading" id="tempReading">—</span>
+    </div>
+    <div class="temp-track" id="tempTrack">
+      <div class="temp-range" id="tempRange" style="display:none"></div>
+      <div class="temp-dot" id="tempDot" style="display:none"></div>
+    </div>
+    <div class="temp-axis">
+      <span>50°C</span><span>60°C</span><span>70°C</span>
+      <span>80°C</span><span>90°C</span><span>100°C</span>
+    </div>
+  </div>
+
+  <!-- Vessel -->
+  <div class="vessel-row" id="vesselRow">
+    <span class="vessel-label">추천 다기</span>
+  </div>
+
+  <!-- Tip + Science -->
+  <div class="info-row">
+    <div class="i-card">
+      <div class="i-title">우리기 팁</div>
+      <div class="i-body" id="iTip">—</div>
+    </div>
+    <div class="i-card">
+      <div class="i-title">특징</div>
+      <div class="i-body" id="iChar">—</div>
+    </div>
+  </div>
+
+  <div class="sci-box">
+    <div class="sci-title">과학적 근거</div>
+    <div class="sci-body" id="iSci">—</div>
+  </div>
+
+  <!-- Water guide -->
+  <div class="water-box">
+    <div class="water-title">물 품질 가이드 <sup>¹</sup></div>
+    <div class="water-body">
+      <strong>TDS 50–150 ppm</strong> 권장 (30–50 ppm에서 폴리페놀·플라보노이드 농도 최고).
+      <strong>pH 6.7–7.3</strong>이 색·향·맛 균형 최적.
+      칼슘 40 mg/L 초과 시 카테킨 추출량 감소. 여러 번 재끓인 물은 미네랄 농축으로 금속 맛 발생 — 한 번 재끓임까지 허용.
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="src-wrap">
+    <div class="src-title">출처</div>
+    <ul class="src-list" id="srcList">
+      <li data-n="1">PMC10192933 — The types of brewing water affect tea infusion flavor (pH 6.7–7.3 최적)</li>
+      <li data-n="2">ResearchGate — Effect of Brewing Temperature and Duration on Green Tea Catechin Solubilization (85°C / 3분 = EGCG 50.69 mg/100ml 최고)</li>
+      <li data-n="3">PMC6356489 — Water Composition Influence on Green and Black Tea (Ca²⁺ 40 mg/L 초과 시 카테킨 감소)</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const CATS = [
+  { id:'green',  label:'녹차',      color:'#4a7a52' },
+  { id:'white',  label:'백차',      color:'#9e8c70' },
+  { id:'yellow', label:'황차',      color:'#b89a20' },
+  { id:'oolong', label:'우롱차',    color:'#7a6040' },
+  { id:'black',  label:'홍차',      color:'#b83a2a' },
+  { id:'dark',   label:'흑차·보이차', color:'#4a3530' },
+];
+
+const TEA_DATA = {
+  green: {
+    gongfu: false,
+    subs: [
+      {
+        id:'cn-green', label:'중국 녹차',
+        desc:'초청·홍청 방식',
+        tempMin:80, tempMax:85,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'3–5회', steepsGf:null,
+        vessels:['유리잔','백자 개완'],
+        tip:'상투법(물 70% 먼저→잎 투입) 권장. 고온 시 쓴맛이 급격히 증가.',
+        char:'탕색 청록~황록. 청향과 신선한 감칠맛. 불발효(0%).',
+        sci:'85°C / 3분에서 EGCG 50.69 mg/100mL 최고. 80°C 초과 시 에피카테킨 → 비에피 구조 전환 가속 → 항산화 활성 저하.<sup>²</sup>',
+        src:[1,9,11],
+      },
+      {
+        id:'sencha-asa', label:'센차 浅蒸し',
+        desc:'일본 연증청(30~40초)',
+        tempMin:70, tempMax:75,
+        timeNormal:'60–90초', timeGf:null,
+        amtNormal:'2–3 g / 100 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['규스','도자기 다완'],
+        tip:'황금빛 수색·청향 특징. 물 70°C로 낮추어 감칠맛 극대화.',
+        char:'浅蒸し = 청향·은은한 떫음. 우지(宇治) 등 고급 산지 대표 방식.',
+        sci:'차광 없음 → 카테킨↑ 테아닌↓. 저온 추출로 테아닌 선택적 추출 가능.',
+        src:[7,9,11],
+      },
+      {
+        id:'sencha-fuka', label:'센차 深蒸し',
+        desc:'일본 장증청(60~180초)',
+        tempMin:75, tempMax:80,
+        timeNormal:'30–60초', timeGf:null,
+        amtNormal:'2–3 g / 100 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['규스(메시 고운 것)','스테인리스 스트레이너'],
+        tip:'찻잎이 잘게 부서져 혼탁해지는 것이 정상. 에메랄드 수색.',
+        char:'深蒸し = 부드럽고 두꺼운 감칠맛, 쓴맛 감소. 시즈오카 마키노하라(牧之原) 발상.',
+        sci:'긴 증청으로 세포벽 파괴 → 성분 추출 빠름 → 짧은 침출로도 충분.',
+        src:[7],
+      },
+      {
+        id:'gyokuro', label:'교쿠로 玉露',
+        desc:'차광 20~30일, 테아닌 극대화',
+        tempMin:50, tempMax:50,
+        timeNormal:'90–150초', timeGf:null,
+        amtNormal:'3–5 g / 30–50 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['교쿠로 전용 소형 다완','직구배(直口杯)'],
+        tip:'50°C 저온 엄수. 뜨거운 물을 식혀서 사용. 물 적게 넣을수록 감칠맛 강해짐.',
+        char:'차광 → 테아닌이 카테킨 전환 억제 → 감칠맛(旨味)↑ 떫음↓. 전국 생산의 0.3%.',
+        sci:'低온 추출 시 테아닌 우선 용출 (분자 크기 小), 카테킨·카페인 억제. 야메 전통본교쿠로(八女伝統本玉露)는 GI 등록.',
+        src:[7,9],
+      },
+      {
+        id:'matcha', label:'말차 抹茶',
+        desc:'덴차(碾茶)를 석마 분쇄',
+        tempMin:80, tempMax:80,
+        timeNormal:'격불 30–60초', timeGf:null,
+        amtNormal:'2 g / 70 mL', amtGf:null,
+        steepsNormal:'1회', steepsGf:null,
+        vessels:['다완(茶碗)','차센(茶筅)','차샤쿠(茶杓)'],
+        tip:'W자형으로 세밀하게 거품. 박차(薄茶)는 포말 풍부하게, 농차(濃茶)는 거품 없이 걸쭉하게.',
+        char:'"Ceremonial/Culinary grade"는 공식 규격 아님 — 품종·차광 기간·石臼 분쇄가 실질 품질 결정.',
+        sci:'유념 없이 건조(碾茶) → 잎 세포 온전히 보존 → 분말 전체를 섭취하므로 카테킨 섭취량 최대.',
+        src:[7],
+      },
+      {
+        id:'houjicha', label:'호지차 ほうじ茶',
+        desc:'고온 배전(180–200°C)으로 볶음',
+        tempMin:90, tempMax:100,
+        timeNormal:'30초', timeGf:null,
+        amtNormal:'3–5 g / 150 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['규스','일반 주전자'],
+        tip:'팔팔 끓인 물 바로 사용. 너무 길게 우리면 쓴맛. 취침 전·어린이·임산부 적합.',
+        char:'배전 시 피라진(Pyrazine) 생성 → 구수한 향. 카페인 승화로 저카페인.',
+        sci:'고온 배전 과정에서 카페인 일부 승화 → 녹차 대비 카페인 현저히 낮음.',
+        src:[7],
+      },
+    ]
+  },
+
+  white: {
+    gongfu: false,
+    subs: [
+      {
+        id:'baihao', label:'백호은침 (신차)',
+        desc:'정아(正芽)만 사용, 1년 이내',
+        tempMin:85, tempMax:90,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'3–4회', steepsGf:null,
+        vessels:['투명 유리잔','백자 개완'],
+        tip:'침처럼 곧은 싹이 세 번 가라앉고 두 번 뜨는 퍼포먼스 감상. 고온 시 신선한 호향 손실.',
+        char:'탕색 연은색. 호향밀운(毫香蜜韻): 백호 향 + 꿀 같은 여운. 복건성 복정·정화.',
+        sci:'위조(萎凋)만으로 가공 — PPO 효소 활성 낮아 카테킨 거의 보존. 햇차는 C 계열 카테킨 풍부.',
+        src:[2],
+      },
+      {
+        id:'baihao-aged', label:'백호은침 (노백차)',
+        desc:'3년 이상 숙성',
+        tempMin:95, tempMax:95,
+        timeNormal:'3–5분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'5–8회', steepsGf:null,
+        vessels:['개완','자사호'],
+        tip:'\'1년차, 3년약, 7년보\'. 노백차는 해열·항염 효능 높아짐. 고온으로 충분히 우려야 향 발현.',
+        char:'탕색 호박색~적갈색. 진향(陈香) 두터움. 숙성 중 폴리페놀 중합 → 부드러운 단맛.',
+        sci:'숙성 과정: 엽록소 분해 → 황색. EGCG → 에피갈로카테킨으로 전환. 항염·해독 성분 증가 보고.',
+        src:[2],
+      },
+      {
+        id:'baimudan', label:'백모단 白牡丹',
+        desc:'일아이엽(一芽二葉)',
+        tempMin:90, tempMax:95,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'4–6회', steepsGf:null,
+        vessels:['유리잔','개완'],
+        tip:'이중색 외형(녹색 잎+백호 싹) 감상 가능. 백모단은 백차 중 가장 균형잡힌 향미.',
+        char:'건엽 두꺼운 잿빛. 탕색 살구색. 백호향 뚜렷, 순수하고 상쾌한 맛.',
+        sci:'일아이엽 구성 → 싹의 아미노산 + 잎의 폴리페놀 균형. 카페인 함량 백호은침보다 높음.',
+        src:[2],
+      },
+      {
+        id:'shoumei', label:'수미·노백차',
+        desc:'일아삼~사엽, 성숙엽 위주',
+        tempMin:95, tempMax:100,
+        timeNormal:'3–5분', timeGf:null,
+        amtNormal:'5 g / 200 mL', amtGf:null,
+        steepsNormal:'5–8회', steepsGf:null,
+        vessels:['개완','자사호','보이차 토기'],
+        tip:'팔팔 끓인 물 바로 부어도 좋음. 동남아시아에서 이뇨 효능으로 즐겨 마심.',
+        char:'백차 전체 생산량의 50% 이상. 건엽 농도 깊은 갈색. 숙성 가능성 백차 中 최고.',
+        sci:'성숙엽 = 루틴·플라보노이드 함량 높음. 동남아 연구: 항염·항산화 효과 보고.',
+        src:[2],
+      },
+    ]
+  },
+
+  yellow: {
+    gongfu: false,
+    subs: [
+      {
+        id:'huangcha', label:'황차',
+        desc:'군산은침·몽정황아·곽산황아',
+        tempMin:80, tempMax:85,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['유리잔','개완'],
+        tip:'군산은침은 세 번 가라앉는 퍼포먼스 감상. 개봉 후 3–6개월 내 소비 권장.',
+        char:'민황(闷黄) 공정 추가 — 녹차보다 부드럽고 덜 떫음. 탕색 황록~황금색. 밤향·구수함.',
+        sci:'민황: 습열(70~80%, 24–72시간) → 엽록소→페오피틴 전환 → 황색. Maillard 반응 → 구수한 향미 물질. 중국 6대다류 중 생산량 1% 미만.',
+        src:[3],
+      },
+    ]
+  },
+
+  oolong: {
+    gongfu: true,
+    subs: [
+      {
+        id:'pouchong', label:'문산포종',
+        desc:'대만 경발효 (15–20%)',
+        tempMin:85, tempMax:90,
+        timeNormal:'2–3분', timeGf:'1포 세다(버림) → 2포~ 10–20초',
+        amtNormal:'5 g / 150 mL', amtGf:'다호 용량 60–70% (약 5 g / 80 mL)',
+        steepsNormal:'4–6회', steepsGf:'6–10회',
+        vessels:['개완','자사호 (단사)','백자'],
+        tip:'청신화향(淸新花香): 가벼운 꽃향. 낮은 산화도로 녹차에 가까운 성격.',
+        char:'구불구불한 조형. 대만 북부 文山 산지. 15–20% 산화 — 우롱차 중 가장 경발효.',
+        sci:'낮은 산화도 → 카테킨 많이 보존. 높은 온도 시 단 향기 성분(리날로올 등) 휘발 손실.',
+        src:[4,8],
+      },
+      {
+        id:'tieguanyin', label:'철관음·동정오룡',
+        desc:'민남·대만 중발효 (30–40%)',
+        tempMin:90, tempMax:95,
+        timeNormal:'2–3분', timeGf:'1포 세다(버림) → 2포~ 10–15초',
+        amtNormal:'5 g / 150 mL', amtGf:'다호 용량 70% (약 6 g / 100 mL)',
+        steepsNormal:'4–6회', steepsGf:'7–10회',
+        vessels:['개완','자사호 (붉은 진흙계)'],
+        tip:'철관음: 관음운(觀音韻) 난화향. 동정: 계화향. 고온으로 향 기화 촉진.',
+        char:'반구형 외형. 민남 안계현 vs 대만 남투현. 35–40% 산화.',
+        sci:'주청(做靑) 공정: 찻잎 테두리부터 산화 유도 → 녹색 중앙 + 적색 테두리 "녹엽홍양변". 철관음 근래 청향형(경발효)·농향형(전통) 두 계통 병존.',
+        src:[4,8],
+      },
+      {
+        id:'dancong', label:'봉황단총',
+        desc:'광동 봉황산 (50–70%) — 조주공부차',
+        tempMin:100, tempMax:100,
+        timeNormal:'2–3분', timeGf:'1포 세다(버림) → 2포~ 5–10초',
+        amtNormal:'5 g / 150 mL', amtGf:'다호 70–80% 충전 (약 7 g / 110 mL)',
+        steepsNormal:'4–6회', steepsGf:'10–15회',
+        vessels:['조주 수라주니호(手拉朱泥壺)','백자 개완'],
+        tip:'반드시 100°C 완전 비등. 차담(茶膽)을 깨지 않도록 다호 벽을 따라 물 붓기. 관공순성(關公巡城)·한신점병(韓信點兵)으로 3잔 균등 분배.',
+        char:'10대 향형(밀란향·계화향·압시향 등). 단일 나무(單叢) 채취. 봉황산 GI 보호. 2022년 유네스코 인류무형문화유산.',
+        sci:'"차담(茶膽)": 다호 70–80% 빽빽이 채운 잎 덩어리. 차담이 깨지면 극심한 쓴맛. 조주공부차에서 공도배 불사용 — 관공순성으로 직접 균등 분배.',
+        src:[4,8],
+      },
+      {
+        id:'wuyi', label:'무이암차',
+        desc:'민북 무이산 (40–50%) — 암운(岩韻)',
+        tempMin:100, tempMax:100,
+        timeNormal:'2–3분', timeGf:'1포 세다(버림) → 2포~ 10–15초',
+        amtNormal:'5 g / 150 mL', amtGf:'다호 70–75% 충전 (약 8 g / 110 mL)',
+        steepsNormal:'4–6회', steepsGf:'8–12회',
+        vessels:['자사호 (자사·단사 계열)','개완'],
+        tip:'암운(岩韻): 향(香)·청(淸)·감(甘)·활(活). 대홍포·육계·수선 등 품종별 향미 차이 큼.',
+        char:'5대 명총: 대홍포·백계관·철라한·수금귀·반천요. 삼갱이간(惠源坑·牛欄坑·大坑口) 정암지가 최고.',
+        sci:'암운의 과학: 무이산 독특한 화강암·사암 토질 → 미네랄 흡수. 암석 골짜기 특수 기후(안개·습도) + 테루아 복합 효과.',
+        src:[4,8],
+      },
+      {
+        id:'dongfang', label:'동방미인',
+        desc:'대만 강발효 우롱 (60–70%)',
+        tempMin:88, tempMax:95,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'4–6회', steepsGf:null,
+        vessels:['백자','유리 다관'],
+        tip:'소록엽선충(茶小綠葉蟬) 교상 필수 — 벌레 물린 잎만 사용. 꿀향·과실향·목향 복합.',
+        char:'우롱차 중 가장 높은 산화도. 탕색 오렌지~琥珀. 영국 왕실 헌납으로 "동방미인" 이름 유래설.',
+        sci:'소록엽선충 교상 → 잎에서 트리메틸 벤질 알데히드 등 방어 물질 생성 → 꿀향·머스캣향의 원천(Hop-like aroma).',
+        src:[4],
+      },
+    ]
+  },
+
+  black: {
+    gongfu: false,
+    subs: [
+      {
+        id:'qimen', label:'기문홍차 祁門',
+        desc:'중국 공부홍차 대표 — 기문향',
+        tempMin:90, tempMax:95,
+        timeNormal:'3–4분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['백자','개완'],
+        tip:'기문향(祁門香): 장미·과일·꿀 복합. 밀크 추가 시 향이 묻힘 — 스트레이트 권장.',
+        char:'세계 3대 홍차. 안휘성 기문현. 중국종(小葉) → 섬세한 향. 탕색 홍갈색.',
+        sci:'공부홍차 발효: 폴리페놀 PPO → 테아플라빈·테아루비긴 생성 (80–90% 산화). 기문향 성분: 테라니올·리날로올·게라니올.',
+        src:[5],
+      },
+      {
+        id:'darjeeling', label:'다즐링 Darjeeling',
+        desc:'인도 서벵골 — 머스캣 포도향',
+        tempMin:85, tempMax:92,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'2회', steepsGf:null,
+        vessels:['백자','도자기 다관'],
+        tip:'퍼스트 플러시(4월) 섬세 — 낮은 온도 권장. 세컨드 플러시(5–6월) 머스캣향이 절정.',
+        char:'세계 3대 홍차. 4-flush 체계 (퍼스트·세컨드·몬순·오텀). 높은 고도(600–2000m) 테루아.',
+        sci:'다즐링 머스캣 향: 세컨드 플러시 소록엽선충 교상 + 더운 기후 → 동방미인과 동일한 호프 아로마 메커니즘.',
+        src:[5],
+      },
+      {
+        id:'assam', label:'아삼·세이론',
+        desc:'인도·스리랑카 대중홍차',
+        tempMin:95, tempMax:100,
+        timeNormal:'3–5분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'1–2회', steepsGf:null,
+        vessels:['도자기 티포트','머그'],
+        tip:'밀크티에 최적. 아삼: 몰트향 진하고 강함. 우바: 민트향. 세이론은 고도별로 성격 달라짐.',
+        char:'아삼: 아삼종(大葉), CTC 85%. 세이론 우바: 세계 3대 홍차. 우바 윈드(Uva Wind) 건조 효과로 독특한 민트향.',
+        sci:'CTC(Crush-Tear-Curl) 가공: 잎 세포 파괴 극대화 → 빠르고 강한 추출. 테아루비긴↑ 테아플라빈↓ → 진한 색, 묵직한 바디감.',
+        src:[5],
+      },
+      {
+        id:'lapsang', label:'정산소종 正山小種',
+        desc:'세계 최초 홍차 — 송연향',
+        tempMin:90, tempMax:95,
+        timeNormal:'3분', timeGf:null,
+        amtNormal:'3 g / 150 mL', amtGf:null,
+        steepsNormal:'2–3회', steepsGf:null,
+        vessels:['도자기 다관','백자'],
+        tip:'소나무 연기로 훈연 — 독특한 송연향(松煙香). 미트·위스키와 페어링. 외산소종과 혼동 주의.',
+        char:'무이산 통목관(桐木關) 한정 생산. GI 등록. 영국으로 최초 수출된 차.',
+        sci:'솔잎 훈연 중 과이어콜(Guaiacol)·크레오솔 생성 → 스모키·우디 노트. 런던 수출 시 유럽에서 "랍상수숑(Lapsang Souchong)" 유행.',
+        src:[5],
+      },
+    ]
+  },
+
+  dark: {
+    gongfu: true,
+    subs: [
+      {
+        id:'sheng', label:'생보이차 生普',
+        desc:'쇄청 후 자연 숙성 (수년~수십년)',
+        tempMin:95, tempMax:100,
+        timeNormal:'2–3분', timeGf:'1포 세다(洗茶, 버림) → 2포~ 10–30초',
+        amtNormal:'5 g / 100 mL', amtGf:'자사호 50–60% (약 5 g / 100 mL)',
+        steepsNormal:'5–8회', steepsGf:'10–20회',
+        vessels:['자사호 (거칠고 작은 것)','개완'],
+        tip:'신차: 쓴맛·풀향 강함. 10년 이상: 매실향·흙향. 20년+: 대추·목향. 반드시 세다(첫포 버림).',
+        char:'탕색: 황록→황금→적갈색(숙성에 따라). 숙성 잠재력 최대 60년+. 건창 저장: 55–65% RH, 18–28°C.',
+        sci:'생보이 숙성 메커니즘: 창고 공기 중 미생물(Aspergillus niger 등) + 산화 복합 진행. 폴리페놀 감소 → 쓴맛 완화. 지방산 산화 → 목향 형성.',
+        src:[6],
+      },
+      {
+        id:'shou', label:'숙보이차 熟普',
+        desc:'인공 악퇴(渥堆) 45–65일',
+        tempMin:100, tempMax:100,
+        timeNormal:'2–3분', timeGf:'1포 세다(洗茶, 버림) → 2포~ 10–20초',
+        amtNormal:'5 g / 100 mL', amtGf:'자사호 50–60% (약 5 g / 100 mL)',
+        steepsNormal:'5–8회', steepsGf:'8–15회',
+        vessels:['자사호','개완'],
+        tip:'탕색 진한 적흑색. 새 숙보이는 토취(土臭) 있음 — 수년 저장 후 정제됨. 악퇴취 없는 것이 고급.',
+        char:'1973년 쿤밍차창이 생보이 20–30년 숙성을 단기 재현 목적으로 개발. 카페인 생보이보다 낮음.',
+        sci:'악퇴 주도균: Aspergillus niger. 갈산(gallic acid)·글루콘산 생성. 2024 PMC11643846: A. niger 강화 발효 시 200종 이상 대사산물 변화.',
+        src:[6],
+      },
+      {
+        id:'anhua', label:'안화흑차·기타',
+        desc:'안화복전차·육보차 등',
+        tempMin:95, tempMax:100,
+        timeNormal:'2–3분', timeGf:null,
+        amtNormal:'6–8 g / 150 mL', amtGf:null,
+        steepsNormal:'3–5회', steepsGf:null,
+        vessels:['개완','토기','보이차 다관'],
+        tip:'복전차(茯砖茶): 금화균(Eurotium cristatum) 번식이 품질 기준. 독특한 균향(菌香).',
+        char:'안화흑차: 후난성. 천량차(약 37 kg 대나무통). 육보차: 광시성, 붉은색 특징.',
+        sci:'복전차 금화균: Eurotium cristatum = Aspergillus cristatus. 아밀라제·셀룰라제 등 효소군 생산. 장내 미생물 개선 연구 진행 중.',
+        src:[6],
+      },
+    ]
+  },
+};
+
+let curCat = 'green';
+let curSub = 0;
+let gfOn = false;
+
+function tempPct(t) { return ((t - 50) / 50) * 100; }
+
+function render() {
+  const cat = CATS.find(c => c.id === curCat);
+  const color = cat.color;
+  document.documentElement.style.setProperty('--cat-color', color);
+
+  const catData = TEA_DATA[curCat];
+  const sub = catData.subs[curSub];
+
+  // gf toggle visibility
+  const gfRow = document.getElementById('gfRow');
+  if (catData.gongfu) {
+    gfRow.classList.add('show');
+  } else {
+    gfRow.classList.remove('show');
+    gfOn = false;
+  }
+  const toggle = document.getElementById('gfToggle');
+  toggle.className = 'toggle' + (gfOn ? ' on' : '');
+
+  const useGf = gfOn && sub.timeGf !== null;
+
+  // params
+  document.getElementById('pTemp').textContent =
+    sub.tempMin === sub.tempMax ? sub.tempMin + '°C' : sub.tempMin + '–' + sub.tempMax + '°C';
+  document.getElementById('pTempSub').textContent = '';
+
+  document.getElementById('pTime').textContent = useGf ? sub.timeGf : sub.timeNormal;
+  document.getElementById('pTimeSub').textContent = useGf ? '공부차 방식' : '';
+
+  document.getElementById('pAmt').textContent = useGf ? sub.amtGf : sub.amtNormal;
+  document.getElementById('pAmtSub').textContent = useGf ? '공부차 방식' : '';
+
+  document.getElementById('pSteeps').textContent = useGf ? sub.steepsGf : sub.steepsNormal;
+  document.getElementById('pSteepsSub').textContent = useGf ? '공부차 방식' : '';
+
+  // temp bar
+  const reading = document.getElementById('tempReading');
+  const range = document.getElementById('tempRange');
+  const dot = document.getElementById('tempDot');
+
+  if (sub.tempMin === sub.tempMax) {
+    const pct = tempPct(sub.tempMin);
+    reading.textContent = sub.tempMin + '°C';
+    range.style.display = 'none';
+    dot.style.display = 'block';
+    dot.style.left = pct + '%';
+    dot.style.background = 'var(--cat-color)';
+    dot.style.borderColor = 'white';
+  } else {
+    const p1 = tempPct(sub.tempMin);
+    const p2 = tempPct(sub.tempMax);
+    reading.textContent = sub.tempMin + '–' + sub.tempMax + '°C';
+    range.style.display = 'block';
+    range.style.left = p1 + '%';
+    range.style.width = (p2 - p1) + '%';
+    dot.style.display = 'none';
+  }
+
+  // vessels
+  const vRow = document.getElementById('vesselRow');
+  vRow.innerHTML = '<span class="vessel-label">추천 다기</span>';
+  (useGf && sub.vessels ? sub.vessels : sub.vessels).forEach(v => {
+    const chip = document.createElement('span');
+    chip.className = 'vessel-chip';
+    chip.textContent = v;
+    vRow.appendChild(chip);
+  });
+
+  document.getElementById('iTip').innerHTML = sub.tip;
+  document.getElementById('iChar').innerHTML = sub.char;
+  document.getElementById('iSci').innerHTML = sub.sci;
+
+  // update src footnote colors
+  document.querySelectorAll('.src-list li').forEach(li => {
+    li.style.color = '';
+  });
+}
+
+function initCats() {
+  const row = document.getElementById('cats');
+  CATS.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn';
+    btn.textContent = cat.label;
+    btn.style.setProperty('--cat-color', cat.color);
+    btn.dataset.id = cat.id;
+    btn.addEventListener('click', () => {
+      curCat = cat.id;
+      curSub = 0;
+      gfOn = TEA_DATA[cat.id].gongfu && ['dancong','sheng','shou'].includes(TEA_DATA[cat.id].subs[0].id);
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      initSubs();
+      render();
+    });
+    if (cat.id === curCat) btn.classList.add('on');
+    row.appendChild(btn);
+  });
+}
+
+function initSubs() {
+  const row = document.getElementById('subs');
+  row.innerHTML = '';
+  const catData = TEA_DATA[curCat];
+  catData.subs.forEach((sub, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-btn' + (i === curSub ? ' on' : '');
+    btn.innerHTML = sub.label + (sub.desc ? '<br><small style="font-size:0.65rem;opacity:0.8">' + sub.desc + '</small>' : '');
+    btn.style.lineHeight = '1.3';
+    btn.addEventListener('click', () => {
+      curSub = i;
+      // auto-on gf for dancong, pu-erh
+      if (catData.gongfu) {
+        const s = catData.subs[i];
+        gfOn = s.timeGf !== null && ['dancong','wuyi','sheng','shou'].includes(s.id);
+      }
+      document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      render();
+    });
+    row.appendChild(btn);
+  });
+}
+
+function toggleGf() {
+  const catData = TEA_DATA[curCat];
+  const sub = catData.subs[curSub];
+  if (sub.timeGf !== null) {
+    gfOn = !gfOn;
+    render();
+  }
+}
+
+initCats();
+initSubs();
+// default: dancong auto-gf
+gfOn = false;
+render();
+</script>
+</body>
+</html>
