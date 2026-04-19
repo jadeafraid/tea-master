@@ -405,7 +405,7 @@ function buildWheel() {
   const lines = tc.name.length > 4 ? tc.name.match(/.{1,3}/g) : [tc.name];
   lines.forEach((ln, i) => {
     const dy = (lines.length === 1) ? '0' : ((i === 0) ? '-7' : '9');
-    html += `<text x="0" y="${dy}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="700" style="pointer-events:none">${ln}</text>`;
+    html += `<text class="wheel-center-text" x="0" y="${dy}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="700" style="pointer-events:none">${ln}</text>`;
   });
 
   let catAngle = 0;
@@ -490,12 +490,10 @@ function buildWheel() {
 
 function setCenterText(line1, line2) {
   const svg = document.getElementById('wheel');
-  const texts = svg.querySelectorAll('circle + text');
-  if (texts.length >= 2) {
+  const texts = svg.querySelectorAll('.wheel-center-text');
+  if (texts.length >= 1) {
     texts[0].textContent = line1;
-    texts[1] && (texts[1].textContent = '');
-  } else if (texts.length === 1) {
-    texts[0].textContent = line1;
+    if (texts[1]) texts[1].textContent = '';
   }
 }
 
@@ -505,14 +503,14 @@ function resetCenterText() {
 
 function buildWheelCenter() {
   const svg = document.getElementById('wheel');
-  svg.querySelectorAll('circle + text, circle ~ text').forEach(el => {
-    if (!el.classList.contains('inner-label')) el.remove();
-  });
+  // 중앙 텍스트만 제거 (링 라벨은 건드리지 않음)
+  svg.querySelectorAll('.wheel-center-text').forEach(el => el.remove());
   const tc = TEAS.find(t => t.id === curTeaId);
   const lines = tc.name.length > 4 ? [tc.name.slice(0,3), tc.name.slice(3)] : [tc.name];
   lines.forEach((ln, i) => {
     const dy = lines.length === 1 ? 0 : (i === 0 ? -7 : 9);
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('class', 'wheel-center-text');
     t.setAttribute('x','0'); t.setAttribute('y', dy);
     t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
     t.setAttribute('fill','white'); t.setAttribute('font-size','12');
