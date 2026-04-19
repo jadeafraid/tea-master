@@ -358,10 +358,17 @@ body {
 /* ── 모바일 ── */
 @media (max-width: 720px) {
   #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
   #main { margin-left: 0 !important; }
   #top-bar-chapter { display: none; }
   .page-section { padding: 28px 20px 36px; }
 }
+#mob-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 85;
+  background: rgba(0,0,0,0.45);
+}
+#mob-overlay.show { display: block; }
 
 /* ── 인쇄 ── */
 @media print {
@@ -396,6 +403,8 @@ body {
 </style>
 </head>
 <body>
+
+<div id="mob-overlay"></div>
 
 <div id="top-bar">
   <button id="sidebar-toggle">☰</button>
@@ -16462,13 +16471,30 @@ B는 산지·등급이 유사한 쌍 선택</p>
 
 <script>
 // 사이드바 토글
-const sidebar = document.getElementById('sidebar');
-const main    = document.getElementById('main');
-const toggle  = document.getElementById('sidebar-toggle');
+const sidebar  = document.getElementById('sidebar');
+const main     = document.getElementById('main');
+const toggle   = document.getElementById('sidebar-toggle');
+const overlay  = document.getElementById('mob-overlay');
+
+function isMobile() { return window.innerWidth <= 720; }
+
+function closeMobileSidebar() {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+}
+
 toggle.addEventListener('click', () => {
-  sidebar.classList.toggle('hidden');
-  main.classList.toggle('expanded');
+  if (isMobile()) {
+    const opening = !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show', opening);
+  } else {
+    sidebar.classList.toggle('hidden');
+    main.classList.toggle('expanded');
+  }
 });
+
+overlay.addEventListener('click', closeMobileSidebar);
 
 // 스크롤 스파이 — 현재 장 강조 + 상단 바 업데이트
 const sections   = document.querySelectorAll('[data-chapter]');
