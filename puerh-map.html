@@ -4,560 +4,341 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>보이차 산지 맵 (普洱茶 産地)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: #1a1208;
-    color: #e8dcc8;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #1a1208;
+  color: #e8dcc8;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  header {
-    text-align: center;
-    padding: 32px 24px 20px;
-    background: linear-gradient(180deg, #0f0a04 0%, transparent 100%);
-    border-bottom: 1px solid #3d2e1a;
-  }
+header {
+  text-align: center;
+  padding: 28px 24px 18px;
+  background: linear-gradient(180deg, #0f0a04 0%, #1a1208 100%);
+  border-bottom: 1px solid #3d2e1a;
+}
 
-  header h1 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #c8a96e;
-    letter-spacing: 0.05em;
-  }
+header h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #c8a96e;
+  letter-spacing: 0.05em;
+}
 
-  header p {
-    font-size: 0.85rem;
-    color: #8a7558;
-    margin-top: 6px;
-    letter-spacing: 0.05em;
-  }
+header p {
+  font-size: 0.82rem;
+  color: #8a7558;
+  margin-top: 5px;
+  letter-spacing: 0.04em;
+}
 
-  .main-layout {
-    display: flex;
-    height: calc(100vh - 120px);
-    gap: 0;
-  }
+.main-layout {
+  display: flex;
+  height: calc(100vh - 108px);
+}
 
-  /* ── MAP PANEL ── */
-  .map-panel {
-    flex: 1 1 60%;
-    position: relative;
-    overflow: hidden;
-    background: radial-gradient(ellipse at 40% 50%, #1e1507 0%, #0d0a05 100%);
-  }
+/* ── MAP PANEL ── */
+.map-panel {
+  flex: 1 1 60%;
+  position: relative;
+}
 
-  svg.map-svg {
-    width: 100%;
-    height: 100%;
-  }
+/* Leaflet overrides */
+.leaflet-container {
+  background: #0d0a05 !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
+  height: 100%;
+  width: 100%;
+}
+.leaflet-control-zoom {
+  border: 1px solid #3d2e1a !important;
+  box-shadow: none !important;
+}
+.leaflet-control-zoom a {
+  background: #1e1608 !important;
+  color: #c8a96e !important;
+  border-color: #3d2e1a !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #2e2210 !important;
+  color: #e8c87e !important;
+}
+.leaflet-control-attribution {
+  background: rgba(10,8,4,0.75) !important;
+  color: #4a3a28 !important;
+  font-size: 9px !important;
+}
+.leaflet-control-attribution a { color: #6a5a40 !important; }
 
-  /* Province background shape */
-  .province-fill {
-    fill: #1e1605;
-    stroke: #4a3820;
-    stroke-width: 1.5;
-  }
+/* Custom marker */
+.custom-marker-wrap {
+  background: none !important;
+  border: none !important;
+}
+.m-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+.m-shape {
+  transition: filter 0.2s;
+}
+.m-inner:hover .m-shape {
+  filter: brightness(1.6) drop-shadow(0 0 5px var(--mc));
+}
+.m-inner.active .m-shape {
+  filter: brightness(2) drop-shadow(0 0 10px var(--mc));
+}
+.m-label {
+  font-size: 10px;
+  color: #d4b896;
+  white-space: nowrap;
+  text-shadow: 1px 1px 3px #000, 0 0 5px #000;
+  margin-top: 3px;
+  pointer-events: none;
+  line-height: 1;
+}
+.m-label.major {
+  font-size: 11px;
+  font-weight: 600;
+  color: #f0d898;
+}
 
-  /* Region zone blobs */
-  .zone-blob {
-    opacity: 0.18;
-    transition: opacity 0.3s;
-  }
-  .zone-blob:hover { opacity: 0.3; }
+/* ── INFO PANEL ── */
+.info-panel {
+  flex: 0 0 380px;
+  background: #120e07;
+  border-left: 1px solid #2e2210;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
 
-  /* rivers */
-  .river {
-    fill: none;
-    stroke: #2a4a6a;
-    stroke-width: 1.2;
-    stroke-dasharray: none;
-    opacity: 0.6;
-  }
+.info-default {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 32px;
+  text-align: center;
+  opacity: 0.5;
+}
+.info-default .icon { font-size: 3rem; margin-bottom: 16px; }
+.info-default p { font-size: 0.85rem; color: #8a7558; line-height: 1.8; }
 
-  /* location dots */
-  .loc-dot {
-    cursor: pointer;
-    transition: r 0.2s, filter 0.2s;
-  }
-  .loc-dot:hover {
-    filter: brightness(1.5) drop-shadow(0 0 6px currentColor);
-  }
-  .loc-dot.active {
-    filter: brightness(1.8) drop-shadow(0 0 10px currentColor);
-  }
+.info-content {
+  display: none;
+  padding: 28px 24px;
+  flex-direction: column;
+  gap: 18px;
+}
+.info-content.visible { display: flex; }
 
-  .loc-label {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 10px;
-    fill: #d4b896;
-    pointer-events: none;
-    dominant-baseline: middle;
-  }
-  .loc-label.major {
-    font-size: 11px;
-    font-weight: 500;
-    fill: #e8cf9a;
-  }
+.info-header {
+  border-bottom: 1px solid #2e2210;
+  padding-bottom: 16px;
+}
 
-  /* region boundary labels */
-  .region-label {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 12px;
-    fill: #8a7050;
-    pointer-events: none;
-    opacity: 0.8;
-  }
+.info-name-ko {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #c8a96e;
+  line-height: 1.2;
+}
 
-  /* compass */
-  .compass-text {
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 10px;
-    fill: #5a4a38;
-  }
+.info-name-zh {
+  font-size: 0.85rem;
+  color: #7a6548;
+  margin-top: 4px;
+  font-style: italic;
+}
 
-  /* ── INFO PANEL ── */
-  .info-panel {
-    flex: 0 0 380px;
-    background: #120e07;
-    border-left: 1px solid #2e2210;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
 
-  .info-default {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 32px;
-    text-align: center;
-    opacity: 0.5;
-  }
+.badge {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid;
+  letter-spacing: 0.02em;
+}
+.badge-region { border-color: #4a3820; color: #8a7050; background: #1e1508; }
+.badge-altitude { border-color: #2a4a2a; color: #7aaa7a; background: #0a180a; }
+.badge-temp { border-color: #4a2a2a; color: #aa7a7a; background: #180a0a; }
 
-  .info-default .icon { font-size: 3rem; margin-bottom: 16px; }
-  .info-default p { font-size: 0.85rem; color: #8a7558; line-height: 1.8; }
+.info-section h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 0.8rem;
+  color: #7a6040;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
 
-  .info-content {
-    display: none;
-    padding: 28px 24px;
-    flex-direction: column;
-    gap: 18px;
-  }
-  .info-content.visible {
-    display: flex;
-  }
+.taste-bars { display: flex; flex-direction: column; gap: 7px; }
 
-  .info-header {
-    border-bottom: 1px solid #2e2210;
-    padding-bottom: 16px;
-  }
+.taste-bar-row { display: flex; align-items: center; gap: 10px; }
 
-  .info-name-ko {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #c8a96e;
-    line-height: 1.2;
-  }
+.taste-bar-label {
+  font-size: 0.78rem;
+  color: #a09070;
+  width: 52px;
+  flex-shrink: 0;
+  text-align: right;
+}
 
-  .info-name-zh {
-    font-size: 0.85rem;
-    color: #7a6548;
-    margin-top: 4px;
-    font-style: italic;
-  }
+.taste-bar-track {
+  flex: 1;
+  height: 5px;
+  background: #1e1808;
+  border-radius: 3px;
+  overflow: hidden;
+}
 
-  .badge-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 10px;
-  }
+.taste-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
 
-  .badge {
-    font-size: 0.72rem;
-    padding: 3px 10px;
-    border-radius: 12px;
-    border: 1px solid;
-    letter-spacing: 0.02em;
-  }
+.bar-bitter    { background: linear-gradient(90deg, #5a3030, #c07060); }
+.bar-astringent{ background: linear-gradient(90deg, #3a4a30, #80a060); }
+.bar-sweet     { background: linear-gradient(90deg, #4a3a20, #c0a050); }
+.bar-floral    { background: linear-gradient(90deg, #3a3050, #9080c0); }
+.bar-smooth    { background: linear-gradient(90deg, #2a4050, #6090b0); }
+.bar-huigan    { background: linear-gradient(90deg, #3a4a3a, #70a070); }
 
-  .badge-region { border-color: #4a3820; color: #8a7050; background: #1e1508; }
-  .badge-altitude { border-color: #2a4a2a; color: #7aaa7a; background: #0a180a; }
-  .badge-temp { border-color: #4a2a2a; color: #aa7a7a; background: #180a0a; }
+.info-desc {
+  font-size: 0.83rem;
+  color: #b0956a;
+  line-height: 1.85;
+}
 
-  .info-section h3 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 0.8rem;
-    color: #7a6040;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
+.highlight-text {
+  background: linear-gradient(90deg, #2a1e0a, #1e1508);
+  border-left: 3px solid #c8a96e;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.82rem;
+  color: #c8a06a;
+  font-style: italic;
+  line-height: 1.7;
+}
 
-  .taste-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-  }
+.caution-text {
+  background: #1a1010;
+  border-left: 3px solid #8a4a40;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.78rem;
+  color: #9a7060;
+  line-height: 1.7;
+}
+.caution-text::before { content: "⚠ "; color: #c06050; }
 
-  .taste-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+/* ── TABS ── */
+.tab-row {
+  display: flex;
+  border-bottom: 1px solid #1e1808;
+}
 
-  .taste-bar-label {
-    font-size: 0.78rem;
-    color: #a09070;
-    width: 52px;
-    flex-shrink: 0;
-    text-align: right;
-  }
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #5a4a38;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+}
+.tab-btn.active { color: #c8a96e; border-bottom-color: #c8a96e; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
-  .taste-bar-track {
-    flex: 1;
-    height: 5px;
-    background: #1e1808;
-    border-radius: 3px;
-    overflow: hidden;
-  }
+/* scroll bar */
+.info-panel::-webkit-scrollbar { width: 4px; }
+.info-panel::-webkit-scrollbar-track { background: #0a0805; }
+.info-panel::-webkit-scrollbar-thumb { background: #2e2210; border-radius: 2px; }
 
-  .taste-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width 0.6s ease;
-  }
+/* Legend */
+.map-legend {
+  position: absolute;
+  bottom: 28px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(10,8,4,0.88);
+  border: 1px solid #2e2210;
+  border-radius: 8px;
+  padding: 12px 14px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.map-legend h4 {
+  font-size: 0.7rem;
+  color: #7a6040;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-star {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+}
+.legend-item span { font-size: 0.72rem; color: #a09070; }
 
-  .bar-bitter { background: linear-gradient(90deg, #5a3030, #c07060); }
-  .bar-astringent { background: linear-gradient(90deg, #3a4a30, #80a060); }
-  .bar-sweet { background: linear-gradient(90deg, #4a3a20, #c0a050); }
-  .bar-floral { background: linear-gradient(90deg, #3a3050, #9080c0); }
-  .bar-smooth { background: linear-gradient(90deg, #2a4050, #6090b0); }
-  .bar-huigan { background: linear-gradient(90deg, #3a4a3a, #70a070); }
-
-  .info-desc {
-    font-size: 0.83rem;
-    color: #b0956a;
-    line-height: 1.85;
-  }
-
-  .highlight-text {
-    background: linear-gradient(90deg, #2a1e0a, #1e1508);
-    border-left: 3px solid #c8a96e;
-    padding: 10px 14px;
-    border-radius: 0 6px 6px 0;
-    font-size: 0.82rem;
-    color: #c8a06a;
-    font-style: italic;
-    line-height: 1.7;
-  }
-
-  .caution-text {
-    background: #1a1010;
-    border-left: 3px solid #8a4a40;
-    padding: 10px 14px;
-    border-radius: 0 6px 6px 0;
-    font-size: 0.78rem;
-    color: #9a7060;
-    line-height: 1.7;
-  }
-
-  .caution-text::before {
-    content: "⚠ ";
-    color: #c06050;
-  }
-
-  /* ── LEGEND ── */
-  .legend {
-    position: absolute;
-    bottom: 20px;
-    left: 16px;
-    background: rgba(10,8,4,0.85);
-    border: 1px solid #2e2210;
-    border-radius: 8px;
-    padding: 12px 14px;
-    backdrop-filter: blur(4px);
-  }
-
-  .legend h4 {
-    font-size: 0.72rem;
-    color: #7a6040;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
-    cursor: pointer;
-  }
-
-  .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .legend-item span {
-    font-size: 0.72rem;
-    color: #a09070;
-  }
-
-  /* ── TABS ── */
-  .tab-row {
-    display: flex;
-    border-bottom: 1px solid #1e1808;
-  }
-
-  .tab-btn {
-    flex: 1;
-    padding: 10px;
-    background: none;
-    border: none;
-    color: #5a4a38;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 0.75rem;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    letter-spacing: 0.02em;
-  }
-
-  .tab-btn.active {
-    color: #c8a96e;
-    border-bottom-color: #c8a96e;
-  }
-
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  /* scroll bar */
-  .info-panel::-webkit-scrollbar { width: 4px; }
-  .info-panel::-webkit-scrollbar-track { background: #0a0805; }
-  .info-panel::-webkit-scrollbar-thumb { background: #2e2210; border-radius: 2px; }
-
-  /* region type labels on map */
-  .map-annotation {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 9px;
-    fill: #3a2e1a;
-    pointer-events: none;
-  }
+@media(max-width: 700px) {
+  .main-layout { flex-direction: column; height: auto; }
+  .map-panel { height: 55vw; min-height: 260px; }
+  .info-panel { flex: none; height: auto; max-height: 60vh; }
+}
 </style>
 </head>
 <body>
 
 <header>
   <h1>보이차 산지 지도 · 普洱茶 産地</h1>
-  <p>운남성(雲南省) 주요 차산 — 클릭하여 산지별 특징 확인</p>
+  <p>운남성(雲南省) 주요 차산 — 마커를 클릭하여 산지별 특징 확인</p>
 </header>
 
 <div class="main-layout">
 
   <!-- MAP -->
-  <div class="map-panel">
-    <svg class="map-svg" viewBox="0 0 620 580" xmlns="http://www.w3.org/2000/svg">
-
-      <!-- Province rough outline -->
-      <path class="province-fill" d="
-        M60,30 L200,20 L280,10 L380,25 L480,50 L560,80 L590,150 L580,240
-        L560,300 L540,360 L490,420 L440,480 L380,540 L310,570 L240,560
-        L170,530 L110,480 L70,420 L40,350 L30,260 L35,160 L60,30Z
-      "/>
-
-      <!-- Country/region border dashes -->
-      <path d="M440,480 L480,540 L530,570" fill="none" stroke="#3a2a18" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
-      <text x="490" y="560" class="map-annotation">미얀마</text>
-      <text x="555" y="320" class="map-annotation">라오스</text>
-      <text x="540" y="430" class="map-annotation" transform="rotate(-20,540,430)">베트남</text>
-
-      <!-- Lancang River (Mekong) -->
-      <path class="river" d="M280,30 Q300,80 310,140 Q320,200 330,260 Q340,330 350,390 Q360,440 370,490 Q380,530 390,560"/>
-      <text x="355" y="200" class="map-annotation" transform="rotate(20,355,200)">란창강(瀾滄江)</text>
-
-      <!-- Nu River -->
-      <path class="river" d="M100,30 Q110,80 115,140 Q118,200 120,260" opacity="0.4"/>
-
-      <!-- Zone blobs -->
-      <!-- 보산시 zone -->
-      <ellipse class="zone-blob" cx="130" cy="170" rx="100" ry="90" fill="#6a8a6a"/>
-      <!-- 임창시 zone -->
-      <ellipse class="zone-blob" cx="240" cy="250" rx="100" ry="120" fill="#8a6a4a"/>
-      <!-- 보이시 zone -->
-      <ellipse class="zone-blob" cx="380" cy="330" rx="110" ry="100" fill="#7a5a8a"/>
-      <!-- 서쌍판납 zone -->
-      <ellipse class="zone-blob" cx="370" cy="480" rx="130" ry="70" fill="#c8902a"/>
-
-      <!-- REGION BOUNDARY LINES (approximate) -->
-      <line x1="200" y1="50" x2="200" y2="380" stroke="#2e2210" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.6"/>
-      <line x1="310" y1="140" x2="500" y2="260" stroke="#2e2210" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.6"/>
-      <line x1="200" y1="380" x2="500" y2="400" stroke="#2e2210" stroke-width="0.8" stroke-dasharray="5,4" opacity="0.6"/>
-
-      <!-- Region name labels -->
-      <text x="80" y="140" class="region-label" opacity="0.5">보산시</text>
-      <text x="80" y="154" class="region-label" opacity="0.4" font-size="10">保山市</text>
-      <text x="210" y="195" class="region-label" opacity="0.5">임창시</text>
-      <text x="210" y="209" class="region-label" opacity="0.4" font-size="10">臨滄市</text>
-      <text x="410" y="310" class="region-label" opacity="0.5">보이시</text>
-      <text x="410" y="324" class="region-label" opacity="0.4" font-size="10">普洱市</text>
-      <text x="280" y="470" class="region-label" opacity="0.5">서쌍판납</text>
-      <text x="278" y="484" class="region-label" opacity="0.4" font-size="10">西雙版納</text>
-
-      <!-- ═══════════════════════════════
-           LOCATION DOTS & LABELS
-           ═══════════════════════════════ -->
-
-      <!-- 1. 보산시 - major dot -->
-      <circle id="dot-baoshan" class="loc-dot" cx="120" cy="175" r="8"
-        fill="#6a8a6a" stroke="#a0c4a0" stroke-width="1.5"
-        onclick="showInfo('baoshan')" />
-      <text x="133" y="175" class="loc-label major">보산시</text>
-
-      <!-- 2. 임창시 - major dot -->
-      <circle id="dot-lincang" class="loc-dot" cx="230" cy="255" r="8"
-        fill="#8a6a4a" stroke="#c4a070" stroke-width="1.5"
-        onclick="showInfo('lincang')" />
-      <text x="243" y="255" class="loc-label major">임창시</text>
-
-      <!-- 3. 빙도 (冰島) - star -->
-      <polygon id="dot-bingdao" class="loc-dot"
-        points="220,180 224,190 235,190 227,196 230,207 220,201 210,207 213,196 205,190 216,190"
-        fill="#d4c060" stroke="#f0e080" stroke-width="1"
-        onclick="showInfo('bingdao')" />
-      <text x="238" y="193" class="loc-label" style="fill:#f0d860;font-weight:500;">빙도</text>
-
-      <!-- 4. 보이시 - major dot -->
-      <circle id="dot-puer" class="loc-dot" cx="430" cy="330" r="8"
-        fill="#7a5a8a" stroke="#c090d0" stroke-width="1.5"
-        onclick="showInfo('puer')" />
-      <text x="443" y="330" class="loc-label major">보이시</text>
-
-      <!-- 5. 서쌍판납 - major dot -->
-      <circle id="dot-xishuang" class="loc-dot" cx="310" cy="465" r="9"
-        fill="#c8902a" stroke="#e8b040" stroke-width="1.5"
-        onclick="showInfo('xishuang')" />
-      <text x="325" y="465" class="loc-label major">서쌍판납</text>
-
-      <!-- === 맹납현 (육대차산) === -->
-      <!-- 6. 이무 -->
-      <circle id="dot-yiwu" class="loc-dot" cx="455" cy="460" r="6"
-        fill="#c8902a" stroke="#e8b850" stroke-width="1.2"
-        onclick="showInfo('yiwu')" />
-      <text x="463" y="460" class="loc-label">이무 易武</text>
-
-      <!-- 7. 의방 -->
-      <circle id="dot-yibang" class="loc-dot" cx="440" cy="430" r="5"
-        fill="#b87828" stroke="#d8a040" stroke-width="1"
-        onclick="showInfo('yibang')" />
-      <text x="448" y="430" class="loc-label">의방 倚邦</text>
-
-      <!-- 8. 만전 -->
-      <circle id="dot-manzhuang" class="loc-dot" cx="462" cy="445" r="5"
-        fill="#b87828" stroke="#d8a040" stroke-width="1"
-        onclick="showInfo('manzhuang')" />
-      <text x="470" y="450" class="loc-label">만전 蠻磚</text>
-
-      <!-- 9. 혁등 -->
-      <circle id="dot-gedeng" class="loc-dot" cx="445" cy="418" r="4.5"
-        fill="#a07030" stroke="#c89050" stroke-width="1"
-        onclick="showInfo('gedeng')" />
-      <text x="452" y="418" class="loc-label">혁등 革登</text>
-
-      <!-- 10. 망지 -->
-      <circle id="dot-mangzhi" class="loc-dot" cx="432" cy="407" r="4.5"
-        fill="#a07030" stroke="#c89050" stroke-width="1"
-        onclick="showInfo('mangzhi')" />
-      <text x="439" y="407" class="loc-label">망지 莽枝</text>
-
-      <!-- 11. 유락(기낙산) -->
-      <circle id="dot-yuluo" class="loc-dot" cx="355" cy="450" r="5"
-        fill="#a07030" stroke="#c89050" stroke-width="1"
-        onclick="showInfo('yuluo')" />
-      <text x="362" y="445" class="loc-label">유락 攸樂</text>
-
-      <!-- === 맹해현 차산 === -->
-      <!-- 12. 포랑산 (노반장) -->
-      <polygon id="dot-bulang" class="loc-dot"
-        points="285,500 290,512 303,512 293,519 297,531 285,524 273,531 277,519 267,512 280,512"
-        fill="#c04030" stroke="#e06050" stroke-width="1"
-        onclick="showInfo('bulang')" />
-      <text x="307" y="515" class="loc-label" style="fill:#e06050;font-weight:500;">포랑산·반장</text>
-
-      <!-- 13. 남나산 -->
-      <circle id="dot-nannuo" class="loc-dot" cx="350" cy="478" r="5"
-        fill="#c8902a" stroke="#e8b040" stroke-width="1"
-        onclick="showInfo('nannuo')" />
-      <text x="357" y="474" class="loc-label">남나산 南糯山</text>
-
-      <!-- 14. 파사 -->
-      <circle id="dot-pasha" class="loc-dot" cx="303" cy="490" r="5"
-        fill="#a07030" stroke="#c89050" stroke-width="1"
-        onclick="showInfo('pasha')" />
-      <text x="310" y="486" class="loc-label">파사 帕沙</text>
-
-      <!-- 15. 하개 -->
-      <circle id="dot-hekai" class="loc-dot" cx="330" cy="490" r="5"
-        fill="#a07030" stroke="#c89050" stroke-width="1"
-        onclick="showInfo('hekai')" />
-      <text x="337" y="490" class="loc-label">하개 賀開</text>
-
-      <!-- ─── 3대 차구 표시선 (subtle) ─── -->
-      <text x="135" y="400" class="map-annotation" opacity="0.6">하관차구</text>
-      <text x="255" y="530" class="map-annotation" opacity="0.6">맹해차구</text>
-      <text x="430" y="395" class="map-annotation" opacity="0.6">이무차구</text>
-
-      <!-- 나침반 -->
-      <g transform="translate(560,55)">
-        <circle cx="0" cy="0" r="18" fill="#0a0805" stroke="#2e2210" stroke-width="1"/>
-        <polygon points="0,-14 -4,0 0,-5 4,0" fill="#c8a96e"/>
-        <polygon points="0,14 -4,0 0,5 4,0" fill="#3a2e1a"/>
-        <text x="0" y="-17" class="compass-text" text-anchor="middle" font-size="8">N</text>
-      </g>
-
-      <!-- scale bar -->
-      <g transform="translate(50, 545)">
-        <line x1="0" y1="0" x2="80" y2="0" stroke="#3a2e1a" stroke-width="1.5"/>
-        <line x1="0" y1="-4" x2="0" y2="4" stroke="#3a2e1a" stroke-width="1.5"/>
-        <line x1="80" y1="-4" x2="80" y2="4" stroke="#3a2e1a" stroke-width="1.5"/>
-        <text x="40" y="14" class="compass-text" text-anchor="middle">약 100km</text>
-      </g>
-
-    </svg>
-
-    <!-- Legend -->
-    <div class="legend">
-      <h4>산지 유형</h4>
-      <div class="legend-item" onclick="showInfo('xishuang')">
-        <div class="legend-dot" style="background:#c8902a;"></div>
-        <span>서쌍판납 주요 산지</span>
-      </div>
-      <div class="legend-item" onclick="showInfo('bulang')">
-        <div class="legend-dot" style="background:#c04030;border-radius:2px;transform:rotate(45deg);"></div>
-        <span>주요 명산지 (★)</span>
-      </div>
-      <div class="legend-item" onclick="showInfo('bingdao')">
-        <div class="legend-dot" style="background:#d4c060;clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);"></div>
-        <span>최고급 단일 산지</span>
-      </div>
-      <div class="legend-item" onclick="showInfo('baoshan')">
-        <div class="legend-dot" style="background:#6a8a6a;"></div>
-        <span>4대 산지 (대분류)</span>
-      </div>
-    </div>
-  </div>
+  <div class="map-panel" id="map"></div>
 
   <!-- INFO PANEL -->
   <div class="info-panel" id="infoPanel">
@@ -609,11 +390,129 @@
 </div>
 
 <script>
+/* ═══════════════════════════════
+   MAP INIT
+   ═══════════════════════════════ */
+const map = L.map('map', {
+  zoomControl: true,
+  attributionControl: true
+});
+
+// CartoDB Dark Matter — no API key needed
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 18
+}).addTo(map);
+
+/* ═══════════════════════════════
+   MARKER DEFINITIONS
+   (lat/lng: 실제 좌표)
+   ═══════════════════════════════ */
+const MARKERS = {
+  baoshan:   { lat: 25.122, lng: 99.183,  color: '#6a8a6a', stroke: '#a0c4a0', size: 14, type: 'major', label: '보산시',       isMajor: true  },
+  lincang:   { lat: 23.886, lng: 100.087, color: '#8a6a4a', stroke: '#c4a070', size: 14, type: 'major', label: '임창시',       isMajor: true  },
+  bingdao:   { lat: 23.580, lng: 99.847,  color: '#d4c060', stroke: '#f0e080', size: 13, type: 'star',  label: '빙도 冰島',    isMajor: false },
+  puer:      { lat: 22.825, lng: 101.088, color: '#7a5a8a', stroke: '#c090d0', size: 14, type: 'major', label: '보이시',       isMajor: true  },
+  xishuang:  { lat: 21.998, lng: 100.797, color: '#c8902a', stroke: '#e8b040', size: 16, type: 'major', label: '서쌍판납',     isMajor: true  },
+  yiwu:      { lat: 21.982, lng: 101.678, color: '#c8902a', stroke: '#e8b850', size: 10, type: 'dot',   label: '이무 易武',    isMajor: false },
+  yibang:    { lat: 21.953, lng: 101.452, color: '#b87828', stroke: '#d8a040', size: 8,  type: 'dot',   label: '의방 倚邦',    isMajor: false },
+  manzhuang: { lat: 22.052, lng: 101.548, color: '#b87828', stroke: '#d8a040', size: 8,  type: 'dot',   label: '만전 蠻磚',    isMajor: false },
+  gedeng:    { lat: 21.903, lng: 101.420, color: '#a07030', stroke: '#c89050', size: 7,  type: 'dot',   label: '혁등 革登',    isMajor: false },
+  mangzhi:   { lat: 21.878, lng: 101.382, color: '#a07030', stroke: '#c89050', size: 7,  type: 'dot',   label: '망지 莽枝',    isMajor: false },
+  yuluo:     { lat: 22.052, lng: 100.878, color: '#a07030', stroke: '#c89050', size: 8,  type: 'dot',   label: '유락(기낙산)', isMajor: false },
+  bulang:    { lat: 21.622, lng: 100.432, color: '#c04030', stroke: '#e06050', size: 13, type: 'star',  label: '포랑산·노반장',isMajor: false },
+  nannuo:    { lat: 21.928, lng: 100.522, color: '#c8902a', stroke: '#e8b040', size: 8,  type: 'dot',   label: '남나산 南糯山', isMajor: false },
+  pasha:     { lat: 21.732, lng: 100.398, color: '#a07030', stroke: '#c89050', size: 8,  type: 'dot',   label: '파사 帕沙',    isMajor: false },
+  hekai:     { lat: 21.848, lng: 100.468, color: '#a07030', stroke: '#c89050', size: 8,  type: 'dot',   label: '하개 賀開',    isMajor: false }
+};
+
+/* ═══════════════════════════════
+   CREATE MARKERS
+   ═══════════════════════════════ */
+function makeIcon(id, m) {
+  let shapeHtml = '';
+  const s = m.size;
+
+  if (m.type === 'major') {
+    shapeHtml = `<div class="m-shape" style="
+      width:${s}px;height:${s}px;border-radius:50%;
+      background:${m.color};border:2px solid ${m.stroke};
+      box-shadow:0 0 10px ${m.color}80;"></div>`;
+  } else if (m.type === 'star') {
+    shapeHtml = `<div class="m-shape" style="
+      width:${s+4}px;height:${s+4}px;
+      background:${m.color};border:1.5px solid ${m.stroke};
+      clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+      box-shadow:0 0 12px ${m.color};"></div>`;
+  } else {
+    shapeHtml = `<div class="m-shape" style="
+      width:${s}px;height:${s}px;border-radius:50%;
+      background:${m.color};border:1.5px solid ${m.stroke};"></div>`;
+  }
+
+  const labelCls = m.isMajor ? 'major' : '';
+  const html = `<div class="m-inner" id="mi-${id}" style="--mc:${m.color}">
+    ${shapeHtml}
+    <div class="m-label ${labelCls}">${m.label}</div>
+  </div>`;
+
+  return L.divIcon({
+    html,
+    className: 'custom-marker-wrap',
+    iconAnchor: [Math.ceil((s+4)/2), Math.ceil((s+4)/2)],
+    iconSize: null
+  });
+}
+
+Object.entries(MARKERS).forEach(([id, m]) => {
+  const marker = L.marker([m.lat, m.lng], {
+    icon: makeIcon(id, m),
+    zIndexOffset: m.type === 'major' ? 100 : m.type === 'star' ? 200 : 0
+  }).addTo(map);
+  marker.on('click', () => showInfo(id));
+});
+
+// Fit map to all markers with padding
+const lats = Object.values(MARKERS).map(m => m.lat);
+const lngs = Object.values(MARKERS).map(m => m.lng);
+map.fitBounds([
+  [Math.min(...lats) - 0.3, Math.min(...lngs) - 0.4],
+  [Math.max(...lats) + 0.3, Math.max(...lngs) + 0.4]
+]);
+
+/* ═══════════════════════════════
+   LEGEND (absolute over map)
+   ═══════════════════════════════ */
+const legendDiv = document.createElement('div');
+legendDiv.className = 'map-legend';
+legendDiv.innerHTML = `
+  <h4>산지 유형</h4>
+  <div class="legend-item">
+    <div class="legend-star" style="background:#c04030;"></div>
+    <span>최고급 명산지</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#c8902a;border:1.5px solid #e8b040;width:14px;height:14px;"></div>
+    <span>4대 산지 (대분류)</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#c8902a;border:1.5px solid #e8b040;"></div>
+    <span>주요 차산</span>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background:#a07030;border:1.5px solid #c89050;"></div>
+    <span>육대차산</span>
+  </div>`;
+document.querySelector('.map-panel').appendChild(legendDiv);
+
+/* ═══════════════════════════════
+   DATA
+   ═══════════════════════════════ */
 const DATA = {
 
   baoshan: {
-    ko: '보산시',
-    zh: '保山市',
+    ko: '보산시', zh: '保山市',
     badges: ['4대 산지', '고해발', '저온'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 30, 떫은맛: 45, 단맛: 25, 꽃향: 20, 탕질부드러움: 55, 회감: 30 },
@@ -623,179 +522,162 @@ const DATA = {
   },
 
   lincang: {
-    ko: '임창시',
-    zh: '臨滄市',
+    ko: '임창시', zh: '臨滄市',
     badges: ['4대 산지', '최대 생산량', '빙도 본거지'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 35, 떫은맛: 35, 단맛: 50, 꽃향: 55, 탕질부드러움: 60, 회감: 50 },
     highlight: '운남성 전체에서 차 생산량이 가장 많다. 빙도·석귀·대설산 등 최근 가장 주목받는 명산지를 품고 있다.',
-    profile: '운남성 사남쪽에 위치. 원래는 녹차·홍차 위주였으나 2003년 이후 보이차 열풍과 함께 쇄청모차 생산을 시작했다. 빙도(冰島), 석귀(昔歸), 대설산(大雪山)이 전 세계 보이차 애호가들의 열광적인 지지를 받고 있다.',
+    profile: '운남성 서남쪽에 위치. 원래는 녹차·홍차 위주였으나 2003년 이후 보이차 열풍과 함께 쇄청모차 생산을 시작했다. 빙도(冰島), 석귀(昔歸), 대설산(大雪山)이 전 세계 보이차 애호가들의 열광적인 지지를 받고 있다.',
     caution: '임창은 보이차 역사가 서쌍판납에 비해 짧다. "빙도" 상표를 도용한 방품(仿品)이 가장 많이 유통되는 산지이기도 하다. 임창 = 빙도로 단순화하는 마케팅에 주의할 것.'
   },
 
   bingdao: {
-    ko: '빙도',
-    zh: '冰島 · Bingdao',
+    ko: '빙도', zh: '冰島 · Bingdao',
     badges: ['임창시·쌍강현', '해발 1,800m+', '매년 최고가'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 10, 떫은맛: 12, 단맛: 95, 꽃향: 90, 탕질부드러움: 92, 회감: 75 },
     highlight: '쓴맛이 거의 없고 쓴맛이 있어도 즉시 단맛으로 전환. 여리고 달콤한 꽃향기, 내포성 최상급. 혀 아래 생진(生津)이 풍부.',
-    profile: '빙도촌민위원회 관할 5개 마을(빙도노채·지계·나오·남박·파외) 중 빙도노채가 핵심. 고차수 다원은 겨우 100여 묘. 봄철 순료 생산량이 1~2톤을 넘지 않을 정도로 극소량이다. 맹고대엽종(국가급 우량품종)의 모수(母樹)가 되는 품종. 최근 단주차(單株茶) 붐으로 집집마다 품질 편차가 크다.',
+    profile: '빙도촌민위원회 관할 5개 마을(빙도노채·지계·나오·남박·파외) 중 빙도노채가 핵심. 고차수 다원은 겨우 100여 묘. 봄철 순료 생산량이 1-2톤을 넘지 않을 정도로 극소량이다. 맹고대엽종(국가급 우량품종)의 모수(母樹)가 되는 품종. 최근 단주차(單株茶) 붐으로 집집마다 품질 편차가 크다.',
     caution: '빙도노채 순료 진품을 구한다는 것은 사실상 불가능에 가까울 정도로 방품 비율이 압도적이다. 가격이 아무리 비싸도 출처 불명이라면 의심해야 한다. 나오·지계·남박 등 주변 마을 차는 빙도노채와 맛이 유사하며 상대적으로 합리적인 가격에 구할 수 있다.'
   },
 
   puer: {
-    ko: '보이시',
-    zh: '普洱市 (구 사모·思茅)',
+    ko: '보이시', zh: '普洱市 (구 사모·思茅)',
     badges: ['4대 산지', '2007년 개명', '고차수 보고'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 30, 떫은맛: 35, 단맛: 40, 꽃향: 35, 탕질부드러움: 50, 회감: 45 },
     highlight: '진원현 천가채에 2,700여 년 야생형 고차수 보유. 역사적으로 보이차의 집산지였던 지역.',
-    profile: '옛 이름은 사모(思茅). 2007년 보이시(普洱市)로 개명. 북쪽으로 임창, 남쪽으로 서쌍판납과 접한다. 란창현 방위에 1,100여 년 과도기형 고차수, 경곡에도 1,000여 년 야생형 고차수 등 운남 보이차의 귀중한 문화유산이 집중되어 있다. 녹차·쇄청모차·홍차 등 다양한 차종을 생산한다.',
+    profile: '옛 이름은 사모(思茅). 2007년 보이시(普洱市)로 개명. 북쪽으로 임창, 남쪽으로 서쌍판납과 접한다. 란창현 방위에 1,100여 년 과도기형 고차수, 경곡에도 1,000여 년 야생형 고차수 등 운남 보이차의 귀중한 문화유산이 집중되어 있다.',
     caution: '"보이"라는 이름 자체가 보이차의 명칭 기원이지만, 정작 현재 보이시에서 생산되는 차는 서쌍판납 산지에 비해 인지도가 낮다. 역사적 집산지라는 위상과 실제 현재 품질을 혼동하지 말 것.'
   },
 
   xishuang: {
-    ko: '서쌍판납',
-    zh: '西雙版納 · Xishuangbanna',
+    ko: '서쌍판납', zh: '西雙版納 · Xishuangbanna',
     badges: ['4대 산지', '최남단', '보이차 본고장'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 55, 떫은맛: 50, 단맛: 45, 꽃향: 60, 탕질부드러움: 55, 회감: 70 },
     highlight: '보이차 생산 역사가 가장 오래되고 생산량도 많다. 육대차산(六大茶山)의 본거지. 열대우림 기후로 유기질 풍부.',
-    profile: '운남성 최남단. 위도와 해발이 가장 낮고 온도·강우량은 가장 높다. 경홍시·맹해현·맹납현 세 지역으로 나뉜다. 맹납현의 육대차산(이무·의방·만전·혁등·망지·유락), 맹해현의 포랑산·반장·남나산·파사·하개 등 수많은 명산지를 포함한다. 수백 년간 보이차 주류시장을 이끌어 왔다.',
+    profile: '운남성 최남단. 위도와 해발이 가장 낮고 온도·강우량은 가장 높다. 경홍시·맹해현·맹납현 세 지역으로 나뉜다. 맹납현의 육대차산(이무·의방·만전·혁등·망지·유락), 맹해현의 포랑산·반장·남나산·파사·하개 등 수많은 명산지를 포함한다.',
     caution: '최근 과도한 채엽으로 일부 차산에서 품질 저하가 논란. 서쌍판납이라는 거대한 지역을 하나의 품질로 묶는 것은 무의미하다. 맹납현 vs 맹해현, 고수차 vs 대지차 등 세부 출처를 반드시 확인해야 한다.'
   },
 
   yiwu: {
-    ko: '이무',
-    zh: '易武 · Yiwu',
-    badges: ['맹납현·육대차산', '해발 1,500~1,900m', '보이차의 황후'],
+    ko: '이무', zh: '易武 · Yiwu',
+    badges: ['맹납현·육대차산', '해발 1,500-1,900m', '보이차의 황후'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 15, 떫은맛: 18, 단맛: 85, 꽃향: 75, 탕질부드러움: 88, 회감: 80 },
     highlight: '"보이차의 황후(普洱茶之后)". 은은한 청향과 벌꿀향, 탕질이 부드럽고 매끄러우며 깨끗한 단맛. 쓰고 떫은맛이 적고 회감·생진이 좋다.',
-    profile: '태어로 "미녀뱀이 사는 곳". 육대차산 중 면적이 가장 크고 생산량도 가장 많다. 연평균 기온 17.2℃, 강수량 1,500~1,900mm. 청나라 말부터 호급차(號級茶)를 생산한 유서 깊은 차장들이 있다. 고차수·왜화차·대지차가 혼재하며, 이무 재래품종(군체종) 대지차도 품질이 뛰어나다.',
-    caution: '높은 명성 때문에 방품이 가장 많이 유통되는 산지 중 하나. 80~90년대 정부 정책으로 왜화(矮化, 가지치기)된 고차수가 많아 수령 확인이 어렵다. 만살·낙수동·괄풍채 등 세부 마을에 따라 가격과 맛이 크게 다르므로 반드시 구분해야 한다.'
+    profile: '육대차산 중 면적이 가장 크고 생산량도 가장 많다. 연평균 기온 17.2°C, 강수량 1,500-1,900mm. 청나라 말부터 호급차(號級茶)를 생산한 유서 깊은 차장들이 있다. 고차수·왜화차·대지차가 혼재.',
+    caution: '높은 명성 때문에 방품이 가장 많이 유통되는 산지 중 하나. 만살·낙수동·괄풍채 등 세부 마을에 따라 가격과 맛이 크게 다르므로 반드시 구분해야 한다.'
   },
 
   yibang: {
-    ko: '의방',
-    zh: '倚邦 · Yibang',
-    badges: ['맹납현·육대차산', '해발 600~1,900m', '청나라 공차'],
+    ko: '의방', zh: '倚邦 · Yibang',
+    badges: ['맹납현·육대차산', '해발 600-1,900m', '청나라 공차'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 20, 떫은맛: 35, 단맛: 60, 꽃향: 80, 탕질부드러움: 70, 회감: 65 },
     highlight: '독특한 꿀향기·꽃향기. 건차 외형이 매우 작고 어리다(소엽종). 만송 고수차는 쓴맛이 매우 약하고 잔향이 오래 남는다.',
-    profile: '태어로 "차나무와 우물이 있는 곳". 청나라 때 만송(漫松)차산 차가 공차(貢茶)로 지정되며 이름을 떨쳤다. 육대차산 중 소엽종(小葉種) 차나무가 유독 많은 독특한 산지. 5백 년 이상 고차수가 현재까지 존재한다.',
-    caution: '만송 왕자산 고수차는 시장에서 진품을 구하는 것이 사실상 불가능하다. 다원 훼손이 심해 고차수 수량이 매우 적지만 "만송 고수차"라는 이름으로 대량 유통 중. 유통량 대비 생산량이 맞지 않으면 방품으로 봐야 한다.'
+    profile: '청나라 때 만송(漫松)차산 차가 공차(貢茶)로 지정되며 이름을 떨쳤다. 육대차산 중 소엽종(小葉種) 차나무가 유독 많은 독특한 산지. 5백 년 이상 고차수가 현재까지 존재한다.',
+    caution: '만송 왕자산 고수차는 시장에서 진품을 구하는 것이 사실상 불가능하다. 유통량 대비 생산량이 맞지 않으면 방품으로 봐야 한다.'
   },
 
   manzhuang: {
-    ko: '만전',
-    zh: '蠻磚 · Manzhuang',
+    ko: '만전', zh: '蠻磚 · Manzhuang',
     badges: ['맹납현·육대차산', '해발 1,100m', '이무와 유사'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 18, 떫은맛: 22, 단맛: 80, 꽃향: 70, 탕질부드러움: 82, 회감: 72 },
     highlight: '탕질이 매끄럽고 두툼하다. 달콤한 벌꿀·사탕수수향. 회감은 늦지만 은은하게 오래 지속되며 목젖 뒤 향기가 오래 간다.',
-    profile: '태어로 "큰 마을". 이무와 가까워 차나무 생태·토양이 비슷해 맛도 유사하다. 역사적으로 "이무칠자병차의 절반은 만전차"라는 말이 있을 정도로 두 지역은 깊이 연결돼 있다. 만림(曼林)·만장·팔총채가 대표 고수차 산지.',
+    profile: '이무와 가까워 차나무 생태·토양이 비슷해 맛도 유사하다. 역사적으로 "이무칠자병차의 절반은 만전차"라는 말이 있을 정도로 두 지역은 깊이 연결돼 있다.',
     caution: '과도한 채엽으로 예년에 비해 맛이 싱거워졌다는 평가가 있다. 대지차·고차수 다원이 혼재하므로 채엽 출처를 반드시 확인해야 한다.'
   },
 
   gedeng: {
-    ko: '혁등',
-    zh: '革登 · Gedeng',
+    ko: '혁등', zh: '革登 · Gedeng',
     badges: ['맹납현·육대차산', '해발 1,300m', '육대차산 최소'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 20, 떫은맛: 22, 단맛: 55, 꽃향: 72, 탕질부드러움: 68, 회감: 60 },
     highlight: '높고 깔끔한 청향(靑香). 탕질은 부드럽고 매끄럽지만 다소 가벼운 느낌. 쓰고 떫은맛이 약한 편.',
-    profile: '태어로 "매우 높은 지역". 육대차산 중 면적이 가장 작다. 대·중·소엽종이 혼재하며 고수차 생산량이 매우 적다. 청나라 때 기록에는 집채만한 거대한 차왕수(茶王樹)가 있다고 하나 현재는 존재하지 않는다.',
+    profile: '육대차산 중 면적이 가장 작다. 대·중·소엽종이 혼재하며 고수차 생산량이 매우 적다.',
     caution: '삼림 훼손·고차수 벌목이 광범위하게 진행되었던 곳. 생산량이 매우 적기 때문에 "혁등 고수차" 이름을 달고 유통되는 차 중 방품 비율이 높다.'
   },
 
   mangzhi: {
-    ko: '망지',
-    zh: '莽枝 · Mangzhi',
+    ko: '망지', zh: '莽枝 · Mangzhi',
     badges: ['맹납현·육대차산', '해발 1,400m', '난꽃향 명산지'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 22, 떫은맛: 25, 단맛: 55, 꽃향: 88, 탕질부드러움: 60, 회감: 68 },
     highlight: '갓 만든 차에서 매우 높은 난꽃(蘭花)향이 난다. 저장 시간이 길어지면 묵직하고 매끄러운 계열로 변화. 회감이 빠르고 지속성도 좋다.',
-    profile: '태어로 "제갈량이 구리거울을 묻은 지역". 혁등차산 서남쪽. 원나라 때부터 다원이 조성된 유서 깊은 땅. 청나라 초 보이차 집산지로서 역할을 했다. 앙림·홍토파의 연속된 고차수 다원이 유명하며, 중엽종이 많다.',
+    profile: '혁등차산 서남쪽. 원나라 때부터 다원이 조성된 유서 깊은 땅. 앙림·홍토파의 연속된 고차수 다원이 유명하며, 중엽종이 많다.',
     caution: '품종 다양성이 높아 마을·구획마다 맛 편차가 크다. "망지 난꽃향"이라는 이름을 앞세운 제품이 많지만, 실제 고수차 다원 면적이 제한적이므로 수량 과장 여부를 따져봐야 한다.'
   },
 
   yuluo: {
-    ko: '유락 (기낙산)',
-    zh: '攸樂 · 基諾山 · Yuluo',
-    badges: ['경홍시·육대차산', '해발 575~1,691m', '가장 넓은 재배지역'],
+    ko: '유락 (기낙산)', zh: '攸樂 · 基諾山 · Yuluo',
+    badges: ['경홍시·육대차산', '해발 575-1,691m', '가장 넓은 재배지역'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 20, 떫은맛: 48, 단맛: 45, 꽃향: 65, 탕질부드러움: 60, 회감: 62 },
     highlight: '높은 청향 위주, 잔 바닥에 달콤한 벌꿀향. 탕질은 맑고 부드럽지만 다소 가벼운 느낌. 육대차산 중 상대적으로 떫은맛이 강한 편.',
-    profile: '현재 지명 기낙산(基諾山). 소수민족 기낙족(基諾族)이 사는 곳. 육대차산 중 유일하게 경홍시에 속하며 동서 75km, 남북 50km로 재배지역이 가장 넓다. 역사적으로 생산량이 많아 이무·의방으로 넘겨 가공되었다.',
+    profile: '현재 지명 기낙산(基諾山). 소수민족 기낙족(基諾族)이 사는 곳. 육대차산 중 유일하게 경홍시에 속하며 동서 75km, 남북 50km로 재배지역이 가장 넓다.',
     caution: '2006년부터 고수차 열풍으로 과도한 채엽이 시작되어 품질이 다소 떨어졌다. 교통 개선으로 접근성이 높아지며 개발 압력이 증가하는 상황.'
   },
 
   bulang: {
-    ko: '포랑산 · 노반장',
-    zh: '布朗山 · 老班章 · Bulang',
-    badges: ['맹해현', '해발 1,600~1,900m', '보이차의 왕'],
+    ko: '포랑산 · 노반장', zh: '布朗山 · 老班章 · Bulang',
+    badges: ['맹해현', '해발 1,600-1,900m', '보이차의 왕'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 90, 떫은맛: 80, 단맛: 70, 꽃향: 55, 탕질부드러움: 55, 회감: 95 },
-    highlight: '"보이차의 왕(普洱茶之王)". 남성적이고 낮게 깔리는 묵직한 향. 쓴맛·떫은맛이 강하지만 회감이 극적으로 강하고 빠르다. 마신 후 비후(鼻後) 통로에 향이 오래 잔류.',
-    profile: '미얀마와 접경. 포랑족(布朗族)은 고대 복족(濮族)의 후예로 운남에서 최초로 차를 재배한 민족. 노반장 수령 600년 이상 고차수가 포랑족이 심은 것. 노만아(老曼峨)는 마을 역사 1,300년 이상. 노반장·신반장·노만아가 대표 산지로, 포랑산 일대에서 생산되는 차는 공통된 강렬한 특징을 가진다.',
-    caution: '"노반장" 이름을 건 방품이 업계에서 가장 악명 높다. 생산 가능한 진품 수량을 훨씬 상회하는 양이 시장에 유통된다. 가격이 비싸도 반드시 신뢰할 수 있는 경로에서 구매할 것. 또한 강한 쓴맛이 일부에선 자극적으로 느껴질 수 있으며, 차기(茶氣)가 매우 강해 공복 음용은 주의.'
+    highlight: '"보이차의 왕(普洱茶之王)". 남성적이고 낮게 깔리는 묵직한 향. 쓴맛·떫은맛이 강하지만 회감이 극적으로 강하고 빠르다.',
+    profile: '미얀마와 접경. 포랑족(布朗族)은 고대 복족(濮族)의 후예로 운남에서 최초로 차를 재배한 민족. 노반장 수령 600년 이상 고차수가 포랑족이 심은 것. 노반장·신반장·노만아가 대표 산지.',
+    caution: '"노반장" 이름을 건 방품이 업계에서 가장 악명 높다. 생산 가능한 진품 수량을 훨씬 상회하는 양이 시장에 유통된다. 또한 차기(茶氣)가 매우 강해 공복 음용은 주의.'
   },
 
   nannuo: {
-    ko: '남나산',
-    zh: '南糯山 · Nannuo',
-    badges: ['맹해현', '해발 1,400~1,700m', '운남 최초 기계화 차창'],
+    ko: '남나산', zh: '南糯山 · Nannuo',
+    badges: ['맹해현', '해발 1,400-1,700m', '운남 최초 기계화 차창'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 28, 떫은맛: 38, 단맛: 55, 꽃향: 58, 탕질부드러움: 65, 회감: 60 },
     highlight: '투명하고 맑은 금황색 탕색. 쓴맛이 약하고 떫은맛은 약간 남는다. 회감은 늦지만 오래 유지되고 내포성이 뛰어나다.',
-    profile: '맹해현 격랑화향 북쪽. 경홍에서 맹해로 가는 큰 길가에 위치. 운남 최초 기계화 차창인 남나산실험차창(南糯山實驗茶廠)이 있던 곳으로 신중국 건립 후 보이차 생산의 중요 기지 역할을 했다. 애니족이 오랫동안 차를 심고 가꾸며 살아온 땅으로, 넓은 규모의 고차수 다원을 보유하고 있다.',
+    profile: '운남 최초 기계화 차창인 남나산실험차창(南糯山實驗茶廠)이 있던 곳. 애니족이 오랫동안 차를 심고 가꾸며 살아온 땅으로, 넓은 규모의 고차수 다원을 보유하고 있다.',
     caution: '고차수 다원과 대지차 다원이 광범위하게 혼재. "남나산 고수차"라는 이름이 시장에 많이 나돌지만 출처 확인이 어렵다.'
   },
 
   pasha: {
-    ko: '파사',
-    zh: '帕沙 · Pasha',
-    badges: ['맹해현', '해발 1,500mm 강수', '중상급 고수차'],
+    ko: '파사', zh: '帕沙 · Pasha',
+    badges: ['맹해현', '연 강수 1,500mm', '중상급 고수차'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 30, 떫은맛: 35, 단맛: 58, 꽃향: 55, 탕질부드러움: 65, 회감: 60 },
     highlight: '남나산과 포랑산 사이에 위치한 균형감 있는 산지. 파사노채의 고차수 다원이 유명하며, 이 지역 고차수 중 은차나무도 많다.',
-    profile: '태어로 "하나의 산, 하나의 강이 있는 곳". 맹해현 격랑화향 서남쪽. 남나산과 포랑산 사이에 위치. 파사신채·파사노채·파사중채·남간·노단 등이 주요 산지. 오래된 차나무가 많고 그중 파사노채의 고차수 다원이 가장 유명하다.',
+    profile: '맹해현 격랑화향 서남쪽. 남나산과 포랑산 사이에 위치. 파사신채·파사노채·파사중채·남간·노단 등이 주요 산지.',
     caution: '남나산·포랑산에 비해 상대적으로 덜 알려진 산지이나, 이 점을 역이용해 방품의 출처로 활용되는 경우도 있다.'
   },
 
   hekai: {
-    ko: '하개',
-    zh: '賀開 · Hekai',
-    badges: ['맹해현', '해발 1,400~1,700m', '납호족 고차수'],
+    ko: '하개', zh: '賀開 · Hekai',
+    badges: ['맹해현', '해발 1,400-1,700m', '납호족 고차수'],
     badgeTypes: ['region', 'altitude', 'temp'],
     taste: { 쓴맛: 32, 떫은맛: 35, 단맛: 52, 꽃향: 48, 탕질부드러움: 62, 회감: 58 },
     highlight: '납호족이 오랫동안 가꿔온 깊은 역사의 산지. 균형 잡힌 맛으로 부드러운 탕질과 은은한 향이 특징.',
-    profile: '맹해현 맹혼진 하개촌. 북쪽으로 남나산, 동쪽으로 파사와 연결된다. 납호족(拉祜族)이 차나무를 가꿔온 지역. 해발 1,400~1,700m의 산지.',
-    caution: '남나산·포랑산·파사에 비해 인지도가 낮아 가격이 상대적으로 합리적이나, 그만큼 유통 경로가 불명확한 경우도 많다.'
+    profile: '맹해현 맹혼진 하개촌. 북쪽으로 남나산, 동쪽으로 파사와 연결된다. 납호족(拉祜族)이 차나무를 가꿔온 지역.',
+    caution: '남나산·포랑산·파사에 비해 인지도가 낮아 가격이 상대적으로 합리적이나, 유통 경로가 불명확한 경우도 많다.'
   }
 };
 
-let currentRegion = null;
+/* ═══════════════════════════════
+   UI LOGIC
+   ═══════════════════════════════ */
 let currentTab = 'taste';
 
 function showInfo(id) {
   const d = DATA[id];
   if (!d) return;
 
-  currentRegion = id;
-
-  // Remove active from all dots
-  document.querySelectorAll('.loc-dot').forEach(el => el.classList.remove('active'));
-
-  // Add active to clicked dot
-  const dot = document.getElementById('dot-' + id);
-  if (dot) dot.classList.add('active');
+  // active marker
+  document.querySelectorAll('.m-inner').forEach(el => el.classList.remove('active'));
+  const mi = document.getElementById('mi-' + id);
+  if (mi) mi.classList.add('active');
 
   document.getElementById('infoDefault').style.display = 'none';
-  const content = document.getElementById('infoContent');
-  content.classList.add('visible');
+  document.getElementById('infoContent').classList.add('visible');
 
   document.getElementById('infoNameKo').textContent = d.ko;
   document.getElementById('infoNameZh').textContent = d.zh;
@@ -813,38 +695,31 @@ function showInfo(id) {
   document.getElementById('tasteHighlight').textContent = d.highlight;
   document.getElementById('profileDesc').textContent = d.profile;
   document.getElementById('cautionText').textContent = d.caution;
-
-  // reset to taste tab
   switchTab('taste');
 }
 
 function renderTaste(d) {
   const bars = document.getElementById('tasteBars');
   bars.innerHTML = '';
-  const labels = { 쓴맛: 'bar-bitter', 떫은맛: 'bar-astringent', 단맛: 'bar-sweet', 꽃향: 'bar-floral', 탕질부드러움: 'bar-smooth', 회감: 'bar-huigan' };
-  const displayNames = { 쓴맛: '쓴맛', 떫은맛: '떫은맛', 단맛: '단맛', 꽃향: '꽃향·청향', 탕질부드러움: '탕질', 회감: '회감' };
+  const cls = { 쓴맛: 'bar-bitter', 떫은맛: 'bar-astringent', 단맛: 'bar-sweet', 꽃향: 'bar-floral', 탕질부드러움: 'bar-smooth', 회감: 'bar-huigan' };
+  const name = { 쓴맛: '쓴맛', 떫은맛: '떫은맛', 단맛: '단맛', 꽃향: '꽃향·청향', 탕질부드러움: '탕질', 회감: '회감' };
   Object.entries(d.taste).forEach(([key, val]) => {
     const row = document.createElement('div');
     row.className = 'taste-bar-row';
     row.innerHTML = `
-      <span class="taste-bar-label">${displayNames[key]}</span>
+      <span class="taste-bar-label">${name[key]}</span>
       <div class="taste-bar-track">
-        <div class="taste-bar-fill ${labels[key]}" style="width: 0%"></div>
-      </div>
-    `;
+        <div class="taste-bar-fill ${cls[key]}" style="width:0%"></div>
+      </div>`;
     bars.appendChild(row);
-    // Animate
-    setTimeout(() => {
-      row.querySelector('.taste-bar-fill').style.width = val + '%';
-    }, 50);
+    setTimeout(() => { row.querySelector('.taste-bar-fill').style.width = val + '%'; }, 50);
   });
 }
 
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-    const tabs = ['taste', 'profile', 'note'];
-    btn.classList.toggle('active', tabs[i] === tab);
+    btn.classList.toggle('active', ['taste','profile','note'][i] === tab);
   });
   document.querySelectorAll('.tab-content').forEach(el => {
     el.classList.toggle('active', el.id === 'tab-' + tab);
