@@ -393,10 +393,12 @@ function setScore(critKey, subKey, val) {
   const card = document.getElementById('card-' + critKey);
   card.querySelectorAll(`.sb[data-crit="${critKey}"][data-sub="${subKey}"]`).forEach(btn => {
     const v = parseInt(btn.dataset.v);
-    btn.classList.toggle('sel', v === val);
-    btn.style.background = v === val
-      ? CRITS.find(c=>c.key===critKey).color
-      : '';
+    const sel = v === val;
+    btn.classList.toggle('sel', sel);
+    const color = CRITS.find(c=>c.key===critKey).color;
+    btn.style.background   = sel ? color : '';
+    btn.style.color        = sel ? 'white' : '';
+    btn.style.borderColor  = sel ? 'transparent' : '';
   });
   const lbl = document.getElementById(`lbl-${critKey}-${subKey}`);
   if (lbl) lbl.textContent = SCALE_LABELS[val];
