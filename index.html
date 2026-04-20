@@ -75,6 +75,18 @@ body {
   background: linear-gradient(90deg, transparent, #a8d4b8, transparent);
   margin: 0 auto;
 }
+.view-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 20px auto 0;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #7ab898;
+  letter-spacing: 0.03em;
+}
+.view-badge svg { width: 13px; height: 13px; opacity: 0.8; }
+#gc-count { color: #a8d4b8; font-weight: 500; }
 
 /* ── GRID ── */
 .grid-wrap {
@@ -300,6 +312,13 @@ footer a:hover { text-decoration: underline; }
     6대 다류의 과학부터 세계 산지, 관능평가, 역사까지<br>
     차를 깊이 이해하기 위한 학습 자료를 모았습니다.
   </p>
+
+  <div class="view-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+    <span id="gc-count">-</span> views
+  </div>
 
   <div class="author-row">
     <span class="author-name">jadeafraid</span>
@@ -535,6 +554,13 @@ footer a:hover { text-decoration: underline; }
   </p>
 </footer>
 
+<script data-goatcounter="https://jadeafraid.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+fetch('https://jadeafraid.goatcounter.com/counter/%2Ftea-master%2F.json')
+  .then(r => r.json())
+  .then(d => { document.getElementById('gc-count').textContent = d.count; })
+  .catch(() => { document.getElementById('gc-count').textContent = '...'; });
+</script>
 <script>
 (function () {
   const form    = document.getElementById('feedbackForm');
