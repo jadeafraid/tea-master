@@ -405,7 +405,7 @@ function buildWheel() {
   const lines = tc.name.length > 4 ? tc.name.match(/.{1,3}/g) : [tc.name];
   lines.forEach((ln, i) => {
     const dy = (lines.length === 1) ? '0' : ((i === 0) ? '-7' : '9');
-    html += `<text x="0" y="${dy}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="700" style="pointer-events:none">${ln}</text>`;
+    html += `<text class="center-label" x="0" y="${dy}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="12" font-weight="700" style="pointer-events:none">${ln}</text>`;
   });
 
   let catAngle = 0;
@@ -442,6 +442,17 @@ function buildWheel() {
         class="outer-seg" data-sub="${sub.id}" data-cat="${cat.id}"
         data-intensity="${intensity}"
         style="cursor:pointer;transition:opacity .25s"/>`;
+
+      // Outer ring label (radial/vertical orientation)
+      const midSubA = subA + subSpan / 2;
+      const outerMidR = (RO1 + RO2) / 2;
+      const outerRot = (midSubA >= 90 && midSubA < 270) ? midSubA + 180 : midSubA;
+      const outerTr  = (midSubA >= 90 && midSubA < 270) ? outerMidR : -outerMidR;
+      html += `<text transform="rotate(${outerRot}) translate(0,${outerTr})"
+        text-anchor="middle" dominant-baseline="middle"
+        fill="white" font-size="8.5" font-weight="600"
+        style="pointer-events:none">${sub.label}</text>`;
+
       subA = subEnd;
     });
 
@@ -479,7 +490,7 @@ function buildWheel() {
 
 function setCenterText(line1, line2) {
   const svg = document.getElementById('wheel');
-  const texts = svg.querySelectorAll('circle + text');
+  const texts = svg.querySelectorAll('.center-label');
   if (texts.length >= 2) {
     texts[0].textContent = line1;
     texts[1] && (texts[1].textContent = '');
@@ -494,14 +505,13 @@ function resetCenterText() {
 
 function buildWheelCenter() {
   const svg = document.getElementById('wheel');
-  svg.querySelectorAll('circle + text, circle ~ text').forEach(el => {
-    if (!el.classList.contains('inner-label')) el.remove();
-  });
+  svg.querySelectorAll('.center-label').forEach(el => el.remove());
   const tc = TEAS.find(t => t.id === curTeaId);
   const lines = tc.name.length > 4 ? [tc.name.slice(0,3), tc.name.slice(3)] : [tc.name];
   lines.forEach((ln, i) => {
     const dy = lines.length === 1 ? 0 : (i === 0 ? -7 : 9);
     const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('class','center-label');
     t.setAttribute('x','0'); t.setAttribute('y', dy);
     t.setAttribute('text-anchor','middle'); t.setAttribute('dominant-baseline','middle');
     t.setAttribute('fill','white'); t.setAttribute('font-size','12');
