@@ -1579,14 +1579,11 @@ async function saveAsImage() {
     // Build list overlay inside SVG clone
     const svgClone = svg.cloneNode(true);
 
-    // Add selected labels inside clone
-    svgClone.querySelectorAll('.booth-rect').forEach(r => {
-      if (r.classList.contains('selected')) {
-        r.setAttribute('fill', '#ff6b35');
-        r.setAttribute('stroke', '#c0392b');
-        r.setAttribute('stroke-width', '2');
-      }
-    });
+    // Inject .selected style into SVG's internal stylesheet so it survives serialization
+    const svgStyle = svgClone.querySelector('style');
+    if (svgStyle) {
+      svgStyle.textContent += '\n.booth-rect.selected { fill: #ff6b35 !important; stroke: #c0392b !important; stroke-width: 2 !important; }';
+    }
 
     // Append wish-list text block to SVG
     const listHeight = Math.min(wishlist.size * 18 + 60, 400);
