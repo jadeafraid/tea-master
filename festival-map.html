@@ -253,7 +253,7 @@
 </div>
 
 <div class="search-bar">
-  <input type="text" id="searchInput" placeholder="부스번호 또는 업체명 검색..." oninput="handleSearch(this.value)">
+  <input type="text" id="searchInput" placeholder="부스번호 또는 업체명 검색..." oninput="handleSearch(this.value)" onkeydown="if(event.key==='Enter') scrollToFirstResult()">
 </div>
 
 <div class="main-layout">
@@ -1371,19 +1371,22 @@ document.querySelectorAll('.booth-rect[id^="b-"]').forEach(el => {
 // ============================================================
 // SEARCH
 // ============================================================
+let _searchFirstResult = null;
 function handleSearch(query) {
   query = query.trim().toLowerCase();
   document.querySelectorAll('.booth-rect.highlight').forEach(el => el.classList.remove('highlight'));
+  _searchFirstResult = null;
   if (!query) return;
-  let first = null;
   Object.entries(boothData).forEach(([id, name]) => {
     if (id.toLowerCase().includes(query) || name.toLowerCase().includes(query)) {
       const el = document.getElementById('b-' + id);
       if (el && !el.classList.contains('selected')) el.classList.add('highlight');
-      if (!first) first = id;
+      if (!_searchFirstResult) _searchFirstResult = id;
     }
   });
-  if (first) scrollToBooth(first);
+}
+function scrollToFirstResult() {
+  if (_searchFirstResult) scrollToBooth(_searchFirstResult);
 }
 </script>
 
