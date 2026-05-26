@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>국제차문화대전 부스배치도</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: #1c1c1c; }
+  body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; touch-action: none; }
+
+  /* ── 상단 바 ── */
+  .top-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    height: 52px;
+    background: rgba(245,240,232,0.97);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex; align-items: center;
+    padding: 0 4px 0 12px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .top-back { color: #666; text-decoration: none; font-size: 13px; padding: 8px 8px 8px 0; white-space: nowrap; }
+  .top-title { flex: 1; text-align: center; font-size: 14px; font-weight: bold; color: #2c2c2c; padding: 0 8px; }
+  .top-search-btn {
+    background: none; border: none; font-size: 19px; padding: 8px 10px;
+    cursor: pointer; line-height: 1; flex-shrink: 0;
+  }
+
+  /* ── 검색 패널 ── */
+  .search-panel {
+    position: fixed; top: 52px; left: 0; right: 0; z-index: 49;
+    background: rgba(245,240,232,0.98);
+    padding: 8px 14px 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    transform: translateY(-110%);
+    transition: transform 0.22s ease;
+  }
+  .search-panel.open { transform: translateY(0); }
+  .search-panel input {
+    width: 100%; padding: 9px 16px;
+    border: 1px solid #ccc; border-radius: 22px;
+    font-size: 14px; font-family: inherit;
+    background: white; outline: none;
+    -webkit-appearance: none;
+  }
+  .search-panel input:focus { border-color: #6aaa6a; }
+
+  /* ── 지도 영역 ── */
+  .map-area {
+    position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
+    overflow: hidden; touch-action: none;
+    cursor: grab;
+  }
+  .map-area.active { cursor: grabbing; }
+  .map-area.search-open { top: 104px; }
+
+  /* ── 지도 무버 ── */
+  .map-mover {
+    position: absolute; top: 0; left: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .map-mover svg { display: block; }
+
+  /* ── 로딩 ── */
+  #svgLoading {
+    color: #aaa; font-size: 14px; padding: 60px 20px; text-align: center; white-space: nowrap;
+  }
+
+  /* ── SVG 부스 오버라이드 ── */
+  .bLabel { pointer-events: none !important; }
+  .booth-rect { cursor: pointer !important; }
+  .booth-rect.selected {
+    fill: #ff6b35 !important;
+    stroke: #c0392b !important;
+    stroke-width: 2 !important;
+  }
+  .booth-rect.highlight {
+    stroke: #e85c00 !important;
+    stroke-width: 2.5 !important;
+    filter: brightness(0.75) saturate(1.5);
+  }
+
+  /* ── 바텀 시트 ── */
+  .bottom-sheet {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 20px 36px;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.14);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
+  }
+  .bottom-sheet.open { transform: translateY(0); }
+  .bs-handle {
+    width: 36px; height: 4px; background: #e0e0e0; border-radius: 2px;
+    margin: 0 auto 14px;
+  }
+  .bs-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .bs-zone-tag {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 11px; font-weight: bold; color: white; letter-spacing: 0.3px;
+  }
+  .bs-id { font-size: 12px; color: #999; }
+  .bs-name {
+    font-size: 16px; font-weight: bold; color: #1a1a1a;
+    line-height: 1.5; margin-bottom: 18px;
+  }
+  .bs-btn {
+    width: 100%; padding: 14px; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: bold; font-family: inherit;
+    cursor: pointer; transition: opacity 0.12s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bs-btn:active { opacity: 0.82; transform: scale(0.98); }
+  .bs-btn.add  { background: #ff6b35; color: white; }
+  .bs-btn.remove { background: #f0f0f0; color: #888; }
+
+  /* ── FAB ── */
+  .fab {
+    position: fixed; bottom: 28px; right: 18px; z-index: 90;
+    width: 58px; height: 58px; border-radius: 29px;
+    background: #4a90a4; color: white;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(74,144,164,0.55);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.18s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fab:active { transform: scale(0.91); }
+  .fab-icon { font-size: 22px; }
+  .fab-badge {
+    position: absolute; top: -3px; right: -3px;
+    background: #e05c5c; color: white;
+    font-size: 11px; font-weight: bold;
+    border-radius: 10px; padding: 2px 6px; min-width: 20px;
+    text-align: center; line-height: 1.4;
+    display: none; font-family: inherit;
+  }
+  .fab-badge.visible { display: block; }
+
+  /* ── 방문 리스트 드로어 ── */
+  .wishlist-drawer {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200;
+    background: #f5f0e8;
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  }
+  .wishlist-drawer.open { transform: translateY(0); }
+  .wd-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 56px 20px 16px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0;
+  }
+  .wd-title { font-size: 17px; font-weight: bold; color: #1a1a1a; }
+  .wd-close {
+    background: none; border: none; font-size: 22px;
+    cursor: pointer; color: #aaa; padding: 4px 6px; line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wd-list { flex: 1; overflow-y: auto; padding: 12px 14px; -webkit-overflow-scrolling: touch; }
+  .wd-item {
+    display: flex; align-items: center; gap: 10px;
+    background: white; border-radius: 12px; padding: 12px 14px;
+    margin-bottom: 8px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wd-zone-dot {
+    width: 30px; height: 30px; border-radius: 15px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: bold; color: white; flex-shrink: 0;
+  }
+  .wd-info { flex: 1; min-width: 0; }
+  .wd-item-id { font-size: 11px; color: #6aaa6a; font-weight: bold; margin-bottom: 2px; }
+  .wd-item-name { font-size: 13px; color: #2c2c2c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wd-remove { color: #ccc; font-size: 18px; padding: 4px; flex-shrink: 0; line-height: 1; }
+  .wd-empty { text-align: center; color: #bbb; font-size: 14px; padding: 60px 20px; line-height: 2.2; }
+  .wd-actions {
+    padding: 12px 14px 36px; display: flex; gap: 8px;
+    background: white; border-top: 1px solid #eee; flex-shrink: 0;
+  }
+  .wd-btn {
+    flex: 1; padding: 13px; border-radius: 10px; border: none;
+    font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.12s;
+  }
+  .wd-btn:active:not(:disabled) { opacity: 0.8; }
+  .wd-btn-save { background: #4a90a4; color: white; }
+  .wd-btn-clear { background: #f0f0f0; color: #999; }
+  .wd-btn:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── 데스크톱 링크 ── */
+  .desktop-link {
+    position: fixed; top: 56px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.55); color: rgba(255,255,255,0.7);
+    font-size: 11px; padding: 4px 12px; border-radius: 12px;
+    white-space: nowrap; z-index: 48; text-decoration: none;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- 상단 바 -->
+<div class="top-bar">
+  <a href="index.html" class="top-back">← 홈</a>
+  <span class="top-title">국제차문화대전 부스배치도</span>
+  <button class="top-search-btn" id="searchToggle" title="검색">🔍</button>
+</div>
+
+<!-- 검색 패널 -->
+<div class="search-panel" id="searchPanel">
+  <input type="text" id="searchInput" placeholder="부스번호 또는 업체명 검색..." autocomplete="off" autocorrect="off" spellcheck="false">
+</div>
+
+<!-- 지도 -->
+<div class="map-area" id="mapArea">
+  <div class="map-mover" id="mapMover">
+    <div id="svgLoading">지도 불러오는 중...</div>
+  </div>
+</div>
+
+<!-- 바텀 시트 -->
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="bs-handle"></div>
+  <div class="bs-meta">
+    <span class="bs-zone-tag" id="bsZoneTag">A존</span>
+    <span class="bs-id" id="bsId">A1</span>
+  </div>
+  <div class="bs-name" id="bsName">부스명</div>
+  <button class="bs-btn add" id="bsBtn" onclick="toggleFromSheet()">+ 방문 추가</button>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openWishlist()">
+  <span class="fab-icon">🍵</span>
+  <span class="fab-badge" id="fabBadge">0</span>
+</button>
+
+<!-- 방문 리스트 드로어 -->
+<div class="wishlist-drawer" id="wishlistDrawer">
+  <div class="wd-header">
+    <span class="wd-title">방문 리스트</span>
+    <button class="wd-close" onclick="closeWishlist()">✕</button>
+  </div>
+  <div class="wd-list" id="wdList">
+    <div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>
+  </div>
+  <div class="wd-actions">
+    <button class="wd-btn wd-btn-save" id="wdBtnSave" onclick="saveAsImage()" disabled>🖼 이미지 저장</button>
+    <button class="wd-btn wd-btn-clear" id="wdBtnClear" onclick="clearAll()" disabled>전체 취소</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// BOOTH DATA
+// ============================================================
+const boothData = {
+  "A1":"무유다원","A2":"완도 청해진다원","A3":"현암제다","A4":"한국제다",
+  "A5":"제주차농 JEJU CHANONG","A6":"차인연합회",
+  "A7":"(사)세계기독교차문화협회/ 일양차문화연구원 회원 티플라워(다화) 전시회",
+  "A8":"휘계차","A9":"공부차파크 복합치유공간 (과천 청계산점)","A10":"국제통상",
+  "A11":"무유장작가마 살래요","A12":"명인신광수차_무드를 즐기는차(moocha)",
+  "A13":"모후실에서만난차","A14":"백자일상","A15":"문경칠봉산농원",
+  "A16":"동국대학교 불교대학원 차문화콘텐츠학과","A17":"가현아트",
+  "A18":"순천대학교 (사)고려천태국제선차 연구보존회","A19":"장흥청태전(장흥다원)",
+  "A20":"동원공방","A21":"한국토기","A22":"헬스베버리지","A23":"문재필 옻칠갤러리",
+  "A24":"경주 남촌도예","A25":"트임&김진욱도예원","A26":"매원초가",
+  "A27":"연으로 만드는 힐링푸드 두레연구품당","A28":"귀단요 성탄송운",
+  "A29":"토라","A30":"언담","A31":"정가로이","A32":"우기원",
+  "A33":"안동착한농장 프로폴리스 茶","A34":"옻칠채","A35":"와락공방",
+  "A36":"대림목공예","A37":"자연으로 웅크씨","A38":"주앤안 (이든갤러리)",
+  "A39":"청도천연염색연구회 감물드리","A40":"꼬매",
+  "A41":"보성천연염색협동조합 (자연담은 하늘수)","A42":"천연염색 미주사랑",
+  "A43":"풀과빛 (청도군 천연염색 연구회)","A44":"승설재·무이성",
+  "A45":"투다헌","A46":"오차연각","A47":"차문화협회",
+  "A48":"(사)한국 싱잉볼 협회 / (주)젠테라피 네츄럴 힐링센터","A49":"원유전통",
+  "B1":"보성군 홍보관","B2":"보성제다","B3":"천보다원","B4":"보성 유기농 운해다원",
+  "B5":"유기농 원당제다원","B6":"징광잎차","B7":"보성(부광녹차)","B8":"죽림다원",
+  "B9":"보성 영천다원","B10":"소아다원","B11":"다채","B12":"보성녹차 선다원",
+  "B13":"섬진다원","B14":"한국티산업경영연구원 - 차그리다","B15":"티 팔래트",
+  "B16":"효월","B17":"토정가 (이조요) since1940","B18":"황우요",
+  "B19":"청자, 더 공유 / the0u","B20":"무결","B21":"몽탄갤러리","B22":"육산도헌",
+  "B23":"뚜띨로공방","B24":"가마공방","B25":"도정요","B26":"대광도요",
+  "B27":"도농도예","B28":"한세은 도예공방",
+  "C1":"나주","C2":"연우제다","C3":"티후","C4":"하동아낙(LADY HADONG)",
+  "C5":"청석골감로다원","C6":"로전","C8":"자드리 TEA SHOP","C9":"웃차",
+  "C10":"찻잎마술/소암 茶","C11":"수제차전수관","C12":"백학제다","C13":"붓당골제다",
+  "C14":"노전요","C15":"청학도방","C16":"황매산다원 허굴산방","C17":"도자기마을(빛살)",
+  "C18":"누보도예","C19":"산이리","C20":"오름오르다","C21":"보니다",
+  "C22":"조선백자","C23":"정요","C24":"소산도예","C25":"삐닥한 도자기 황제요",
+  "C26":"문경 경북요","C27":"라키모","C28":"채담요","C29":"봉정요",
+  "D1":"일구다&요산당","D2":"곡천다원","D3":"황아차 용강 녹차","D4":"혜림茶. 혜림농원",
+  "D5":"죽로은침","D6":"삼신차 (발효차 전문다원)","D7":"명성다원",
+  "D8":"하동 휴심선차","D9":"조태연가 죽로차","D10":"한밭제다 차공간",
+  "D11":"도재명차","D12":"관아수제차","D13":"농업회사법인 지리산 상선암차",
+  "D14":"무애(MUAE TEA)","D15":"금향다원","D16":"차살림","D17":"산도방",
+  "D18":"설도예","D19":"해너울","D20":"민토(최민록)","D21":"우곡요",
+  "D22":"녹주요","D23":"도유가","D24":"소랑요","D25":"공림요","D26":"알천도예",
+  "D27":"현암요","D29":"김동인","D30":"청림도요","D31":"영남요",
+  "D32":"포암요","D33":"기린공방",
+  "E1":"대통령 표창 수상_꽃차 하늘바라기","E2":"김천방짜유기 명인 이운형",
+  "E3":"이아뜰리에","E4":"경기한방꽃차협동조합","E5":"엄기순 금속전",
+  "E6":"스튜디오 세온","E7":"따티 (뷰닉스테크)","E8":"수니공방",
+  "E9":"백산도예 연구소","E10":"여송도예","E11":"우림도예","E12":"효원도예",
+  "E13":"무무요","E14":"청욱요","E15":"김해예인요","E16":"다솜공방",
+  "E17":"예인요","E18":"부산광역시 공예협동조합 토산요","E19":"슬우재",
+  "E20":"부산광역시 공예협동조합 다솔도예","E21":"김묘진","E22":"청담요",
+  "E23":"긍정공방","E24":"도예명장2023-01호 영산요","E25":"더세드",
+  "E26":"효향요","E27":"백암요","E28":"도동요","E29":"송하요",
+  "E30":"수도예","E31":"화경도요",
+  "F1":"자연을담다","F2":"경위복차 (가인갤러리)","F3":"Tea진공밀폐용기 에스락",
+  "F4":"모차","F5":"교문공방","F6":"강동현","F7":"연세라믹","F8":"우기세라믹",
+  "F9":"날빛","F10":"청기백기","F11":"무유","F12":"삼정공방","F13":"송화도예",
+  "F14":"가람도예","F15":"고도산방","F16":"라세라미스타","F17":"김해요",
+  "F18":"다경요","F19":"정호요","F20":"연화도방","F21":"언양도예",
+  "F22":"임의섭도예작업장","F23":"이치헌도예연구소","F24":"박달요",
+  "F25":"모동도예","F26":"소월백자","F27":"진곡요","F28":"드내뜰(이종주의 도자기)",
+  "F29":"심곡요","F30":"침향나무","F31":"모을 황선희도방","F32":"HaDa design(하다디자인)",
+  "G1":"대익코리아","G2":"티하우스 나니","G3":"정산당",
+  "G4":"재단법인 하동차&바이오진흥원","G5":"글림피스","G6":"천년보이차",
+  "G7":"다연재","G9":"지유명차","G10":"다견원","G11":"향적당",
+  "G12":"랑카티스(스리랑카 홍차)","G13":"틴지오브소울","G14":"사계다향",
+  "G15":"동정보이차 노반차품","G16":"차세상(茶世上) / 유산차방(遊山茶訪) 한국총판",
+  "G17":"宜興永盛陶艺茗壶堂","G18":"北京妙香缘贸易有限公司","G19":"동심명차",
+  "G20":"포담 티하우스","G21":"尹茶人-YIN TEA","G22":"상해구산지진차문화유한공사",
+  "G23":"아람드리","G24":"바이에드가","G25":"다심헌.AFTR","G26":"보림원목 공방",
+  "G27":"여원",
+  "H1":"보이차전문점 명가원","H2":"차우림, 오래된 미래","H3":"한차원","H4":"예평",
+  "H5":"선묘당 (善妙堂) CHINA TEA","H6":"복향명차","H7":"상명","H8":"죽평",
+  "H9":"밀밀홍","H10":"석가명차 오운산고차","H11":"ㄷㅓㄱㅎㅗㅏ (덕화코리아)",
+  "H12":"아망시 프리미엄 티라운지","H13":"茗扬天下 x 휴코퍼레이션 x 북경도사",
+  "H14":"취죽진여실","H15":"휴다인","H16":"宜興知了文化创意有限公司",
+  "H17":"일삼차(壹叁茶) 武夷岩茶","H18":"하나실크로드티","H19":"森桦陶瓷公司",
+  "H20":"주식회사 인센스윌드","H21":"(주)차모아",
+  "H22":"청도 천연염색연구회 쪽빛나라","H23":"나은크래프트",
+  "H24":"수향(대경팔공공예협동조합)","H25":"고전문화",
+  "H26":"계절사이로(이오순 금침명인)","H27":"반짐고리",
+};
+
+const ZONE_COLORS = {
+  A:'#7cb95f', B:'#5fa8c8', C:'#e07070', D:'#7ab857',
+  E:'#6094d0', F:'#d4a040', G:'#9080c0', H:'#50a898'
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const wishlist = new Map();
+let currentBoothId = null;
+let svgReady = false;
+
+// ============================================================
+// SVG LOADING
+// ============================================================
+async function loadSvg() {
+  try {
+    const resp = await fetch('festival-map.html');
+    const html = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const svgEl = doc.getElementById('mapSvg');
+    if (!svgEl) throw new Error('SVG not found');
+
+    // Let CSS control rendering size; keep viewBox
+    svgEl.removeAttribute('width');
+    svgEl.removeAttribute('height');
+    svgEl.style.width  = '1260px';
+    svgEl.style.height = '800px';
+
+    document.getElementById('svgLoading').remove();
+    document.getElementById('mapMover').appendChild(svgEl);
+
+    svgReady = true;
+    initTransform();
+  } catch(e) {
+    document.getElementById('svgLoading').textContent = '지도 로드 실패. 새로고침해 주세요.';
+  }
+}
+
+// ============================================================
+// PAN / PINCH-ZOOM
+// ============================================================
+const mapArea  = document.getElementById('mapArea');
+const mapMover = document.getElementById('mapMover');
+const SVG_W = 1260, SVG_H = 800;
+
+let scale = 1, tx = 0, ty = 0;
+let activeTouches = {};
+let lastPinchDist = null, lastPinchMid = null;
+let tapStart = null, didDrag = false;
+
+function initTransform() {
+  const aw = mapArea.clientWidth;
+  const ah = mapArea.clientHeight;
+  scale = Math.min(aw / SVG_W, ah / SVG_H) * 0.97;
+  tx = (aw - SVG_W * scale) / 2;
+  ty = Math.max(4, (ah - SVG_H * scale) / 2);
+  applyTransform(false);
+}
+
+function applyTransform(animate) {
+  if (animate) mapMover.style.transition = 'transform 0.38s ease';
+  else mapMover.style.transition = '';
+  mapMover.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+}
+
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
+
+function clampPos(nx, ny) {
+  const aw = mapArea.clientWidth, ah = mapArea.clientHeight;
+  const pad = 80;
+  return {
+    x: clamp(nx, pad - SVG_W * scale, aw - pad),
+    y: clamp(ny, pad - SVG_H * scale, ah - pad)
+  };
+}
+
+function pinchDist(a, b) {
+  return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+}
+
+mapArea.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  mapArea.classList.add('active');
+  for (const t of e.changedTouches) activeTouches[t.identifier] = { x: t.clientX, y: t.clientY };
+
+  if (e.touches.length === 1) {
+    tapStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+    didDrag = false;
+    lastPinchDist = null;
+  } else if (e.touches.length === 2) {
+    tapStart = null;
+    lastPinchDist = pinchDist(e.touches[0], e.touches[1]);
+    lastPinchMid  = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+                      y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
+  }
+}, { passive: false });
+
+mapArea.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  const tArr = e.touches;
+
+  if (tArr.length === 1) {
+    const t    = tArr[0];
+    const prev = activeTouches[t.identifier];
+    if (prev) {
+      const dx = t.clientX - prev.x, dy = t.clientY - prev.y;
+      if (Math.hypot(dx, dy) > 5) didDrag = true;
+      const c = clampPos(tx + dx, ty + dy);
+      tx = c.x; ty = c.y;
+      applyTransform(false);
+    }
+    activeTouches[t.identifier] = { x: t.clientX, y: t.clientY };
+
+  } else if (tArr.length === 2) {
+    const t0 = tArr[0], t1 = tArr[1];
+    const dist = pinchDist(t0, t1);
+    const mid  = { x: (t0.clientX + t1.clientX) / 2,
+                   y: (t0.clientY + t1.clientY) / 2 };
+
+    if (lastPinchDist && lastPinchMid) {
+      const ratio    = dist / lastPinchDist;
+      const newScale = clamp(scale * ratio, 0.18, 3.5);
+      const sf       = newScale / scale;
+      tx = mid.x - (mid.x - tx) * sf + (mid.x - lastPinchMid.x);
+      ty = mid.y - (mid.y - ty) * sf + (mid.y - lastPinchMid.y);
+      scale = newScale;
+      const c = clampPos(tx, ty); tx = c.x; ty = c.y;
+      applyTransform(false);
+      didDrag = true;
+    }
+    lastPinchDist = dist; lastPinchMid = mid;
+    activeTouches[t0.identifier] = { x: t0.clientX, y: t0.clientY };
+    activeTouches[t1.identifier] = { x: t1.clientX, y: t1.clientY };
+  }
+}, { passive: false });
+
+mapArea.addEventListener('touchend', (e) => {
+  for (const t of e.changedTouches) delete activeTouches[t.identifier];
+  if (e.touches.length < 2) lastPinchDist = null;
+  mapArea.classList.remove('active');
+
+  if (!didDrag && tapStart && e.changedTouches.length === 1) {
+    const t  = e.changedTouches[0];
+    const dx = t.clientX - tapStart.x, dy = t.clientY - tapStart.y;
+    if (Math.hypot(dx, dy) < 12 && Date.now() - tapStart.t < 320) {
+      handleTap(tapStart.x, tapStart.y);
+    }
+  }
+  tapStart = null;
+}, { passive: false });
+
+function handleTap(cx, cy) {
+  if (!svgReady) return;
+  const el = document.elementFromPoint(cx, cy);
+  if (!el) { hideBottomSheet(); return; }
+
+  // Walk up DOM for booth-rect
+  let node = el, found = null;
+  for (let i = 0; i < 6; i++) {
+    if (!node || node === document.body) break;
+    if (node.id && node.id.startsWith('b-') &&
+        node.classList && node.classList.contains('booth-rect')) {
+      found = node; break;
+    }
+    node = node.parentElement;
+  }
+
+  if (found) {
+    const id = found.id.slice(2);
+    if (boothData[id]) { showBottomSheet(id); return; }
+  }
+  hideBottomSheet();
+}
+
+// ============================================================
+// BOTTOM SHEET
+// ============================================================
+function showBottomSheet(id) {
+  currentBoothId = id;
+  const zone = id[0];
+  const color = ZONE_COLORS[zone] || '#aaa';
+
+  document.getElementById('bsZoneTag').textContent = zone + '존';
+  document.getElementById('bsZoneTag').style.background = color;
+  document.getElementById('bsId').textContent = '부스 ' + id;
+  document.getElementById('bsName').textContent = boothData[id] || id;
+  refreshBsBtn(id);
+  document.getElementById('bottomSheet').classList.add('open');
+}
+
+function hideBottomSheet() {
+  document.getElementById('bottomSheet').classList.remove('open');
+  currentBoothId = null;
+}
+
+function refreshBsBtn(id) {
+  const btn = document.getElementById('bsBtn');
+  if (wishlist.has(id)) {
+    btn.textContent = '방문 취소';
+    btn.className = 'bs-btn remove';
+  } else {
+    btn.textContent = '+ 방문 추가';
+    btn.className = 'bs-btn add';
+  }
+}
+
+function toggleFromSheet() {
+  if (!currentBoothId) return;
+  const id = currentBoothId;
+  const el = document.getElementById('b-' + id);
+  if (wishlist.has(id)) {
+    wishlist.delete(id);
+    if (el) el.classList.remove('selected');
+  } else {
+    wishlist.set(id, boothData[id]);
+    if (el) el.classList.add('selected');
+  }
+  refreshBsBtn(id);
+  refreshFab();
+}
+
+// ============================================================
+// FAB & WISHLIST DRAWER
+// ============================================================
+function refreshFab() {
+  const n = wishlist.size;
+  const badge = document.getElementById('fabBadge');
+  badge.textContent = n;
+  badge.classList.toggle('visible', n > 0);
+}
+
+function openWishlist() {
+  renderWishlistDrawer();
+  document.getElementById('wishlistDrawer').classList.add('open');
+}
+
+function closeWishlist() {
+  document.getElementById('wishlistDrawer').classList.remove('open');
+}
+
+function sortedWishlist() {
+  return [...wishlist.entries()].sort(([a], [b]) => {
+    if (a[0] !== b[0]) return a[0].localeCompare(b[0]);
+    return parseInt(a.slice(1)) - parseInt(b.slice(1));
+  });
+}
+
+function renderWishlistDrawer() {
+  const list   = document.getElementById('wdList');
+  const btnSav = document.getElementById('wdBtnSave');
+  const btnClr = document.getElementById('wdBtnClear');
+  btnSav.disabled = wishlist.size === 0;
+  btnClr.disabled = wishlist.size === 0;
+
+  if (wishlist.size === 0) {
+    list.innerHTML = '<div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>';
+    return;
+  }
+
+  let html = '';
+  sortedWishlist().forEach(([id, name]) => {
+    const zone  = id[0];
+    const color = ZONE_COLORS[zone] || '#aaa';
+    html += `<div class="wd-item" onclick="panToBoothFromDrawer('${id}')">
+      <div class="wd-zone-dot" style="background:${color}">${zone}</div>
+      <div class="wd-info">
+        <div class="wd-item-id">${id}</div>
+        <div class="wd-item-name">${name}</div>
+      </div>
+      <span class="wd-remove" onclick="event.stopPropagation();removeItem('${id}')">✕</span>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function removeItem(id) {
+  wishlist.delete(id);
+  const el = document.getElementById('b-' + id);
+  if (el) el.classList.remove('selected');
+  refreshFab();
+  renderWishlistDrawer();
+  if (currentBoothId === id) refreshBsBtn(id);
+}
+
+function clearAll() {
+  wishlist.forEach((_, id) => {
+    const el = document.getElementById('b-' + id);
+    if (el) el.classList.remove('selected');
+  });
+  wishlist.clear();
+  refreshFab();
+  renderWishlistDrawer();
+  hideBottomSheet();
+}
+
+function panToBoothFromDrawer(id) {
+  closeWishlist();
+  setTimeout(() => panToBooth(id, true), 100);
+}
+
+function panToBooth(id, showSheet) {
+  const el = document.getElementById('b-' + id);
+  if (!el) return;
+
+  const bbox = el.getBBox();
+  const bx   = bbox.x + bbox.width  / 2;
+  const by   = bbox.y + bbox.height / 2;
+  const aw   = mapArea.clientWidth;
+  const ah   = mapArea.clientHeight;
+
+  const targetScale = clamp(Math.max(scale, 1.2), 0.8, 2.2);
+  const newTx = aw / 2 - bx * targetScale;
+  const newTy = ah / 2 - by * targetScale;
+  const c = clampPos(newTx, newTy);
+
+  scale = targetScale; tx = c.x; ty = c.y;
+  applyTransform(true);
+  setTimeout(() => { mapMover.style.transition = ''; }, 420);
+
+  if (showSheet) {
+    setTimeout(() => {
+      el.style.filter = 'brightness(0.5)';
+      setTimeout(() => { el.style.filter = ''; }, 380);
+      if (boothData[id]) showBottomSheet(id);
+    }, 420);
+  }
+}
+
+// ============================================================
+// SEARCH
+// ============================================================
+let searchDebounce = null;
+document.getElementById('searchToggle').addEventListener('click', () => {
+  const panel = document.getElementById('searchPanel');
+  const area  = document.getElementById('mapArea');
+  const open  = panel.classList.toggle('open');
+  area.classList.toggle('search-open', open);
+  if (open) setTimeout(() => document.getElementById('searchInput').focus(), 220);
+  else {
+    document.getElementById('searchInput').value = '';
+    clearHighlights();
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => handleSearch(this.value), 280);
+});
+
+function clearHighlights() {
+  document.querySelectorAll('.booth-rect.highlight').forEach(el => el.classList.remove('highlight'));
+}
+
+function handleSearch(q) {
+  clearHighlights();
+  if (!q.trim()) return;
+  const lq = q.trim().toLowerCase();
+  let first = null;
+  for (const [id, name] of Object.entries(boothData)) {
+    if (id.toLowerCase().includes(lq) || name.toLowerCase().includes(lq)) {
+      const el = document.getElementById('b-' + id);
+      if (el) { el.classList.add('highlight'); if (!first) first = id; }
+    }
+  }
+  if (first) panToBooth(first, false);
+}
+
+// ============================================================
+// SAVE AS IMAGE (동일 로직, mapSvg fetch에서 주입된 SVG 사용)
+// ============================================================
+async function saveAsImage() {
+  const btn = document.getElementById('wdBtnSave');
+  btn.textContent = '⏳ 저장 중...';
+  btn.disabled = true;
+
+  try {
+    const svg = document.getElementById('mapSvg');
+    if (!svg) throw new Error('SVG 없음');
+    const svgClone = svg.cloneNode(true);
+
+    // 선택된 부스 스타일 주입
+    const svgStyle = svgClone.querySelector('style');
+    if (svgStyle) {
+      svgStyle.textContent += '\n.booth-rect.selected { fill: #ff6b35 !important; stroke: #c0392b !important; stroke-width: 2 !important; }';
+    }
+
+    const svgW = 1260, svgH = 800;
+    const panelX = svgW + 10, panelW = 300;
+    const totalW = svgW + panelW + 20;
+    const totalH = Math.max(svgH, wishlist.size * 20 + 80);
+
+    svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
+    svgClone.setAttribute('width',   totalW);
+    svgClone.setAttribute('height',  totalH);
+
+    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bg.setAttribute('x', panelX); bg.setAttribute('y', 0);
+    bg.setAttribute('width', panelW); bg.setAttribute('height', totalH);
+    bg.setAttribute('fill', '#fff'); bg.setAttribute('rx', '6');
+    svgClone.appendChild(bg);
+
+    const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    title.setAttribute('x', panelX + 14); title.setAttribute('y', 34);
+    title.setAttribute('font-size', '14'); title.setAttribute('font-weight', 'bold');
+    title.setAttribute('fill', '#2c2c2c');
+    title.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+    title.textContent = `방문 리스트 (${wishlist.size}곳)`;
+    svgClone.appendChild(title);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', panelX+10); line.setAttribute('y1', 44);
+    line.setAttribute('x2', panelX+panelW-10); line.setAttribute('y2', 44);
+    line.setAttribute('stroke', '#eee'); line.setAttribute('stroke-width', '1');
+    svgClone.appendChild(line);
+
+    let yPos = 66;
+    sortedWishlist().forEach(([id, name]) => {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', panelX+20); dot.setAttribute('cy', yPos-4);
+      dot.setAttribute('r', 5); dot.setAttribute('fill', '#ff6b35');
+      svgClone.appendChild(dot);
+
+      const idText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      idText.setAttribute('x', panelX+32); idText.setAttribute('y', yPos);
+      idText.setAttribute('font-size', '10'); idText.setAttribute('fill', '#6aaa6a');
+      idText.setAttribute('font-weight', 'bold');
+      idText.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+      idText.textContent = id;
+      svgClone.appendChild(idText);
+
+      const nameText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      nameText.setAttribute('x', panelX+62); nameText.setAttribute('y', yPos);
+      nameText.setAttribute('font-size', '10'); nameText.setAttribute('fill', '#333');
+      nameText.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+      nameText.textContent = name.length > 16 ? name.slice(0, 15) + '…' : name;
+      svgClone.appendChild(nameText);
+
+      yPos += 20;
+    });
+
+    const serializer = new XMLSerializer();
+    const svgStr  = serializer.serializeToString(svgClone);
+    const svgBlob = new Blob([svgStr], {type: 'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(svgBlob);
+
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width  = totalW * 1.5;
+      canvas.height = totalH * 1.5;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(1.5, 1.5);
+      ctx.fillStyle = '#f5f0e8';
+      ctx.fillRect(0, 0, totalW, totalH);
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'TEA_FESTIVAL_방문리스트.png';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        btn.textContent = '✅ 저장 완료!';
+        setTimeout(() => {
+          btn.textContent = '🖼 이미지 저장';
+          btn.disabled = wishlist.size === 0;
+        }, 2000);
+      }, 'image/png');
+    };
+    img.onerror = () => {
+      btn.textContent = '🖼 이미지 저장';
+      btn.disabled = false;
+    };
+    img.src = url;
+  } catch(e) {
+    document.getElementById('wdBtnSave').textContent = '🖼 이미지 저장';
+    document.getElementById('wdBtnSave').disabled = false;
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadSvg();
+</script>
+</body>
+</html>
