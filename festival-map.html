@@ -262,896 +262,544 @@
 <!-- ▼ 왼쪽: 지도 -->
 <div class="map-wrapper">
 <div class="map-container">
-<svg id="mapSvg" viewBox="0 0 1260 800" width="1260" height="800" xmlns="http://www.w3.org/2000/svg">
-
-<!-- Background -->
-<rect width="1260" height="800" fill="#f8f6f0" rx="6"/>
-
-<!-- ===================== COLOR SCHEME =====================
-  A-zone (perimeter): #a8d08d (green)
-  B-zone: #9ec8e0 (blue-gray)
-  C-zone: #f4b8b8 (pink/salmon)
-  D-zone: #c8e0a8 (light green)
-  E-zone: #b8d4f0 (light blue)
-  F-zone: #f8d8a0 (peach/tan)
-  G-zone: #d4c8e8 (lavender)
-  H-zone: #b8e0d4 (mint)
-  Stage/특수: yellow #f5e642
--->
-
-<defs>
-  <style>
-    .zA { fill: #a8d08d; }
-    .zB { fill: #9ec8e0; }
-    .zC { fill: #f4b8b8; }
-    .zD { fill: #c8e0a8; }
-    .zE { fill: #b8d4f0; }
-    .zF { fill: #f8d8a0; }
-    .zG { fill: #d4c8e8; }
-    .zH { fill: #b8e0d4; }
-    .zStage { fill: #e8e8e8; stroke: #aaa; }
-    .zSpecial { fill: #f5e642; }
-    .bLabel { font-size: 9px; fill: #333; text-anchor: middle; dominant-baseline: middle; pointer-events: none; font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; font-weight: 600; }
-    rect.booth-rect { stroke: rgba(0,0,0,0.18); stroke-width: 0.8; }
-  </style>
-</defs>
-
-<!-- ============================================================
-     LAYOUT: Based on the floor plan image
-     Grid approach: approximate positions from map
-
-     Outer wall border
-============================================================ -->
-<rect x="8" y="8" width="1244" height="778" fill="none" stroke="#999" stroke-width="1.5" rx="4"/>
-
-<!-- ============================================================
-     A-ZONE: Perimeter booths (green)
-     Left column: A7, A8 (far left), then A6, A5, A4, A3, A2, A1 (bottom-left area)
-     Top row: A27..A40
-     Right column: A41..A49
-     Also: A9-A26 inner-left area
-============================================================ -->
-
-<!-- TOP ROW: A27-A40 (y≈18, spanning roughly x=248 to x=1240) -->
-<!-- Each booth ~72px wide, 34px tall -->
-<rect class="booth-rect zA" id="b-A27" x="248" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="35">A27</text>
-
-<rect class="booth-rect zA" id="b-A28" x="326" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="362" y="35">A28</text>
-
-<rect class="booth-rect zA" id="b-A29" x="424" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="450" y="35">A29</text>
-
-<rect class="booth-rect zA" id="b-A30" x="480" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="506" y="35">A30</text>
-
-<rect class="booth-rect zA" id="b-A31" x="558" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="594" y="35">A31</text>
-
-<rect class="booth-rect zA" id="b-A32" x="636" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="672" y="35">A32</text>
-
-<rect class="booth-rect zA" id="b-A33" x="730" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="756" y="35">A33</text>
-
-<rect class="booth-rect zA" id="b-A34" x="788" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="824" y="35">A34</text>
-
-<rect class="booth-rect zA" id="b-A35" x="866" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="892" y="35">A35</text>
-
-<rect class="booth-rect zA" id="b-A36" x="924" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="960" y="35">A36</text>
-
-<rect class="booth-rect zA" id="b-A37" x="1012" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1038" y="35">A37</text>
-
-<rect class="booth-rect zA" id="b-A38" x="1070" y="18" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1096" y="35">A38</text>
-
-<rect class="booth-rect zA" id="b-A39" x="1132" y="18" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1168" y="35">A39</text>
-
-<rect class="booth-rect zA" id="b-A40" x="1210" y="18" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="35">A40</text>
-
-<!-- LEFT COLUMN A-zone: A25, A26 (upper left inner) -->
-<rect class="booth-rect zA" id="b-A26" x="248" y="58" width="72" height="52" rx="2"/>
-<text class="bLabel" x="284" y="84">A26</text>
-
-<rect class="booth-rect zA" id="b-A25" x="248" y="152" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="169">A25</text>
-
-<!-- A24, A23 -->
-<rect class="booth-rect zA" id="b-A24" x="248" y="198" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="215">A24</text>
-
-<rect class="booth-rect zA" id="b-A23" x="248" y="238" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="255">A23</text>
-
-<!-- Stage (무 대) -->
-<rect class="zStage" x="36" y="238" width="204" height="100" rx="3"/>
-<text style="font-size:16px;fill:#666;text-anchor:middle;dominant-baseline:middle;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;" x="138" y="288">무　　대</text>
-<!-- 기둥 label on stage right -->
-<rect class="zSpecial booth-rect" id="b-stage-dong" x="222" y="258" width="28" height="20" rx="2"/>
-<text class="bLabel" x="236" y="268">기둥</text>
-
-<!-- A8 (far left) -->
-<rect class="booth-rect zA" id="b-A8" x="8" y="380" width="28" height="34" rx="2"/>
-<text class="bLabel" x="22" y="397">A8</text>
-
-<!-- A7 (far left, taller) -->
-<rect class="booth-rect zA" id="b-A7" x="8" y="450" width="28" height="70" rx="2"/>
-<text class="bLabel" x="22" y="485">A7</text>
-
-<!-- A20, A21, A22 row -->
-<rect class="booth-rect zA" id="b-A20" x="44" y="380" width="72" height="34" rx="2"/>
-<text class="bLabel" x="80" y="397">A20</text>
-
-<rect class="booth-rect zA" id="b-A21" x="152" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="178" y="397">A21</text>
-
-<rect class="booth-rect zA" id="b-A22" x="208" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="234" y="397">A22</text>
-
-<!-- A16, A17 -->
-<rect class="booth-rect zA" id="b-A16" x="44" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="70" y="435">A16</text>
-
-<rect class="booth-rect zA" id="b-A17" x="100" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="126" y="435">A17</text>
-
-<!-- A18, A19 -->
-<rect class="booth-rect zA" id="b-A18" x="152" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="178" y="435">A18</text>
-
-<rect class="booth-rect zA" id="b-A19" x="208" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="234" y="435">A19</text>
-
-<!-- A10, A11 -->
-<rect class="booth-rect zA" id="b-A10" x="44" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="70" y="477">A10</text>
-
-<rect class="booth-rect zA" id="b-A11" x="100" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="126" y="477">A11</text>
-
-<!-- A14, A15 -->
-<rect class="booth-rect zA" id="b-A14" x="152" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="178" y="477">A14</text>
-
-<rect class="booth-rect zA" id="b-A15" x="208" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="234" y="477">A15</text>
-
-<!-- A9 (wider) -->
-<rect class="booth-rect zA" id="b-A9" x="44" y="498" width="108" height="34" rx="2"/>
-<text class="bLabel" x="98" y="515">A9</text>
-
-<!-- A12, A13 -->
-<rect class="booth-rect zA" id="b-A12" x="152" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="178" y="515">A12</text>
-
-<rect class="booth-rect zA" id="b-A13" x="208" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="234" y="515">A13</text>
-
-<!-- A6 (wide, with 기둥) -->
-<rect class="booth-rect zA" id="b-A6" x="44" y="548" width="140" height="34" rx="2"/>
-<text class="bLabel" x="104" y="565">A6</text>
-<rect class="zSpecial booth-rect" id="b-A6-dong" x="172" y="550" width="28" height="20" rx="2"/>
-<text class="bLabel" x="186" y="560">기둥</text>
-
-<!-- A5 -->
-<rect class="booth-rect zA" id="b-A5" x="208" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="234" y="565">A5</text>
-
-<!-- A4 -->
-<rect class="booth-rect zA" id="b-A4" x="248" y="590" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="607">A4</text>
-
-<!-- A3 -->
-<rect class="booth-rect zA" id="b-A3" x="248" y="630" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="647">A3</text>
-
-<!-- A2 -->
-<rect class="booth-rect zA" id="b-A2" x="248" y="668" width="72" height="34" rx="2"/>
-<text class="bLabel" x="284" y="685">A2</text>
-
-<!-- A1 -->
-<rect class="booth-rect zA" id="b-A1" x="248" y="700" width="72" height="30" rx="2"/>
-<text class="bLabel" x="284" y="715">A1</text>
-
-<!-- RIGHT COLUMN: A41-A49 -->
-<rect class="booth-rect zA" id="b-A41" x="1210" y="58" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="75">A41</text>
-
-<rect class="booth-rect zA" id="b-A42" x="1210" y="96" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="113">A42</text>
-
-<rect class="booth-rect zA" id="b-A43" x="1210" y="198" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="215">A43</text>
-
-<rect class="booth-rect zA" id="b-A44" x="1210" y="236" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="253">A44</text>
-
-<rect class="booth-rect zA" id="b-A45" x="1210" y="380" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="397">A45</text>
-
-<rect class="booth-rect zA" id="b-A46" x="1210" y="452" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="469">A46</text>
-
-<rect class="booth-rect zA" id="b-A47" x="1210" y="490" width="42" height="34" rx="2"/>
-<text class="bLabel" x="1231" y="507">A47</text>
-
-<rect class="booth-rect zA" id="b-A48" x="1210" y="548" width="42" height="52" rx="2"/>
-<text class="bLabel" x="1231" y="574">A48</text>
-
-<rect class="booth-rect zA" id="b-A49" x="1210" y="700" width="42" height="30" rx="2"/>
-<text class="bLabel" x="1231" y="715">A49</text>
-
-<!-- ============================================================
-     B-ZONE (blue-gray): x≈326-406 area, multiple rows
-============================================================ -->
-<!-- Row 1 (top): B27, B28 -->
-<rect class="booth-rect zB" id="b-B27" x="326" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="75">B27</text>
-
-<rect class="booth-rect zB" id="b-B28" x="382" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="75">B28</text>
-
-<!-- B25, B26 -->
-<rect class="booth-rect zB" id="b-B25" x="326" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="113">B25</text>
-
-<rect class="booth-rect zB" id="b-B26" x="382" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="113">B26</text>
-
-<!-- B23, B24 -->
-<rect class="booth-rect zB" id="b-B23" x="326" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="169">B23</text>
-
-<rect class="booth-rect zB" id="b-B24" x="382" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="169">B24</text>
-
-<!-- B21, B22 -->
-<rect class="booth-rect zB" id="b-B21" x="326" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="207">B21</text>
-
-<rect class="booth-rect zB" id="b-B22" x="382" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="207">B22</text>
-
-<!-- B19, B20 -->
-<rect class="booth-rect zB" id="b-B19" x="326" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="315">B19</text>
-
-<rect class="booth-rect zB" id="b-B20" x="382" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="315">B20</text>
-
-<!-- B17, B18 -->
-<rect class="booth-rect zB" id="b-B17" x="326" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="353">B17</text>
-
-<rect class="booth-rect zB" id="b-B18" x="382" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="353">B18</text>
-
-<!-- B16 (wider, single) -->
-<rect class="booth-rect zB" id="b-B16" x="326" y="380" width="108" height="72" rx="2"/>
-<text class="bLabel" x="380" y="416">B16</text>
-
-<!-- B14, B15 -->
-<rect class="booth-rect zB" id="b-B14" x="326" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="477">B14</text>
-
-<rect class="booth-rect zB" id="b-B15" x="382" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="477">B15</text>
-
-<!-- B12, B13 -->
-<rect class="booth-rect zB" id="b-B12" x="326" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="515">B12</text>
-
-<rect class="booth-rect zB" id="b-B13" x="382" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="515">B13</text>
-
-<!-- B10, B11 -->
-<rect class="booth-rect zB" id="b-B10" x="326" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="565">B10</text>
-
-<rect class="booth-rect zB" id="b-B11" x="382" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="565">B11</text>
-
-<!-- B8, B9 -->
-<rect class="booth-rect zB" id="b-B8" x="326" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="603">B8</text>
-
-<rect class="booth-rect zB" id="b-B9" x="382" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="603">B9</text>
-
-<!-- B6, B7 -->
-<rect class="booth-rect zB" id="b-B6" x="326" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="641">B6</text>
-
-<rect class="booth-rect zB" id="b-B7" x="382" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="641">B7</text>
-
-<!-- B4, B5 -->
-<rect class="booth-rect zB" id="b-B4" x="326" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="679">B4</text>
-
-<rect class="booth-rect zB" id="b-B5" x="382" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="679">B5</text>
-
-<!-- B2, B3 -->
-<rect class="booth-rect zB" id="b-B2" x="326" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="352" y="717">B2</text>
-
-<rect class="booth-rect zB" id="b-B3" x="382" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="408" y="717">B3</text>
-
-<!-- B1 (wide single booth at very bottom of B zone) -->
-<rect class="booth-rect zB" id="b-B1" x="326" y="738" width="108" height="34" rx="2"/>
-<text class="bLabel" x="380" y="755">B1</text>
-
-<!-- ============================================================
-     C-ZONE (pink): x≈440-520 area
-============================================================ -->
-<rect class="booth-rect zC" id="b-C28" x="440" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="75">C28</text>
-
-<rect class="booth-rect zC" id="b-C29" x="496" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="75">C29</text>
-
-<rect class="booth-rect zC" id="b-C26" x="440" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="113">C26</text>
-
-<rect class="booth-rect zC" id="b-C27" x="496" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="113">C27</text>
-
-<rect class="booth-rect zC" id="b-C24" x="440" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="169">C24</text>
-
-<rect class="booth-rect zC" id="b-C25" x="496" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="169">C25</text>
-
-<rect class="booth-rect zC" id="b-C22" x="440" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="207">C22</text>
-
-<rect class="booth-rect zC" id="b-C23" x="496" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="207">C23</text>
-
-<rect class="booth-rect zC" id="b-C20" x="440" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="315">C20</text>
-
-<rect class="booth-rect zC" id="b-C21" x="496" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="315">C21</text>
-
-<rect class="booth-rect zC" id="b-C18" x="440" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="353">C18</text>
-
-<rect class="booth-rect zC" id="b-C19" x="496" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="353">C19</text>
-
-<rect class="booth-rect zC" id="b-C16" x="440" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="397">C16</text>
-
-<rect class="booth-rect zC" id="b-C17" x="496" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="397">C17</text>
-
-<rect class="booth-rect zC" id="b-C14" x="440" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="435">C14</text>
-
-<rect class="booth-rect zC" id="b-C15" x="496" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="435">C15</text>
-
-<rect class="booth-rect zC" id="b-C12" x="440" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="477">C12</text>
-
-<rect class="booth-rect zC" id="b-C13" x="496" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="477">C13</text>
-
-<rect class="booth-rect zC" id="b-C10" x="440" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="515">C10</text>
-
-<rect class="booth-rect zC" id="b-C11" x="496" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="515">C11</text>
-
-<rect class="booth-rect zC" id="b-C8" x="440" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="565">C8</text>
-
-<rect class="booth-rect zC" id="b-C9" x="496" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="565">C9</text>
-
-<rect class="booth-rect zC" id="b-C6" x="440" y="586" width="108" height="34" rx="2"/>
-<text class="bLabel" x="494" y="603">C6</text>
-
-<rect class="booth-rect zC" id="b-C4" x="440" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="641">C4</text>
-
-<rect class="booth-rect zC" id="b-C5" x="496" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="641">C5</text>
-
-<rect class="booth-rect zC" id="b-C2" x="440" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="466" y="679">C2</text>
-
-<rect class="booth-rect zC" id="b-C3" x="496" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="522" y="679">C3</text>
-
-<!-- C1 (wide, bottom) -->
-<rect class="booth-rect zC" id="b-C1" x="440" y="700" width="108" height="72" rx="2"/>
-<text class="bLabel" x="494" y="736">C1</text>
-
-<!-- ============================================================
-     D-ZONE (light green): x≈558-648
-============================================================ -->
-<rect class="booth-rect zD" id="b-D32" x="558" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="75">D32</text>
-
-<rect class="booth-rect zD" id="b-D33" x="614" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="75">D33</text>
-
-<rect class="booth-rect zD" id="b-D30" x="558" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="113">D30</text>
-
-<rect class="booth-rect zD" id="b-D31" x="614" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="113">D31</text>
-
-<rect class="booth-rect zD" id="b-D27" x="558" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="169">D27</text>
-
-<rect class="booth-rect zD" id="b-D29" x="614" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="169">D29</text>
-
-<rect class="booth-rect zD" id="b-D25" x="558" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="207">D25</text>
-
-<rect class="booth-rect zD" id="b-D26" x="614" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="207">D26</text>
-
-<rect class="booth-rect zD" id="b-D23" x="558" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="315">D23</text>
-
-<rect class="booth-rect zD" id="b-D24" x="614" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="315">D24</text>
-
-<rect class="booth-rect zD" id="b-D21" x="558" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="353">D21</text>
-
-<rect class="booth-rect zD" id="b-D22" x="614" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="353">D22</text>
-
-<rect class="booth-rect zD" id="b-D19" x="558" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="397">D19</text>
-
-<rect class="booth-rect zD" id="b-D20" x="614" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="397">D20</text>
-
-<rect class="booth-rect zD" id="b-D17" x="558" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="435">D17</text>
-
-<rect class="booth-rect zD" id="b-D18" x="614" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="435">D18</text>
-
-<rect class="booth-rect zD" id="b-D15" x="558" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="477">D15</text>
-
-<rect class="booth-rect zD" id="b-D16" x="614" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="477">D16</text>
-
-<rect class="booth-rect zD" id="b-D13" x="558" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="515">D13</text>
-
-<rect class="booth-rect zD" id="b-D14" x="614" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="515">D14</text>
-
-<rect class="booth-rect zD" id="b-D11" x="558" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="565">D11</text>
-
-<rect class="booth-rect zD" id="b-D12" x="614" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="565">D12</text>
-
-<rect class="booth-rect zD" id="b-D9" x="558" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="603">D9</text>
-
-<rect class="booth-rect zD" id="b-D10" x="614" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="603">D10</text>
-
-<rect class="booth-rect zD" id="b-D7" x="558" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="641">D7</text>
-
-<rect class="booth-rect zD" id="b-D8" x="614" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="641">D8</text>
-
-<rect class="booth-rect zD" id="b-D5" x="558" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="679">D5</text>
-
-<rect class="booth-rect zD" id="b-D6" x="614" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="679">D6</text>
-
-<rect class="booth-rect zD" id="b-D3" x="558" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="717">D3</text>
-
-<rect class="booth-rect zD" id="b-D4" x="614" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="717">D4</text>
-
-<rect class="booth-rect zD" id="b-D1" x="558" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="584" y="755">D1</text>
-
-<rect class="booth-rect zD" id="b-D2" x="614" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="640" y="755">D2</text>
-
-<!-- ============================================================
-     E-ZONE (light blue): x≈672-760
-============================================================ -->
-<rect class="booth-rect zE" id="b-E30" x="672" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="75">E30</text>
-
-<rect class="booth-rect zE" id="b-E31" x="728" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="75">E31</text>
-
-<rect class="booth-rect zE" id="b-E28" x="672" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="113">E28</text>
-
-<rect class="booth-rect zE" id="b-E29" x="728" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="113">E29</text>
-
-<rect class="booth-rect zE" id="b-E26" x="672" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="169">E26</text>
-
-<rect class="booth-rect zE" id="b-E27" x="728" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="169">E27</text>
-
-<rect class="booth-rect zE" id="b-E25" x="672" y="190" width="72" height="34" rx="2"/>
-<text class="bLabel" x="708" y="207">E25</text>
-
-<rect class="booth-rect zE" id="b-E23" x="672" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="315">E23</text>
-
-<rect class="booth-rect zE" id="b-E24" x="728" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="315">E24</text>
-
-<rect class="booth-rect zE" id="b-E21" x="672" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="353">E21</text>
-
-<rect class="booth-rect zE" id="b-E22" x="728" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="353">E22</text>
-
-<rect class="booth-rect zE" id="b-E19" x="672" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="397">E19</text>
-
-<rect class="booth-rect zE" id="b-E20" x="728" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="397">E20</text>
-
-<rect class="booth-rect zE" id="b-E17" x="672" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="435">E17</text>
-
-<rect class="booth-rect zE" id="b-E18" x="728" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="435">E18</text>
-
-<rect class="booth-rect zE" id="b-E15" x="672" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="477">E15</text>
-
-<rect class="booth-rect zE" id="b-E16" x="728" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="477">E16</text>
-
-<rect class="booth-rect zE" id="b-E13" x="672" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="515">E13</text>
-
-<rect class="booth-rect zE" id="b-E14" x="728" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="515">E14</text>
-
-<rect class="booth-rect zE" id="b-E11" x="672" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="565">E11</text>
-
-<rect class="booth-rect zE" id="b-E12" x="728" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="565">E12</text>
-
-<rect class="booth-rect zE" id="b-E9" x="672" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="603">E9</text>
-
-<rect class="booth-rect zE" id="b-E10" x="728" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="603">E10</text>
-
-<rect class="booth-rect zE" id="b-E7" x="672" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="641">E7</text>
-
-<rect class="booth-rect zE" id="b-E8" x="728" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="641">E8</text>
-
-<rect class="booth-rect zE" id="b-E5" x="672" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="679">E5</text>
-
-<rect class="booth-rect zE" id="b-E6" x="728" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="679">E6</text>
-
-<rect class="booth-rect zE" id="b-E3" x="672" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="717">E3</text>
-
-<rect class="booth-rect zE" id="b-E4" x="728" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="717">E4</text>
-
-<rect class="booth-rect zE" id="b-E1" x="672" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="698" y="755">E1</text>
-
-<rect class="booth-rect zE" id="b-E2" x="728" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="754" y="755">E2</text>
-
-<!-- ============================================================
-     F-ZONE (peach): x≈790-878
-============================================================ -->
-<rect class="booth-rect zF" id="b-F31" x="790" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="75">F31</text>
-
-<rect class="booth-rect zF" id="b-F32" x="846" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="75">F32</text>
-
-<rect class="booth-rect zF" id="b-F29" x="790" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="113">F29</text>
-
-<rect class="booth-rect zF" id="b-F30" x="846" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="113">F30</text>
-
-<rect class="booth-rect zF" id="b-F27" x="790" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="169">F27</text>
-
-<rect class="booth-rect zF" id="b-F28" x="846" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="169">F28</text>
-
-<rect class="booth-rect zF" id="b-F25" x="790" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="207">F25</text>
-
-<rect class="booth-rect zF" id="b-F26" x="846" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="207">F26</text>
-
-<rect class="booth-rect zF" id="b-F23" x="790" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="315">F23</text>
-
-<rect class="booth-rect zF" id="b-F24" x="846" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="315">F24</text>
-
-<rect class="booth-rect zF" id="b-F21" x="790" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="353">F21</text>
-
-<rect class="booth-rect zF" id="b-F22" x="846" y="336" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="353">F22</text>
-
-<rect class="booth-rect zF" id="b-F19" x="790" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="397">F19</text>
-
-<rect class="booth-rect zF" id="b-F20" x="846" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="397">F20</text>
-
-<rect class="booth-rect zF" id="b-F17" x="790" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="435">F17</text>
-
-<rect class="booth-rect zF" id="b-F18" x="846" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="435">F18</text>
-
-<rect class="booth-rect zF" id="b-F15" x="790" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="477">F15</text>
-
-<rect class="booth-rect zF" id="b-F16" x="846" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="477">F16</text>
-
-<rect class="booth-rect zF" id="b-F13" x="790" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="515">F13</text>
-
-<rect class="booth-rect zF" id="b-F14" x="846" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="515">F14</text>
-
-<rect class="booth-rect zF" id="b-F11" x="790" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="565">F11</text>
-
-<rect class="booth-rect zF" id="b-F12" x="846" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="565">F12</text>
-
-<rect class="booth-rect zF" id="b-F9" x="790" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="603">F9</text>
-
-<rect class="booth-rect zF" id="b-F10" x="846" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="603">F10</text>
-
-<rect class="booth-rect zF" id="b-F7" x="790" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="641">F7</text>
-
-<rect class="booth-rect zF" id="b-F8" x="846" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="641">F8</text>
-
-<rect class="booth-rect zF" id="b-F5" x="790" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="679">F5</text>
-
-<rect class="booth-rect zF" id="b-F6" x="846" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="679">F6</text>
-
-<rect class="booth-rect zF" id="b-F3" x="790" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="717">F3</text>
-
-<rect class="booth-rect zF" id="b-F4" x="846" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="717">F4</text>
-
-<rect class="booth-rect zF" id="b-F1" x="790" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="816" y="755">F1</text>
-
-<rect class="booth-rect zF" id="b-F2" x="846" y="738" width="52" height="34" rx="2"/>
-<text class="bLabel" x="872" y="755">F2</text>
-
-<!-- ============================================================
-     G-ZONE (lavender): x≈908-996
-============================================================ -->
-<rect class="booth-rect zG" id="b-G26" x="908" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="75">G26</text>
-
-<rect class="booth-rect zG" id="b-G27" x="964" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="75">G27</text>
-
-<rect class="booth-rect zG" id="b-G24" x="908" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="113">G24</text>
-
-<rect class="booth-rect zG" id="b-G25" x="964" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="113">G25</text>
-
-<rect class="booth-rect zG" id="b-G22" x="908" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="169">G22</text>
-
-<rect class="booth-rect zG" id="b-G23" x="964" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="169">G23</text>
-
-<rect class="booth-rect zG" id="b-G20" x="908" y="190" width="72" height="34" rx="2"/>
-<text class="bLabel" x="944" y="207">G20</text>
-
-<rect class="booth-rect zG" id="b-G21" x="986" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1012" y="207">G21</text>
-
-<rect class="booth-rect zG" id="b-G18" x="908" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="315">G18</text>
-
-<rect class="booth-rect zG" id="b-G19" x="964" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="315">G19</text>
-
-<rect class="booth-rect zG" id="b-G17" x="908" y="336" width="72" height="34" rx="2"/>
-<text class="bLabel" x="944" y="353">G17</text>
-
-<rect class="booth-rect zG" id="b-G15" x="908" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="397">G15</text>
-
-<rect class="booth-rect zG" id="b-G16" x="964" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="397">G16</text>
-
-<rect class="booth-rect zG" id="b-G14" x="908" y="418" width="72" height="34" rx="2"/>
-<text class="bLabel" x="944" y="435">G14</text>
-
-<rect class="booth-rect zG" id="b-G12" x="908" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="477">G12</text>
-
-<rect class="booth-rect zG" id="b-G13" x="964" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="477">G13</text>
-
-<rect class="booth-rect zG" id="b-G10" x="908" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="515">G10</text>
-
-<rect class="booth-rect zG" id="b-G11" x="964" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="515">G11</text>
-
-<rect class="booth-rect zG" id="b-G7" x="908" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="565">G7</text>
-
-<rect class="booth-rect zG" id="b-G9" x="964" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="565">G9</text>
-
-<rect class="booth-rect zG" id="b-G6" x="908" y="586" width="72" height="34" rx="2"/>
-<text class="bLabel" x="944" y="603">G6</text>
-
-<rect class="booth-rect zG" id="b-G4" x="908" y="624" width="72" height="34" rx="2"/>
-<text class="bLabel" x="944" y="641">G4</text>
-
-<rect class="booth-rect zG" id="b-G5" x="986" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1012" y="641">G5</text>
-
-<rect class="booth-rect zG" id="b-G2" x="908" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="934" y="679">G2</text>
-
-<rect class="booth-rect zG" id="b-G3" x="964" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="990" y="679">G3</text>
-
-<rect class="booth-rect zG" id="b-G1" x="908" y="700" width="108" height="34" rx="2"/>
-<text class="bLabel" x="962" y="717">G1</text>
-
-<!-- ============================================================
-     H-ZONE (mint): x≈1044-1130
-============================================================ -->
-<rect class="booth-rect zH" id="b-H25" x="1044" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1070" y="75">H25</text>
-
-<rect class="booth-rect zH" id="b-H26" x="1100" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1126" y="75">H26</text>
-
-<rect class="booth-rect zH" id="b-H27" x="1156" y="58" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="75">H27</text>
-
-<rect class="booth-rect zH" id="b-H23" x="1044" y="96" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1070" y="113">H23</text>
-
-<rect class="booth-rect zH" id="b-H24" x="1100" y="96" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1136" y="113">H24</text>
-
-<rect class="booth-rect zH" id="b-H21" x="1044" y="152" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="169">H21</text>
-
-<rect class="booth-rect zH" id="b-H22" x="1156" y="152" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="169">H22</text>
-
-<rect class="booth-rect zH" id="b-H19" x="1044" y="190" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1070" y="207">H19</text>
-
-<rect class="booth-rect zH" id="b-H20" x="1100" y="190" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1136" y="207">H20</text>
-
-<rect class="booth-rect zH" id="b-H17" x="1044" y="298" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1070" y="315">H17</text>
-
-<rect class="booth-rect zH" id="b-H18" x="1100" y="298" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1136" y="315">H18</text>
-
-<rect class="booth-rect zH" id="b-H16" x="1044" y="336" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="353">H16</text>
-
-<rect class="booth-rect zH" id="b-H13" x="1044" y="380" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="397">H13</text>
-
-<rect class="booth-rect zH" id="b-H15" x="1156" y="380" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="397">H15</text>
-
-<rect class="booth-rect zH" id="b-H14" x="1156" y="418" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="435">H14</text>
-
-<rect class="booth-rect zH" id="b-H10" x="1044" y="460" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="477">H10</text>
-
-<rect class="booth-rect zH" id="b-H12" x="1156" y="460" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="477">H12</text>
-
-<rect class="booth-rect zH" id="b-H11" x="1156" y="498" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="515">H11</text>
-
-<rect class="booth-rect zH" id="b-H7" x="1044" y="548" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="565">H7</text>
-
-<rect class="booth-rect zH" id="b-H9" x="1156" y="548" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="565">H9</text>
-
-<rect class="booth-rect zH" id="b-H8" x="1156" y="586" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="603">H8</text>
-
-<rect class="booth-rect zH" id="b-H4" x="1044" y="624" width="72" height="34" rx="2"/>
-<text class="bLabel" x="1080" y="641">H4</text>
-
-<rect class="booth-rect zH" id="b-H6" x="1156" y="624" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="641">H6</text>
-
-<rect class="booth-rect zH" id="b-H5" x="1156" y="662" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="679">H5</text>
-
-<rect class="booth-rect zH" id="b-H1" x="1044" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1070" y="717">H1</text>
-
-<rect class="booth-rect zH" id="b-H3" x="1100" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1126" y="717">H3</text>
-
-<rect class="booth-rect zH" id="b-H2" x="1156" y="700" width="52" height="34" rx="2"/>
-<text class="bLabel" x="1182" y="717">H2</text>
-
-<!-- ============================================================
-     BOTTOM LABELS: 입구/출구, 등록대
-============================================================ -->
-<text class="entry-label" x="494" y="790">입구  출구</text>
-<text class="entry-label" x="726" y="790">등　록　대</text>
-<text class="entry-label" x="1126" y="790">입구  출구</text>
-
-<!-- Dotted divider lines (aisle separators) -->
-<line x1="248" y1="140" x2="1208" y2="140" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-<line x1="248" y1="280" x2="1208" y2="280" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-<line x1="248" y1="370" x2="1208" y2="370" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-<line x1="248" y1="540" x2="1208" y2="540" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-<line x1="248" y1="620" x2="1208" y2="620" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-<line x1="248" y1="698" x2="1208" y2="698" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
-
+<svg id="mapSvg" viewBox="0 0 1325 911" width="1325" height="911" xmlns="http://www.w3.org/2000/svg">
+<rect width="1325" height="911" fill="#f8f6f0" rx="6"/>
+<rect x="4" y="4" width="1317" height="903" fill="none" stroke="#999" stroke-width="1.5" rx="4"/>
+<defs><style>
+  .zA{fill:#a8d08d}.zB{fill:#9ec8e0}.zC{fill:#f4b8b8}.zD{fill:#c8e0a8}
+  .zE{fill:#b8d4f0}.zF{fill:#f8d8a0}.zG{fill:#d4c8e8}.zH{fill:#b8e0d4}
+  .zStage{fill:#e8e8e8;stroke:#aaa;stroke-width:1}
+  .zSpecial{fill:#f5e642}
+  .bLabel{font-size:8px;fill:#333;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
+    font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:600}
+  rect.booth-rect{stroke:rgba(0,0,0,0.18);stroke-width:0.8}
+  .booth-rect{cursor:pointer;transition:filter .12s}
+  .booth-rect:hover{filter:brightness(0.82) saturate(1.4)}
+  .booth-rect.highlight{stroke:#e85c00!important;stroke-width:2!important;filter:brightness(0.78) saturate(1.6)}
+  .booth-rect.selected{fill:#ff6b35!important;stroke:#c0392b!important;stroke-width:2!important}
+</style></defs>
+<rect class="zStage" x="49" y="261" width="161" height="59" rx="3"/>
+<text style="font-size:10px;fill:#666;text-anchor:middle;dominant-baseline:middle;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;" x="129" y="290">무　　대</text>
+<rect class="zSpecial booth-rect" x="213" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="306">기둥</text>
+<rect class="zSpecial booth-rect" x="213" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="621">기둥</text>
+<rect class="booth-rect zA" id="b-A1" x="254" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="862">A1</text>
+<rect class="booth-rect zA" id="b-A10" x="90" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="109" y="516">A10</text>
+<rect class="booth-rect zA" id="b-A11" x="131" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="150" y="516">A11</text>
+<rect class="booth-rect zA" id="b-A12" x="213" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="547">A12</text>
+<rect class="booth-rect zA" id="b-A13" x="254" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="547">A13</text>
+<rect class="booth-rect zA" id="b-A14" x="213" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="516">A14</text>
+<rect class="booth-rect zA" id="b-A15" x="254" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="516">A15</text>
+<rect class="booth-rect zA" id="b-A16" x="90" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="109" y="442">A16</text>
+<rect class="booth-rect zA" id="b-A17" x="131" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="150" y="442">A17</text>
+<rect class="booth-rect zA" id="b-A18" x="213" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="442">A18</text>
+<rect class="booth-rect zA" id="b-A19" x="254" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="442">A19</text>
+<rect class="booth-rect zA" id="b-A2" x="254" y="786" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="800">A2</text>
+<rect class="booth-rect zA" id="b-A20" x="90" y="397" width="79" height="28" rx="2"/>
+<text class="bLabel" x="129" y="411">A20</text>
+<rect class="booth-rect zA" id="b-A21" x="213" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="232" y="411">A21</text>
+<rect class="booth-rect zA" id="b-A22" x="254" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="411">A22</text>
+<rect class="booth-rect zA" id="b-A23" x="254" y="261" width="38" height="59" rx="2"/>
+<text class="bLabel" x="273" y="290">A23</text>
+<rect class="booth-rect zA" id="b-A24" x="254" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="232">A24</text>
+<rect class="booth-rect zA" id="b-A25" x="254" y="156" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="170">A25</text>
+<rect class="booth-rect zA" id="b-A26" x="254" y="82" width="38" height="59" rx="2"/>
+<text class="bLabel" x="273" y="111">A26</text>
+<rect class="booth-rect zA" id="b-A27" x="254" y="8" width="79" height="28" rx="2"/>
+<text class="bLabel" x="293" y="22">A27</text>
+<rect class="booth-rect zA" id="b-A28" x="336" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="22">A28</text>
+<rect class="booth-rect zA" id="b-A29" x="459" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="22">A29</text>
+<rect class="booth-rect zA" id="b-A3" x="254" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="757">A3</text>
+<rect class="booth-rect zA" id="b-A30" x="500" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="22">A30</text>
+<rect class="booth-rect zA" id="b-A31" x="582" y="8" width="79" height="28" rx="2"/>
+<text class="bLabel" x="621" y="22">A31</text>
+<rect class="booth-rect zA" id="b-A32" x="664" y="8" width="79" height="28" rx="2"/>
+<text class="bLabel" x="703" y="22">A32</text>
+<rect class="booth-rect zA" id="b-A33" x="787" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="806" y="22">A33</text>
+<rect class="booth-rect zA" id="b-A34" x="828" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="22">A34</text>
+<rect class="booth-rect zA" id="b-A35" x="910" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="929" y="22">A35</text>
+<rect class="booth-rect zA" id="b-A36" x="951" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="22">A36</text>
+<rect class="booth-rect zA" id="b-A37" x="1074" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1093" y="22">A37</text>
+<rect class="booth-rect zA" id="b-A38" x="1115" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="22">A38</text>
+<rect class="booth-rect zA" id="b-A39" x="1197" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="22">A39</text>
+<rect class="booth-rect zA" id="b-A4" x="254" y="638" width="38" height="71" rx="2"/>
+<text class="bLabel" x="273" y="673">A4</text>
+<rect class="booth-rect zA" id="b-A40" x="1279" y="8" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="22">A40</text>
+<rect class="booth-rect zA" id="b-A41" x="1279" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="96">A41</text>
+<rect class="booth-rect zA" id="b-A42" x="1279" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="127">A42</text>
+<rect class="booth-rect zA" id="b-A43" x="1279" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="232">A43</text>
+<rect class="booth-rect zA" id="b-A44" x="1279" y="261" width="38" height="133" rx="2"/>
+<text class="bLabel" x="1298" y="327">A44</text>
+<rect class="booth-rect zA" id="b-A45" x="1279" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="411">A45</text>
+<rect class="booth-rect zA" id="b-A46" x="1279" y="471" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1298" y="485">A46</text>
+<rect class="booth-rect zA" id="b-A47" x="1279" y="502" width="38" height="133" rx="2"/>
+<text class="bLabel" x="1298" y="568">A47</text>
+<rect class="booth-rect zA" id="b-A48" x="1279" y="638" width="38" height="71" rx="2"/>
+<text class="bLabel" x="1298" y="673">A48</text>
+<rect class="booth-rect zA" id="b-A49" x="1279" y="786" width="38" height="90" rx="2"/>
+<text class="bLabel" x="1298" y="831">A49</text>
+<rect class="booth-rect zA" id="b-A5" x="254" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="273" y="621">A5</text>
+<rect class="booth-rect zA" id="b-A6" x="49" y="607" width="161" height="28" rx="2"/>
+<text class="bLabel" x="129" y="621">A6</text>
+<rect class="booth-rect zA" id="b-A7" x="8" y="471" width="38" height="164" rx="2"/>
+<text class="bLabel" x="27" y="553">A7</text>
+<rect class="booth-rect zA" id="b-A8" x="8" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="27" y="411">A8</text>
+<rect class="booth-rect zA" id="b-A9" x="90" y="533" width="79" height="28" rx="2"/>
+<text class="bLabel" x="129" y="547">A9</text>
+<rect class="booth-rect zB" id="b-B1" x="336" y="848" width="79" height="28" rx="2"/>
+<text class="bLabel" x="375" y="862">B1</text>
+<rect class="booth-rect zB" id="b-B10" x="336" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="621">B10</text>
+<rect class="booth-rect zB" id="b-B11" x="377" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="621">B11</text>
+<rect class="booth-rect zB" id="b-B12" x="336" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="547">B12</text>
+<rect class="booth-rect zB" id="b-B13" x="377" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="547">B13</text>
+<rect class="booth-rect zB" id="b-B14" x="336" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="516">B14</text>
+<rect class="booth-rect zB" id="b-B15" x="377" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="516">B15</text>
+<rect class="booth-rect zB" id="b-B16" x="336" y="397" width="79" height="59" rx="2"/>
+<text class="bLabel" x="375" y="426">B16</text>
+<rect class="booth-rect zB" id="b-B17" x="336" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="337">B17</text>
+<rect class="booth-rect zB" id="b-B18" x="377" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="337">B18</text>
+<rect class="booth-rect zB" id="b-B19" x="336" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="306">B19</text>
+<rect class="booth-rect zB" id="b-B2" x="336" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="831">B2</text>
+<rect class="booth-rect zB" id="b-B20" x="377" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="306">B20</text>
+<rect class="booth-rect zB" id="b-B21" x="336" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="232">B21</text>
+<rect class="booth-rect zB" id="b-B22" x="377" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="232">B22</text>
+<rect class="booth-rect zB" id="b-B23" x="336" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="201">B23</text>
+<rect class="booth-rect zB" id="b-B24" x="377" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="201">B24</text>
+<rect class="booth-rect zB" id="b-B25" x="336" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="127">B25</text>
+<rect class="booth-rect zB" id="b-B26" x="377" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="127">B26</text>
+<rect class="booth-rect zB" id="b-B27" x="336" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="96">B27</text>
+<rect class="booth-rect zB" id="b-B28" x="377" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="96">B28</text>
+<rect class="booth-rect zB" id="b-B3" x="377" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="831">B3</text>
+<rect class="booth-rect zB" id="b-B4" x="336" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="757">B4</text>
+<rect class="booth-rect zB" id="b-B5" x="377" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="757">B5</text>
+<rect class="booth-rect zB" id="b-B6" x="336" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="726">B6</text>
+<rect class="booth-rect zB" id="b-B7" x="377" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="726">B7</text>
+<rect class="booth-rect zB" id="b-B8" x="336" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="355" y="652">B8</text>
+<rect class="booth-rect zB" id="b-B9" x="377" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="396" y="652">B9</text>
+<rect class="booth-rect zC" id="b-C1" x="459" y="817" width="79" height="59" rx="2"/>
+<text class="bLabel" x="498" y="846">C1</text>
+<rect class="booth-rect zC" id="b-C10" x="459" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="547">C10</text>
+<rect class="booth-rect zC" id="b-C11" x="500" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="547">C11</text>
+<rect class="booth-rect zC" id="b-C12" x="459" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="516">C12</text>
+<rect class="booth-rect zC" id="b-C13" x="500" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="516">C13</text>
+<rect class="booth-rect zC" id="b-C14" x="459" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="442">C14</text>
+<rect class="booth-rect zC" id="b-C15" x="500" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="442">C15</text>
+<rect class="booth-rect zC" id="b-C16" x="459" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="411">C16</text>
+<rect class="booth-rect zC" id="b-C17" x="500" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="411">C17</text>
+<rect class="booth-rect zC" id="b-C18" x="459" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="337">C18</text>
+<rect class="booth-rect zC" id="b-C19" x="500" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="337">C19</text>
+<rect class="booth-rect zC" id="b-C2" x="459" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="757">C2</text>
+<rect class="booth-rect zC" id="b-C20" x="459" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="306">C20</text>
+<rect class="booth-rect zC" id="b-C21" x="500" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="306">C21</text>
+<rect class="booth-rect zC" id="b-C22" x="459" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="232">C22</text>
+<rect class="booth-rect zC" id="b-C23" x="500" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="232">C23</text>
+<rect class="booth-rect zC" id="b-C24" x="459" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="201">C24</text>
+<rect class="booth-rect zC" id="b-C25" x="500" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="201">C25</text>
+<rect class="booth-rect zC" id="b-C26" x="459" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="127">C26</text>
+<rect class="booth-rect zC" id="b-C27" x="500" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="127">C27</text>
+<rect class="booth-rect zC" id="b-C28" x="459" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="96">C28</text>
+<rect class="booth-rect zC" id="b-C29" x="500" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="96">C29</text>
+<rect class="booth-rect zC" id="b-C3" x="500" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="757">C3</text>
+<rect class="booth-rect zC" id="b-C4" x="459" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="726">C4</text>
+<rect class="booth-rect zC" id="b-C5" x="500" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="726">C5</text>
+<rect class="booth-rect zC" id="b-C6" x="459" y="638" width="79" height="28" rx="2"/>
+<text class="bLabel" x="498" y="652">C6</text>
+<rect class="booth-rect zC" id="b-C8" x="459" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="478" y="621">C8</text>
+<rect class="booth-rect zC" id="b-C9" x="500" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="519" y="621">C9</text>
+<rect class="booth-rect zD" id="b-D1" x="582" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="862">D1</text>
+<rect class="booth-rect zD" id="b-D10" x="623" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="652">D10</text>
+<rect class="booth-rect zD" id="b-D11" x="582" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="621">D11</text>
+<rect class="booth-rect zD" id="b-D12" x="623" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="621">D12</text>
+<rect class="booth-rect zD" id="b-D13" x="582" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="547">D13</text>
+<rect class="booth-rect zD" id="b-D14" x="623" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="547">D14</text>
+<rect class="booth-rect zD" id="b-D15" x="582" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="516">D15</text>
+<rect class="booth-rect zD" id="b-D16" x="623" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="516">D16</text>
+<rect class="booth-rect zD" id="b-D17" x="582" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="442">D17</text>
+<rect class="booth-rect zD" id="b-D18" x="623" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="442">D18</text>
+<rect class="booth-rect zD" id="b-D19" x="582" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="411">D19</text>
+<rect class="booth-rect zD" id="b-D2" x="623" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="862">D2</text>
+<rect class="booth-rect zD" id="b-D20" x="623" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="411">D20</text>
+<rect class="booth-rect zD" id="b-D21" x="582" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="337">D21</text>
+<rect class="booth-rect zD" id="b-D22" x="623" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="337">D22</text>
+<rect class="booth-rect zD" id="b-D23" x="582" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="306">D23</text>
+<rect class="booth-rect zD" id="b-D24" x="623" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="306">D24</text>
+<rect class="booth-rect zD" id="b-D25" x="582" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="232">D25</text>
+<rect class="booth-rect zD" id="b-D26" x="623" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="232">D26</text>
+<rect class="booth-rect zD" id="b-D27" x="582" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="201">D27</text>
+<rect class="booth-rect zD" id="b-D29" x="623" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="201">D29</text>
+<rect class="booth-rect zD" id="b-D3" x="582" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="831">D3</text>
+<rect class="booth-rect zD" id="b-D30" x="582" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="127">D30</text>
+<rect class="booth-rect zD" id="b-D31" x="623" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="127">D31</text>
+<rect class="booth-rect zD" id="b-D32" x="582" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="96">D32</text>
+<rect class="booth-rect zD" id="b-D33" x="623" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="96">D33</text>
+<rect class="booth-rect zD" id="b-D4" x="623" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="831">D4</text>
+<rect class="booth-rect zD" id="b-D5" x="582" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="757">D5</text>
+<rect class="booth-rect zD" id="b-D6" x="623" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="757">D6</text>
+<rect class="booth-rect zD" id="b-D7" x="582" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="726">D7</text>
+<rect class="booth-rect zD" id="b-D8" x="623" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="642" y="726">D8</text>
+<rect class="booth-rect zD" id="b-D9" x="582" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="601" y="652">D9</text>
+<rect class="booth-rect zE" id="b-E1" x="705" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="862">E1</text>
+<rect class="booth-rect zE" id="b-E10" x="746" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="652">E10</text>
+<rect class="booth-rect zE" id="b-E11" x="705" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="621">E11</text>
+<rect class="booth-rect zE" id="b-E12" x="746" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="621">E12</text>
+<rect class="booth-rect zE" id="b-E13" x="705" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="547">E13</text>
+<rect class="booth-rect zE" id="b-E14" x="746" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="547">E14</text>
+<rect class="booth-rect zE" id="b-E15" x="705" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="516">E15</text>
+<rect class="booth-rect zE" id="b-E16" x="746" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="516">E16</text>
+<rect class="booth-rect zE" id="b-E17" x="705" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="442">E17</text>
+<rect class="booth-rect zE" id="b-E18" x="746" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="442">E18</text>
+<rect class="booth-rect zE" id="b-E19" x="705" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="411">E19</text>
+<rect class="booth-rect zE" id="b-E2" x="746" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="862">E2</text>
+<rect class="booth-rect zE" id="b-E20" x="746" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="411">E20</text>
+<rect class="booth-rect zE" id="b-E21" x="705" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="337">E21</text>
+<rect class="booth-rect zE" id="b-E22" x="746" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="337">E22</text>
+<rect class="booth-rect zE" id="b-E23" x="705" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="306">E23</text>
+<rect class="booth-rect zE" id="b-E24" x="746" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="306">E24</text>
+<rect class="booth-rect zE" id="b-E25" x="705" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="232">E25</text>
+<rect class="booth-rect zE" id="b-E26" x="705" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="201">E26</text>
+<rect class="booth-rect zE" id="b-E27" x="746" y="187" width="38" height="59" rx="2"/>
+<text class="bLabel" x="765" y="216">E27</text>
+<rect class="booth-rect zE" id="b-E28" x="705" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="127">E28</text>
+<rect class="booth-rect zE" id="b-E29" x="746" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="127">E29</text>
+<rect class="booth-rect zE" id="b-E3" x="705" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="831">E3</text>
+<rect class="booth-rect zE" id="b-E30" x="705" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="96">E30</text>
+<rect class="booth-rect zE" id="b-E31" x="746" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="96">E31</text>
+<rect class="booth-rect zE" id="b-E4" x="746" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="831">E4</text>
+<rect class="booth-rect zE" id="b-E5" x="705" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="757">E5</text>
+<rect class="booth-rect zE" id="b-E6" x="746" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="757">E6</text>
+<rect class="booth-rect zE" id="b-E7" x="705" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="726">E7</text>
+<rect class="booth-rect zE" id="b-E8" x="746" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="765" y="726">E8</text>
+<rect class="booth-rect zE" id="b-E9" x="705" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="724" y="652">E9</text>
+<rect class="booth-rect zF" id="b-F1" x="828" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="862">F1</text>
+<rect class="booth-rect zF" id="b-F10" x="869" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="652">F10</text>
+<rect class="booth-rect zF" id="b-F11" x="828" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="621">F11</text>
+<rect class="booth-rect zF" id="b-F12" x="869" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="621">F12</text>
+<rect class="booth-rect zF" id="b-F13" x="828" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="547">F13</text>
+<rect class="booth-rect zF" id="b-F14" x="869" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="547">F14</text>
+<rect class="booth-rect zF" id="b-F15" x="828" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="516">F15</text>
+<rect class="booth-rect zF" id="b-F16" x="869" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="516">F16</text>
+<rect class="booth-rect zF" id="b-F17" x="828" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="442">F17</text>
+<rect class="booth-rect zF" id="b-F18" x="869" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="442">F18</text>
+<rect class="booth-rect zF" id="b-F19" x="828" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="411">F19</text>
+<rect class="booth-rect zF" id="b-F2" x="869" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="862">F2</text>
+<rect class="booth-rect zF" id="b-F20" x="869" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="411">F20</text>
+<rect class="booth-rect zF" id="b-F21" x="828" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="337">F21</text>
+<rect class="booth-rect zF" id="b-F22" x="869" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="337">F22</text>
+<rect class="booth-rect zF" id="b-F23" x="828" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="306">F23</text>
+<rect class="booth-rect zF" id="b-F24" x="869" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="306">F24</text>
+<rect class="booth-rect zF" id="b-F25" x="828" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="232">F25</text>
+<rect class="booth-rect zF" id="b-F26" x="869" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="232">F26</text>
+<rect class="booth-rect zF" id="b-F27" x="828" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="201">F27</text>
+<rect class="booth-rect zF" id="b-F28" x="869" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="201">F28</text>
+<rect class="booth-rect zF" id="b-F29" x="828" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="127">F29</text>
+<rect class="booth-rect zF" id="b-F3" x="828" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="831">F3</text>
+<rect class="booth-rect zF" id="b-F30" x="869" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="127">F30</text>
+<rect class="booth-rect zF" id="b-F31" x="828" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="96">F31</text>
+<rect class="booth-rect zF" id="b-F32" x="869" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="96">F32</text>
+<rect class="booth-rect zF" id="b-F4" x="869" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="831">F4</text>
+<rect class="booth-rect zF" id="b-F5" x="828" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="757">F5</text>
+<rect class="booth-rect zF" id="b-F6" x="869" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="757">F6</text>
+<rect class="booth-rect zF" id="b-F7" x="828" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="726">F7</text>
+<rect class="booth-rect zF" id="b-F8" x="869" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="888" y="726">F8</text>
+<rect class="booth-rect zF" id="b-F9" x="828" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="847" y="652">F9</text>
+<rect class="booth-rect zG" id="b-G1" x="951" y="817" width="120" height="59" rx="2"/>
+<text class="bLabel" x="1011" y="846">G1</text>
+<rect class="booth-rect zG" id="b-G10" x="951" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="547">G10</text>
+<rect class="booth-rect zG" id="b-G11" x="992" y="533" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="547">G11</text>
+<rect class="booth-rect zG" id="b-G12" x="951" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="516">G12</text>
+<rect class="booth-rect zG" id="b-G13" x="992" y="502" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="516">G13</text>
+<rect class="booth-rect zG" id="b-G14" x="951" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="442">G14</text>
+<rect class="booth-rect zG" id="b-G15" x="951" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="411">G15</text>
+<rect class="booth-rect zG" id="b-G16" x="992" y="397" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1031" y="426">G16</text>
+<rect class="booth-rect zG" id="b-G17" x="951" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="337">G17</text>
+<rect class="booth-rect zG" id="b-G18" x="951" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="306">G18</text>
+<rect class="booth-rect zG" id="b-G19" x="992" y="292" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1031" y="321">G19</text>
+<rect class="booth-rect zG" id="b-G2" x="951" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="757">G2</text>
+<rect class="booth-rect zG" id="b-G20" x="951" y="218" width="79" height="28" rx="2"/>
+<text class="bLabel" x="990" y="232">G20</text>
+<rect class="booth-rect zG" id="b-G21" x="1033" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1052" y="232">G21</text>
+<rect class="booth-rect zG" id="b-G22" x="951" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="201">G22</text>
+<rect class="booth-rect zG" id="b-G23" x="992" y="187" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="201">G23</text>
+<rect class="booth-rect zG" id="b-G24" x="951" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="127">G24</text>
+<rect class="booth-rect zG" id="b-G25" x="992" y="113" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="127">G25</text>
+<rect class="booth-rect zG" id="b-G26" x="951" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="96">G26</text>
+<rect class="booth-rect zG" id="b-G27" x="992" y="82" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="96">G27</text>
+<rect class="booth-rect zG" id="b-G3" x="992" y="743" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1031" y="757">G3</text>
+<rect class="booth-rect zG" id="b-G4" x="951" y="712" width="79" height="28" rx="2"/>
+<text class="bLabel" x="990" y="726">G4</text>
+<rect class="booth-rect zG" id="b-G5" x="1033" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1052" y="726">G5</text>
+<rect class="booth-rect zG" id="b-G6" x="951" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="652">G6</text>
+<rect class="booth-rect zG" id="b-G7" x="951" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="970" y="621">G7</text>
+<rect class="booth-rect zG" id="b-G9" x="992" y="607" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1031" y="636">G9</text>
+<rect class="booth-rect zH" id="b-H1" x="1115" y="817" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1154" y="846">H1</text>
+<rect class="booth-rect zH" id="b-H10" x="1115" y="502" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1154" y="531">H10</text>
+<rect class="booth-rect zH" id="b-H11" x="1197" y="533" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="547">H11</text>
+<rect class="booth-rect zH" id="b-H12" x="1197" y="502" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="516">H12</text>
+<rect class="booth-rect zH" id="b-H13" x="1115" y="397" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1154" y="426">H13</text>
+<rect class="booth-rect zH" id="b-H14" x="1197" y="428" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="442">H14</text>
+<rect class="booth-rect zH" id="b-H15" x="1197" y="397" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="411">H15</text>
+<rect class="booth-rect zH" id="b-H16" x="1115" y="323" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="337">H16</text>
+<rect class="booth-rect zH" id="b-H17" x="1115" y="292" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="306">H17</text>
+<rect class="booth-rect zH" id="b-H18" x="1156" y="292" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1195" y="321">H18</text>
+<rect class="booth-rect zH" id="b-H19" x="1115" y="218" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="232">H19</text>
+<rect class="booth-rect zH" id="b-H2" x="1197" y="848" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="862">H2</text>
+<rect class="booth-rect zH" id="b-H20" x="1156" y="218" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1195" y="232">H20</text>
+<rect class="booth-rect zH" id="b-H21" x="1115" y="187" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1154" y="201">H21</text>
+<rect class="booth-rect zH" id="b-H22" x="1197" y="187" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="201">H22</text>
+<rect class="booth-rect zH" id="b-H23" x="1115" y="113" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="127">H23</text>
+<rect class="booth-rect zH" id="b-H24" x="1156" y="113" width="79" height="28" rx="2"/>
+<text class="bLabel" x="1195" y="127">H24</text>
+<rect class="booth-rect zH" id="b-H25" x="1115" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1134" y="96">H25</text>
+<rect class="booth-rect zH" id="b-H26" x="1156" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1175" y="96">H26</text>
+<rect class="booth-rect zH" id="b-H27" x="1197" y="82" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="96">H27</text>
+<rect class="booth-rect zH" id="b-H3" x="1197" y="817" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="831">H3</text>
+<rect class="booth-rect zH" id="b-H4" x="1115" y="712" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1154" y="741">H4</text>
+<rect class="booth-rect zH" id="b-H5" x="1197" y="743" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="757">H5</text>
+<rect class="booth-rect zH" id="b-H6" x="1197" y="712" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="726">H6</text>
+<rect class="booth-rect zH" id="b-H7" x="1115" y="607" width="79" height="59" rx="2"/>
+<text class="bLabel" x="1154" y="636">H7</text>
+<rect class="booth-rect zH" id="b-H8" x="1197" y="638" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="652">H8</text>
+<rect class="booth-rect zH" id="b-H9" x="1197" y="607" width="38" height="28" rx="2"/>
+<text class="bLabel" x="1216" y="621">H9</text>
+<line x1="336" y1="150" x2="1235" y2="150" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="255" x2="1235" y2="255" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="360" x2="1235" y2="360" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="465" x2="1235" y2="465" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="570" x2="1235" y2="570" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="675" x2="1235" y2="675" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="336" y1="780" x2="1235" y2="780" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
+<text style="font-size:10px;fill:#555;text-anchor:middle;" x="375" y="889">입구  출구</text>
+<text style="font-size:10px;fill:#555;text-anchor:middle;" x="683" y="889">등　록　대</text>
+<text style="font-size:10px;fill:#555;text-anchor:middle;" x="1175" y="889">입구  출구</text>
 </svg>
 </div>
 
@@ -1597,7 +1245,7 @@ async function saveAsImage() {
     }
 
     // Append wish-list text block to SVG
-    const svgW = 1260, svgH = 800;
+    const svgW = 1325, svgH = 911;
     const panelX = svgW + 10;
     const panelW = 300;
     const totalW = svgW + panelW + 20;
