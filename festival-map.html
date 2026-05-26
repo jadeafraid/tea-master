@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>제23회 국제차문화대전 2026 TEA WORLD FESTIVAL 부스배치도</title>
+<script>if(localStorage.getItem('darkMode')==='1')document.documentElement.classList.add('dark');</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -18,6 +19,7 @@
   .page-header {
     text-align: center;
     margin-bottom: 14px;
+    position: relative;
   }
   a.back-home { display:inline-block; color:#aaa; text-decoration:none; font-size:.7rem; margin-bottom:8px; transition:color .15s; }
   a.back-home:hover { color:#333; }
@@ -213,6 +215,38 @@
 
   .entry-label { font-size: 11px; fill: #555; text-anchor: middle; }
 
+  /* ── 다크 모드 토글 버튼 ── */
+  .dark-toggle {
+    position: absolute; top: 0; right: 0;
+    background: none; border: none; cursor: pointer;
+    font-size: 17px; padding: 4px 6px; line-height: 1;
+    opacity: 0.4; transition: opacity 0.15s;
+  }
+  .dark-toggle:hover { opacity: 1; }
+
+  /* ── 다크 모드 ── */
+  html.dark body { background: #1a1a1a; }
+  html.dark a.back-home { color: #555; }
+  html.dark a.back-home:hover { color: #bbb; }
+  html.dark .page-header h1 { color: #e0e0e0; }
+  html.dark .page-header p { color: #666; }
+  html.dark .search-bar input { background: #2a2a2a; border-color: #444; color: #e0e0e0; }
+  html.dark .search-bar input::placeholder { color: #555; }
+  html.dark .side-panel { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+  html.dark .side-panel-title { color: #e0e0e0; }
+  html.dark .wishlist-empty { color: #555; }
+  html.dark .wishlist-items::-webkit-scrollbar-thumb { background: #444; }
+  html.dark .wishlist-item { border-bottom-color: #333; }
+  html.dark .wishlist-item:hover { background: #2e2e2e; }
+  html.dark .item-num { color: #444; }
+  html.dark .item-name { color: #ccc; }
+  html.dark .item-remove { color: #444; }
+  html.dark .btn-clear { background: #2e2e2e; color: #888; }
+  html.dark .map-container { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+  html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
+  html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
+  html.dark #mapSvg text { fill: #ccc !important; }
+
   /* ── 반응형 ── */
 
   /* 태블릿: 패널을 좁게 */
@@ -247,6 +281,7 @@
   if (window.innerWidth <= 700) window.location.replace('festival-map-mobile.html');
 </script>
 <div class="page-header">
+  <button id="darkToggle" class="dark-toggle" onclick="toggleDark()" title="다크 모드 전환"></button>
   <a href="index.html" class="back-home">← 홈으로</a>
   <h1>제23회 국제차문화대전 부스배치도</h1>
   <p>2026 TEA WORLD FESTIVAL — 클릭으로 찜하고, 이미지로 저장하세요</p>
@@ -1371,6 +1406,17 @@ document.querySelectorAll('.booth-rect[id^="b-"]').forEach(el => {
 // ============================================================
 // SEARCH
 // ============================================================
+// ── Dark mode ──
+(function() {
+  var btn = document.getElementById('darkToggle');
+  if (btn) btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+})();
+function toggleDark() {
+  var isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('darkMode', isDark ? '1' : '0');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️' : '🌙';
+}
+
 let _searchFirstResult = null;
 function handleSearch(query) {
   query = query.trim().toLowerCase();

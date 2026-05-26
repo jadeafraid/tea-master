@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>국제차문화대전 부스배치도</title>
+<script>if(localStorage.getItem('darkMode')==='1')document.documentElement.classList.add('dark');</script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; background: #1c1c1c; }
@@ -204,6 +205,52 @@
     padding: 5px 16px; line-height: 1.45;
   }
 
+  /* ── 다크 모드 토글 버튼 ── */
+  .top-dark-btn {
+    background: none; border: none; font-size: 18px; padding: 8px 8px 8px 4px;
+    cursor: pointer; line-height: 1; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── 다크 모드 ── */
+  html.dark .top-bar {
+    background: rgba(30,30,32,0.97);
+    border-bottom-color: rgba(255,255,255,0.08);
+  }
+  html.dark .top-back { color: #aaa; }
+  html.dark .top-title { color: #e0e0e0; }
+  html.dark .search-panel {
+    background: rgba(30,30,32,0.98);
+    border-bottom-color: rgba(255,255,255,0.06);
+  }
+  html.dark .search-panel input { background: #2e2e2e; border-color: #444; color: #e0e0e0; }
+  html.dark .search-panel input::placeholder { color: #555; }
+  html.dark .bottom-sheet { background: #242424; }
+  html.dark .bs-handle { background: #444; }
+  html.dark .bs-id { color: #666; }
+  html.dark .bs-name { color: #e0e0e0; }
+  html.dark .bs-btn.remove { background: #333; color: #888; }
+  html.dark .wishlist-drawer { background: #1a1a1a; }
+  html.dark .wd-header { background: #242424; border-bottom-color: #333; }
+  html.dark .wd-title { color: #e0e0e0; }
+  html.dark .wd-close { color: #555; }
+  html.dark .wd-item { background: #2e2e2e; }
+  html.dark .wd-item-name { color: #d0d0d0; }
+  html.dark .wd-remove { color: #444; }
+  html.dark .wd-empty { color: #555; }
+  html.dark .wd-actions { background: #242424; border-top-color: #333; }
+  html.dark .wd-btn-clear { background: #333; color: #888; }
+  html.dark .desktop-notice { background: #252520; color: #7a7760; border-bottom-color: rgba(255,255,255,0.05); }
+  html.dark .onboarding-overlay { background: rgba(0,0,0,0.72); }
+  html.dark .onboarding-box { background: #242424; }
+  html.dark .onboarding-title { color: #e0e0e0; }
+  html.dark .ob-item { color: #bbb; }
+  /* SVG 다크 오버라이드 (fetch 후 주입된 SVG에 적용) */
+  html.dark .bLabel { fill: #ccc !important; }
+  html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
+  html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
+  html.dark #mapSvg text { fill: #ccc !important; }
+
   /* ── 온보딩 팝업 ── */
   .onboarding-overlay {
     position: fixed; inset: 0; z-index: 300;
@@ -241,6 +288,7 @@
   <a href="index.html" class="top-back">← 홈</a>
   <span class="top-title">국제차문화대전 부스배치도</span>
   <button class="top-search-btn" id="searchToggle" title="검색">🔍</button>
+  <button class="top-dark-btn" id="darkToggle" onclick="toggleDark()" title="다크 모드 전환"></button>
 </div>
 
 <!-- 데스크탑 권장 안내 -->
@@ -903,6 +951,19 @@ async function saveAsImage() {
 // ============================================================
 function closeOnboarding() {
   document.getElementById('onboardingOverlay').style.display = 'none';
+}
+
+// ============================================================
+// DARK MODE
+// ============================================================
+(function() {
+  var btn = document.getElementById('darkToggle');
+  if (btn) btn.textContent = document.documentElement.classList.contains('dark') ? '☀️' : '🌙';
+})();
+function toggleDark() {
+  var isDark = document.documentElement.classList.toggle('dark');
+  localStorage.setItem('darkMode', isDark ? '1' : '0');
+  document.getElementById('darkToggle').textContent = isDark ? '☀️' : '🌙';
 }
 
 // ============================================================
