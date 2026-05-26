@@ -1586,19 +1586,20 @@ async function saveAsImage() {
     }
 
     // Append wish-list text block to SVG
-    const listHeight = Math.min(wishlist.size * 18 + 60, 400);
     const svgW = 1260, svgH = 740;
     const panelX = svgW + 10;
     const panelW = 300;
     const totalW = svgW + panelW + 20;
+    const totalH = Math.max(svgH, wishlist.size * 20 + 80);
 
-    svgClone.setAttribute('viewBox', `0 0 ${totalW} ${svgH}`);
+    svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
     svgClone.setAttribute('width', totalW);
+    svgClone.setAttribute('height', totalH);
 
     // Panel background
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('x', panelX); bg.setAttribute('y', 0);
-    bg.setAttribute('width', panelW); bg.setAttribute('height', svgH);
+    bg.setAttribute('width', panelW); bg.setAttribute('height', totalH);
     bg.setAttribute('fill', '#fff'); bg.setAttribute('rx', '6');
     svgClone.appendChild(bg);
 
@@ -1647,7 +1648,6 @@ async function saveAsImage() {
 
       yPos += 20;
       idx++;
-      if (yPos > svgH - 30) return; // overflow guard
     });
 
     // Serialize SVG
@@ -1660,11 +1660,11 @@ async function saveAsImage() {
     img.onload = function() {
       const canvas = document.createElement('canvas');
       canvas.width = totalW * 1.5;
-      canvas.height = svgH * 1.5;
+      canvas.height = totalH * 1.5;
       const ctx = canvas.getContext('2d');
       ctx.scale(1.5, 1.5);
       ctx.fillStyle = '#f5f0e8';
-      ctx.fillRect(0, 0, totalW, svgH);
+      ctx.fillRect(0, 0, totalW, totalH);
       ctx.drawImage(img, 0, 0);
       URL.revokeObjectURL(url);
 
