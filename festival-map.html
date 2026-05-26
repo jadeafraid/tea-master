@@ -245,7 +245,8 @@
   html.dark .map-container { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
   html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
   html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
-  html.dark #mapSvg text { fill: #ccc !important; }
+  /* 부스 라벨은 rect 위에 있으므로 어두운 색 유지, 그 외 배경 텍스트만 밝게 */
+  html.dark #mapSvg text:not(.bLabel) { fill: #aaa !important; }
 
   /* ── 반응형 ── */
 

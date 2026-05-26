@@ -246,10 +246,9 @@
   html.dark .onboarding-title { color: #e0e0e0; }
   html.dark .ob-item { color: #bbb; }
   /* SVG 다크 오버라이드 (fetch 후 주입된 SVG에 적용) */
-  html.dark .bLabel { fill: #ccc !important; }
   html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
   html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
-  html.dark #mapSvg text { fill: #ccc !important; }
+  html.dark #mapSvg text:not(.bLabel) { fill: #aaa !important; }
 
   /* ── 온보딩 팝업 ── */
   .onboarding-overlay {
