@@ -456,7 +456,8 @@ let tapStart = null, didDrag = false;
 function initTransform() {
   const aw = mapArea.clientWidth;
   const ah = mapArea.clientHeight;
-  scale = Math.min(aw / SVG_W, ah / SVG_H) * 0.97;
+  // 높이 기준으로 fit → 세로가 꽉 차고 좌우로 탐색하는 방식
+  scale = Math.max(aw / SVG_W, ah / SVG_H) * 0.92;
   tx = (aw - SVG_W * scale) / 2;
   ty = Math.max(4, (ah - SVG_H * scale) / 2);
   applyTransform(false);
@@ -591,11 +592,15 @@ function showBottomSheet(id) {
   document.getElementById('bsName').textContent = boothData[id] || id;
   refreshBsBtn(id);
   document.getElementById('bottomSheet').classList.add('open');
+  document.getElementById('fab').style.opacity = '0';
+  document.getElementById('fab').style.pointerEvents = 'none';
 }
 
 function hideBottomSheet() {
   document.getElementById('bottomSheet').classList.remove('open');
   currentBoothId = null;
+  document.getElementById('fab').style.opacity = '';
+  document.getElementById('fab').style.pointerEvents = '';
 }
 
 function refreshBsBtn(id) {
@@ -713,7 +718,7 @@ function panToBooth(id, showSheet) {
   const aw   = mapArea.clientWidth;
   const ah   = mapArea.clientHeight;
 
-  const targetScale = clamp(Math.max(scale, 1.2), 0.8, 2.2);
+  const targetScale = clamp(Math.max(scale, 0.85), 0.5, 2.2);
   const newTx = aw / 2 - bx * targetScale;
   const newTy = ah / 2 - by * targetScale;
   const c = clampPos(newTx, newTy);

@@ -165,7 +165,6 @@
     gap: 10px;
   }
   .map-container {
-    overflow-x: auto;
     background: white;
     border-radius: 10px;
     padding: 16px;
@@ -270,7 +269,7 @@
   .zE{fill:#b8d4f0}.zF{fill:#f8d8a0}.zG{fill:#d4c8e8}.zH{fill:#b8e0d4}
   .zStage{fill:#e8e8e8;stroke:#aaa;stroke-width:1}
   .zSpecial{fill:#f5e642}
-  .bLabel{font-size:8px;fill:#333;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
+  .bLabel{font-size:10px;fill:#333;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
     font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:600}
   rect.booth-rect{stroke:rgba(0,0,0,0.18);stroke-width:0.8}
   .booth-rect{cursor:pointer;transition:filter .12s}
@@ -801,7 +800,6 @@
 <text style="font-size:10px;fill:#555;text-anchor:middle;" x="683" y="889">등　록　대</text>
 <text style="font-size:10px;fill:#555;text-anchor:middle;" x="1175" y="889">입구  출구</text>
 </svg>
-</div>
 
 </div><!-- /map-container -->
 </div><!-- /map-wrapper -->
@@ -1377,12 +1375,15 @@ function handleSearch(query) {
   query = query.trim().toLowerCase();
   document.querySelectorAll('.booth-rect.highlight').forEach(el => el.classList.remove('highlight'));
   if (!query) return;
+  let first = null;
   Object.entries(boothData).forEach(([id, name]) => {
     if (id.toLowerCase().includes(query) || name.toLowerCase().includes(query)) {
       const el = document.getElementById('b-' + id);
       if (el && !el.classList.contains('selected')) el.classList.add('highlight');
+      if (!first) first = id;
     }
   });
+  if (first) scrollToBooth(first);
 }
 </script>
 
