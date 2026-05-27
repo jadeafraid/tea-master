@@ -888,7 +888,7 @@ const boothData = {
   "A14": "백자일상",
   "A15": "문경칠봉산농원",
   "A16": "동국대학교 불교대학원 차문화콘텐츠학과",
-  "A17": "가현아트",
+  "A17": "가헌아트",
   "A18": "순천대학교 (사)고려천태국제선차 연구보존회",
   "A19": "장흥청태전(장흥다원)",
   "A20": "동원공방",
@@ -908,7 +908,7 @@ const boothData = {
   "A34": "옻칠채",
   "A35": "와락공방",
   "A36": "대림목공예",
-  "A37": "자연으로 웅크씨",
+  "A37": "자연으로 옹크씨",
   "A38": "주앤안 (이든갤러리)",
   "A39": "청도천연염색연구회 감물드리",
   "A40": "꼬매",
@@ -943,7 +943,7 @@ const boothData = {
   "B19": "청자, 더 공유 / the0u",
   "B20": "무결",
   "B21": "몽탄갤러리",
-  "B22": "육산도헌",
+  "B22": "욱산도헌",
   "B23": "뚜띨로공방",
   "B24": "가마공방",
   "B25": "도정요",
@@ -957,7 +957,7 @@ const boothData = {
   "C4": "하동아낙(LADY HADONG)",
   "C5": "청석골감로다원",
   "C6": "로전",
-  "C8": "자드리 TEA SHOP",
+  "C8": "쟈드리 TEA SHOP",
   "C9": "웃차",
   "C10": "찻잎마술/소암 茶",
   "C11": "수제차전수관",
@@ -974,7 +974,7 @@ const boothData = {
   "C22": "조선백자",
   "C23": "정요",
   "C24": "소산도예",
-  "C25": "삐닥한 도자기 황제요",
+  "C25": "삐딱한 도자기 황제요",
   "C26": "문경 경북요",
   "C27": "라키모",
   "C28": "채담요",
@@ -1037,7 +1037,7 @@ const boothData = {
   "E22": "청담요",
   "E23": "긍정공방",
   "E24": "도예명장2023-01호 영산요",
-  "E25": "더세드",
+  "E25": "더셰드",
   "E26": "효향요",
   "E27": "백암요",
   "E28": "도동요",
@@ -1048,7 +1048,7 @@ const boothData = {
   "F1": "자연을담다",
   "F2": "경위복차 (가인갤러리)",
   "F3": "Tea진공밀폐용기 에스락",
-  "F4": "모차",
+  "F4": "묘차",
   "F5": "교문공방",
   "F6": "강동현",
   "F7": "연세라믹",
@@ -1075,7 +1075,7 @@ const boothData = {
   "F28": "드내뜰(이종주의 도자기)",
   "F29": "심곡요",
   "F30": "침향나무",
-  "F31": "모을 황선희도방",
+  "F31": "모을 황선회도방",
   "F32": "HaDa design(하다디자인)",
 
   "G1": "대익코리아",
@@ -1131,13 +1131,29 @@ const boothData = {
   "H24": "수향(대경팔공공예협동조합)",
   "H25": "고전문화",
   "H26": "계절사이로(이오순 금침명인)",
-  "H27": "반짐고리",
+  "H27": "반짇고리",
 };
 
 // ============================================================
 // STATE
 // ============================================================
 const wishlist = new Map(); // boothId -> name (insertion-ordered)
+
+function saveWishlist() {
+  localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
+}
+function loadWishlist() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    saved.forEach(([id, name]) => {
+      wishlist.set(id, name);
+      const el = document.getElementById('b-' + id);
+      if (el) el.classList.add('selected');
+    });
+    if (wishlist.size > 0) renderWishlist();
+  } catch(e) {}
+}
+loadWishlist();
 
 // ============================================================
 // TOOLTIP
@@ -1185,6 +1201,7 @@ function toggleBooth(boothId) {
     wishlist.set(boothId, boothData[boothId]);
     el.classList.add('selected');
   }
+  saveWishlist();
   renderWishlist();
 }
 
@@ -1192,6 +1209,7 @@ function removeBooth(boothId) {
   wishlist.delete(boothId);
   const el = document.getElementById('b-' + boothId);
   if (el) el.classList.remove('selected');
+  saveWishlist();
   renderWishlist();
 }
 
@@ -1201,6 +1219,7 @@ function clearAll() {
     if (el) el.classList.remove('selected');
   });
   wishlist.clear();
+  saveWishlist();
   renderWishlist();
 }
 

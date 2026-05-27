@@ -460,6 +460,21 @@ const wishlist = new Map();
 let currentBoothId = null;
 let svgReady = false;
 
+function saveWishlist() {
+  localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
+}
+function loadWishlist() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    saved.forEach(([id, name]) => {
+      wishlist.set(id, name);
+      const el = document.getElementById('b-' + id);
+      if (el) el.classList.add('selected');
+    });
+    if (wishlist.size > 0) refreshFab();
+  } catch(e) {}
+}
+
 // ============================================================
 // SVG LOADING
 // ============================================================
@@ -483,6 +498,7 @@ async function loadSvg() {
 
     svgReady = true;
     initTransform();
+    loadWishlist();
   } catch(e) {
     document.getElementById('svgLoading').textContent = '지도 로드 실패. 새로고침해 주세요.';
   }
@@ -672,6 +688,7 @@ function toggleFromSheet() {
     wishlist.set(id, boothData[id]);
     if (el) el.classList.add('selected');
   }
+  saveWishlist();
   refreshBsBtn(id);
   refreshFab();
 }
@@ -734,6 +751,7 @@ function removeItem(id) {
   wishlist.delete(id);
   const el = document.getElementById('b-' + id);
   if (el) el.classList.remove('selected');
+  saveWishlist();
   refreshFab();
   renderWishlistDrawer();
   if (currentBoothId === id) refreshBsBtn(id);
@@ -745,6 +763,7 @@ function clearAll() {
     if (el) el.classList.remove('selected');
   });
   wishlist.clear();
+  saveWishlist();
   refreshFab();
   renderWishlistDrawer();
   hideBottomSheet();
