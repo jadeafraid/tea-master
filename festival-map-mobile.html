@@ -30,7 +30,7 @@
 
   /* ── 검색 패널 ── */
   .search-panel {
-    position: fixed; top: 81px; left: 0; right: 0; z-index: 49;
+    position: fixed; top: 81px; left: 0; right: 0; z-index: 110;
     background: rgba(245,240,232,0.98);
     padding: 8px 14px 10px;
     border-bottom: 1px solid rgba(0,0,0,0.07);
@@ -739,6 +739,14 @@ function handleTap(cx, cy) {
 // BOTTOM SHEET
 // ============================================================
 function showBottomSheet(id) {
+  // 검색 패널이 열려 있으면 닫기 (겹침 방지)
+  const sp = document.getElementById('searchPanel');
+  if (sp.classList.contains('open')) {
+    sp.classList.remove('open');
+    document.getElementById('mapArea').classList.remove('search-open');
+    document.getElementById('searchInput').value = '';
+    clearHighlights();
+  }
   currentBoothId = id;
   const zone = id[0];
   const color = ZONE_COLORS[zone] || '#aaa';
@@ -954,8 +962,10 @@ document.getElementById('searchToggle').addEventListener('click', () => {
   const area  = document.getElementById('mapArea');
   const open  = panel.classList.toggle('open');
   area.classList.toggle('search-open', open);
-  if (open) setTimeout(() => document.getElementById('searchInput').focus(), 220);
-  else {
+  if (open) {
+    hideBottomSheet();   // 검색과 부스 상세가 겹치지 않도록 (좁은/가로 화면 대비)
+    setTimeout(() => document.getElementById('searchInput').focus(), 220);
+  } else {
     document.getElementById('searchInput').value = '';
     clearHighlights();
   }
