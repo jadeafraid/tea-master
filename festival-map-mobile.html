@@ -1016,7 +1016,8 @@ async function saveAsImage() {
     const svgW = 1325, svgH = 911;
     const panelX = svgW + 10, panelW = 300;
     const totalW = svgW + panelW + 20;
-    const totalH = Math.max(svgH, wishlist.size * 20 + 80);
+    const memoCount = [...wishlist.keys()].filter(id => memos.has(id)).length;
+    const totalH = Math.max(svgH, wishlist.size * 20 + memoCount * 14 + 80);
 
     svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
     svgClone.setAttribute('width',   totalW);
@@ -1064,7 +1065,30 @@ async function saveAsImage() {
       nameText.textContent = name.length > 16 ? name.slice(0, 15) + '…' : name;
       svgClone.appendChild(nameText);
 
+      // 방문완료 표시
+      if (visited.has(id)) {
+        const chk = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        chk.setAttribute('x', panelX+panelW-16); chk.setAttribute('y', yPos);
+        chk.setAttribute('font-size', '11'); chk.setAttribute('fill', '#2e8b57');
+        chk.setAttribute('font-weight', 'bold');
+        chk.textContent = '✓';
+        svgClone.appendChild(chk);
+      }
+
       yPos += 20;
+
+      // 메모 한 줄
+      const memo = memos.get(id);
+      if (memo) {
+        const memoText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        memoText.setAttribute('x', panelX+32); memoText.setAttribute('y', yPos-6);
+        memoText.setAttribute('font-size', '9'); memoText.setAttribute('fill', '#999');
+        memoText.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+        const oneLine = memo.replace(/\s*\n\s*/g, ' ');
+        memoText.textContent = '✎ ' + (oneLine.length > 26 ? oneLine.slice(0, 25) + '…' : oneLine);
+        svgClone.appendChild(memoText);
+        yPos += 14;
+      }
     });
 
     const serializer = new XMLSerializer();
