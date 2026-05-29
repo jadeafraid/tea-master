@@ -1306,6 +1306,7 @@ const boothData = {
 const wishlist = new Map(); // boothId -> name (insertion-ordered)
 const visited  = new Set(); // boothId
 const memos    = new Map(); // boothId -> text
+let _listFilter = 'all';    // all | wish | visited | memo (loadWishlist보다 먼저 선언 — TDZ 방지)
 
 const ZONE_COLORS = {
   A:'#a8d08d', B:'#9ec8e0', C:'#f4b8b8', D:'#c8e0a8',
@@ -1551,7 +1552,6 @@ function sortedWishlist() {
   });
 }
 
-let _listFilter = 'all'; // all | wish | visited | memo
 function setListFilter(f) {
   _listFilter = f;
   document.querySelectorAll('.list-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));

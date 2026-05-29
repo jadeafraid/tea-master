@@ -545,6 +545,7 @@ const ZONE_COLORS = {
 const wishlist = new Map();
 const visited  = new Set();
 const memos    = new Map();
+let _listFilter = 'all';    // all | wish | visited | memo (TDZ 방지: loadWishlist보다 먼저 선언)
 let currentBoothId = null;
 let svgReady = false;
 
@@ -947,7 +948,6 @@ function escapeHtml(s) {
   return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
-let _listFilter = 'all'; // all | wish | visited | memo
 function setListFilter(f) {
   _listFilter = f;
   document.querySelectorAll('.wd-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));
