@@ -34,6 +34,12 @@
     font-size: clamp(11px, 1.4vw, 13px);
     color: #888;
   }
+  .page-guide {
+    font-size: clamp(11px, 1.3vw, 12.5px);
+    color: #9a8a6a !important;
+    margin-top: 5px;
+  }
+  .page-guide b { color: #7a6a4a; }
 
   /* ── 검색바 ── */
   .search-bar {
@@ -128,7 +134,13 @@
   .wishlist-item:hover { background: #f7f7f7; }
   .item-num  { font-size: 10px; color: #ccc; min-width: 16px; padding-top: 1px; }
   .item-id   { font-size: 10px; color: #6aaa6a; font-weight: bold; min-width: 30px; }
-  .item-name { font-size: 11px; color: #333; flex: 1; line-height: 1.4; }
+  .item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .item-name { font-size: 11px; color: #333; line-height: 1.4; }
+  .item-memo {
+    font-size: 10.5px; color: #999; line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; white-space: normal;
+  }
   .item-remove {
     font-size: 12px; color: #ddd; cursor: pointer;
     padding: 0 2px; flex-shrink: 0; line-height: 1;
@@ -215,6 +227,37 @@
 
   .entry-label { font-size: 11px; fill: #555; text-anchor: middle; }
 
+  /* ── 부스 상세 모달 ── */
+  .booth-modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(0,0,0,0.35);
+    display: none; align-items: center; justify-content: center;
+  }
+  .booth-modal-overlay.open { display: flex; }
+  .booth-modal {
+    background: white; border-radius: 14px;
+    padding: 22px; width: min(360px, 90vw);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  }
+  .bm-header { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .bm-zone-tag { padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; color: white; }
+  .bm-id { font-size: 12px; color: #999; }
+  .bm-name { font-size: 18px; font-weight: bold; color: #1a1a1a; line-height: 1.4; margin-bottom: 16px; }
+  .bm-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+  .bm-btn { flex: 1; padding: 10px; border: none; border-radius: 9px; font-size: 13px; font-weight: bold; cursor: pointer; font-family: inherit; transition: opacity .12s; }
+  .bm-btn:hover { opacity: 0.85; }
+  .bm-btn.wish-off  { background: #fff0e8; color: #e8651e; border: 1.5px solid #f3c4a8; }
+  .bm-btn.wish-on   { background: #ff6b35; color: white; }
+  .bm-btn.visit-off { background: #eef7f0; color: #2e8b57; border: 1.5px solid #b8ddc4; }
+  .bm-btn.visit-on  { background: #2e8b57; color: white; }
+  .bm-memo-label { font-size: 12px; color: #888; margin-bottom: 5px; }
+  .bm-memo { width: 100%; min-height: 70px; padding: 9px 11px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; outline: none; }
+  .bm-memo:focus { border-color: #6aaa6a; }
+  .bm-close { display: block; width: 100%; margin-top: 14px; padding: 9px; border: none; border-radius: 8px; background: #f0f0f0; color: #777; font-size: 13px; font-weight: bold; cursor: pointer; font-family: inherit; }
+
+  /* ── 방문 리스트 항목 상태 표시 ── */
+  .item-status { font-size: 11px; flex-shrink: 0; line-height: 1; padding-top: 1px; }
+
   /* ── 다크 모드 토글 버튼 ── */
   .dark-toggle {
     position: absolute; top: 0; right: 0;
@@ -230,6 +273,8 @@
   html.dark a.back-home:hover { color: #bbb; }
   html.dark .page-header h1 { color: #e0e0e0; }
   html.dark .page-header p { color: #666; }
+  html.dark .page-guide { color: #888 !important; }
+  html.dark .page-guide b { color: #aaa; }
   html.dark .search-bar input { background: #2a2a2a; border-color: #444; color: #e0e0e0; }
   html.dark .search-bar input::placeholder { color: #555; }
   html.dark .side-panel { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
@@ -240,13 +285,22 @@
   html.dark .wishlist-item:hover { background: #2e2e2e; }
   html.dark .item-num { color: #444; }
   html.dark .item-name { color: #ccc; }
+  html.dark .item-memo { color: #888; }
   html.dark .item-remove { color: #444; }
   html.dark .btn-clear { background: #2e2e2e; color: #888; }
   html.dark .map-container { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
   html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
   html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
   /* 부스 라벨은 rect 위에 있으므로 어두운 색 유지, 그 외 배경 텍스트만 밝게 */
-  html.dark #mapSvg text:not(.bLabel) { fill: #aaa !important; }
+  html.dark #mapSvg text:not(.bLabel):not(.bName) { fill: #aaa !important; }
+  html.dark .booth-modal { background: #242424; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+  html.dark .bm-id { color: #666; }
+  html.dark .bm-name { color: #e0e0e0; }
+  html.dark .bm-memo-label { color: #777; }
+  html.dark .bm-memo { background: #2e2e2e; border-color: #444; color: #e0e0e0; }
+  html.dark .bm-btn.wish-off  { background: #3a2a20; color: #e8965e; border-color: #5a4030; }
+  html.dark .bm-btn.visit-off { background: #1f2e24; color: #6abb8a; border-color: #355040; }
+  html.dark .bm-close { background: #2e2e2e; color: #888; }
 
   /* ── 반응형 ── */
 
@@ -286,6 +340,7 @@
   <a href="index.html" class="back-home">← 홈으로</a>
   <h1>제23회 국제차문화대전 부스배치도</h1>
   <p>2026 TEA WORLD FESTIVAL — 클릭으로 찜하고, 이미지로 저장하세요</p>
+  <p class="page-guide">💡 부스 <b>클릭</b> = 찜하기(다시 클릭 시 해제) · <b>더블클릭</b> = 메모·방문완료</p>
 </div>
 
 <div class="search-bar">
@@ -305,13 +360,18 @@
   .zE{fill:#b8d4f0}.zF{fill:#f8d8a0}.zG{fill:#d4c8e8}.zH{fill:#b8e0d4}
   .zStage{fill:#e8e8e8;stroke:#aaa;stroke-width:1}
   .zSpecial{fill:#f5e642}
-  .bLabel{font-size:13px;fill:#333;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
+  .bLabel{font-size:8px;fill:#666;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
     font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:600}
+  .bName{font-size:9.5px;fill:#1a1a1a;text-anchor:middle;dominant-baseline:middle;pointer-events:none;
+    font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-weight:700}
   rect.booth-rect{stroke:rgba(0,0,0,0.18);stroke-width:0.8}
   .booth-rect{cursor:pointer;transition:filter .12s}
   .booth-rect:hover{filter:brightness(0.82) saturate(1.4)}
   .booth-rect.highlight{stroke:#e85c00!important;stroke-width:2!important;filter:brightness(0.78) saturate(1.6)}
   .booth-rect.selected{fill:#ff6b35!important;stroke:#c0392b!important;stroke-width:2!important}
+  .booth-rect.visited{stroke:#2e8b57!important;stroke-width:2.5!important;opacity:0.55}
+  .visited-badge{pointer-events:none}
+  .memo-dot{pointer-events:none}
 </style></defs>
 <rect class="zStage" x="49" y="261" width="161" height="59" rx="3"/>
 <text style="font-size:10px;fill:#666;text-anchor:middle;dominant-baseline:middle;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;" x="129" y="290">무　　대</text>
@@ -320,511 +380,511 @@
 <rect class="zSpecial booth-rect" x="213" y="607" width="38" height="28" rx="2"/>
 <text class="bLabel" x="232" y="621">기둥</text>
 <rect class="booth-rect zA" id="b-A1" x="254" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="862">A1</text>
+<text class="bLabel" x="273" y="856.5">A1</text><text class="bName" x="273" y="867.5">무유다원</text>
 <rect class="booth-rect zA" id="b-A10" x="90" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="109" y="516">A10</text>
+<text class="bLabel" x="109" y="510.5">A10</text><text class="bName" x="109" y="521.5">국제통상</text>
 <rect class="booth-rect zA" id="b-A11" x="131" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="150" y="516">A11</text>
+<text class="bLabel" x="150" y="510.5">A11</text><text class="bName" x="150" y="521.5">무유장…</text>
 <rect class="booth-rect zA" id="b-A12" x="213" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="232" y="547">A12</text>
+<text class="bLabel" x="232" y="541.5">A12</text><text class="bName" x="232" y="552.5">명인신…</text>
 <rect class="booth-rect zA" id="b-A13" x="254" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="547">A13</text>
+<text class="bLabel" x="273" y="541.5">A13</text><text class="bName" x="273" y="552.5">모후실…</text>
 <rect class="booth-rect zA" id="b-A14" x="213" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="232" y="516">A14</text>
+<text class="bLabel" x="232" y="510.5">A14</text><text class="bName" x="232" y="521.5">백자일상</text>
 <rect class="booth-rect zA" id="b-A15" x="254" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="516">A15</text>
+<text class="bLabel" x="273" y="510.5">A15</text><text class="bName" x="273" y="521.5">문경칠…</text>
 <rect class="booth-rect zA" id="b-A16" x="90" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="109" y="442">A16</text>
+<text class="bLabel" x="109" y="436.5">A16</text><text class="bName" x="109" y="447.5">동국대…</text>
 <rect class="booth-rect zA" id="b-A17" x="131" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="150" y="442">A17</text>
+<text class="bLabel" x="150" y="436.5">A17</text><text class="bName" x="150" y="447.5">가헌아트</text>
 <rect class="booth-rect zA" id="b-A18" x="213" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="232" y="442">A18</text>
+<text class="bLabel" x="232" y="436.5">A18</text><text class="bName" x="232" y="447.5">순천대…</text>
 <rect class="booth-rect zA" id="b-A19" x="254" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="442">A19</text>
+<text class="bLabel" x="273" y="436.5">A19</text><text class="bName" x="273" y="447.5">장흥청…</text>
 <rect class="booth-rect zA" id="b-A2" x="254" y="786" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="800">A2</text>
+<text class="bLabel" x="273" y="794.5">A2</text><text class="bName" x="273" y="805.5">완도 …</text>
 <rect class="booth-rect zA" id="b-A20" x="90" y="397" width="79" height="28" rx="2"/>
-<text class="bLabel" x="129" y="411">A20</text>
+<text class="bLabel" x="129" y="405.5">A20</text><text class="bName" x="129" y="416.5">동원공방</text>
 <rect class="booth-rect zA" id="b-A21" x="213" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="232" y="411">A21</text>
+<text class="bLabel" x="232" y="405.5">A21</text><text class="bName" x="232" y="416.5">한국토기</text>
 <rect class="booth-rect zA" id="b-A22" x="254" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="411">A22</text>
+<text class="bLabel" x="273" y="405.5">A22</text><text class="bName" x="273" y="416.5">헬스베…</text>
 <rect class="booth-rect zA" id="b-A23" x="254" y="261" width="38" height="59" rx="2"/>
-<text class="bLabel" x="273" y="290">A23</text>
+<text class="bLabel" x="273" y="284.5">A23</text><text class="bName" x="273" y="295.5">문재필…</text>
 <rect class="booth-rect zA" id="b-A24" x="254" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="232">A24</text>
+<text class="bLabel" x="273" y="226.5">A24</text><text class="bName" x="273" y="237.5">경주 …</text>
 <rect class="booth-rect zA" id="b-A25" x="254" y="156" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="170">A25</text>
+<text class="bLabel" x="273" y="164.5">A25</text><text class="bName" x="273" y="175.5">트임&amp;…</text>
 <rect class="booth-rect zA" id="b-A26" x="254" y="82" width="38" height="59" rx="2"/>
-<text class="bLabel" x="273" y="111">A26</text>
+<text class="bLabel" x="273" y="105.5">A26</text><text class="bName" x="273" y="116.5">매원초가</text>
 <rect class="booth-rect zA" id="b-A27" x="254" y="8" width="79" height="28" rx="2"/>
-<text class="bLabel" x="293" y="22">A27</text>
+<text class="bLabel" x="293" y="16.5">A27</text><text class="bName" x="293" y="27.5">연으로…</text>
 <rect class="booth-rect zA" id="b-A28" x="336" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="22">A28</text>
+<text class="bLabel" x="355" y="16.5">A28</text><text class="bName" x="355" y="27.5">귀단요…</text>
 <rect class="booth-rect zA" id="b-A29" x="459" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="22">A29</text>
+<text class="bLabel" x="478" y="16.5">A29</text><text class="bName" x="478" y="27.5">토라</text>
 <rect class="booth-rect zA" id="b-A3" x="254" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="757">A3</text>
+<text class="bLabel" x="273" y="751.5">A3</text><text class="bName" x="273" y="762.5">현암제다</text>
 <rect class="booth-rect zA" id="b-A30" x="500" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="22">A30</text>
+<text class="bLabel" x="519" y="16.5">A30</text><text class="bName" x="519" y="27.5">언담</text>
 <rect class="booth-rect zA" id="b-A31" x="582" y="8" width="79" height="28" rx="2"/>
-<text class="bLabel" x="621" y="22">A31</text>
+<text class="bLabel" x="621" y="16.5">A31</text><text class="bName" x="621" y="27.5">정가로이</text>
 <rect class="booth-rect zA" id="b-A32" x="664" y="8" width="79" height="28" rx="2"/>
-<text class="bLabel" x="703" y="22">A32</text>
+<text class="bLabel" x="703" y="16.5">A32</text><text class="bName" x="703" y="27.5">우기원</text>
 <rect class="booth-rect zA" id="b-A33" x="787" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="806" y="22">A33</text>
+<text class="bLabel" x="806" y="16.5">A33</text><text class="bName" x="806" y="27.5">안동착…</text>
 <rect class="booth-rect zA" id="b-A34" x="828" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="22">A34</text>
+<text class="bLabel" x="847" y="16.5">A34</text><text class="bName" x="847" y="27.5">옻칠채</text>
 <rect class="booth-rect zA" id="b-A35" x="910" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="929" y="22">A35</text>
+<text class="bLabel" x="929" y="16.5">A35</text><text class="bName" x="929" y="27.5">와락공방</text>
 <rect class="booth-rect zA" id="b-A36" x="951" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="22">A36</text>
+<text class="bLabel" x="970" y="16.5">A36</text><text class="bName" x="970" y="27.5">대림목…</text>
 <rect class="booth-rect zA" id="b-A37" x="1074" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1093" y="22">A37</text>
+<text class="bLabel" x="1093" y="16.5">A37</text><text class="bName" x="1093" y="27.5">자연으…</text>
 <rect class="booth-rect zA" id="b-A38" x="1115" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="22">A38</text>
+<text class="bLabel" x="1134" y="16.5">A38</text><text class="bName" x="1134" y="27.5">주앤안…</text>
 <rect class="booth-rect zA" id="b-A39" x="1197" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="22">A39</text>
+<text class="bLabel" x="1216" y="16.5">A39</text><text class="bName" x="1216" y="27.5">청도천…</text>
 <rect class="booth-rect zA" id="b-A4" x="254" y="638" width="38" height="71" rx="2"/>
-<text class="bLabel" x="273" y="673">A4</text>
+<text class="bLabel" x="273" y="667.5">A4</text><text class="bName" x="273" y="678.5">한국제다</text>
 <rect class="booth-rect zA" id="b-A40" x="1279" y="8" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="22">A40</text>
+<text class="bLabel" x="1298" y="16.5">A40</text><text class="bName" x="1298" y="27.5">꼬매</text>
 <rect class="booth-rect zA" id="b-A41" x="1279" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="96">A41</text>
+<text class="bLabel" x="1298" y="90.5">A41</text><text class="bName" x="1298" y="101.5">보성천…</text>
 <rect class="booth-rect zA" id="b-A42" x="1279" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="127">A42</text>
+<text class="bLabel" x="1298" y="121.5">A42</text><text class="bName" x="1298" y="132.5">천연염…</text>
 <rect class="booth-rect zA" id="b-A43" x="1279" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="232">A43</text>
+<text class="bLabel" x="1298" y="226.5">A43</text><text class="bName" x="1298" y="237.5">풀과빛…</text>
 <rect class="booth-rect zA" id="b-A44" x="1279" y="261" width="38" height="133" rx="2"/>
-<text class="bLabel" x="1298" y="327">A44</text>
+<text class="bLabel" x="1298" y="321.5">A44</text><text class="bName" x="1298" y="332.5">승설재…</text>
 <rect class="booth-rect zA" id="b-A45" x="1279" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="411">A45</text>
+<text class="bLabel" x="1298" y="405.5">A45</text><text class="bName" x="1298" y="416.5">투다헌</text>
 <rect class="booth-rect zA" id="b-A46" x="1279" y="471" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1298" y="485">A46</text>
+<text class="bLabel" x="1298" y="479.5">A46</text><text class="bName" x="1298" y="490.5">오차연각</text>
 <rect class="booth-rect zA" id="b-A47" x="1279" y="502" width="38" height="133" rx="2"/>
-<text class="bLabel" x="1298" y="568">A47</text>
+<text class="bLabel" x="1298" y="562.5">A47</text><text class="bName" x="1298" y="573.5">차문화…</text>
 <rect class="booth-rect zA" id="b-A48" x="1279" y="638" width="38" height="71" rx="2"/>
-<text class="bLabel" x="1298" y="673">A48</text>
+<text class="bLabel" x="1298" y="667.5">A48</text><text class="bName" x="1298" y="678.5">(사)…</text>
 <rect class="booth-rect zA" id="b-A49" x="1279" y="786" width="38" height="90" rx="2"/>
-<text class="bLabel" x="1298" y="831">A49</text>
+<text class="bLabel" x="1298" y="825.5">A49</text><text class="bName" x="1298" y="836.5">원유전통</text>
 <rect class="booth-rect zA" id="b-A5" x="254" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="273" y="621">A5</text>
+<text class="bLabel" x="273" y="615.5">A5</text><text class="bName" x="273" y="626.5">제주차…</text>
 <rect class="booth-rect zA" id="b-A6" x="49" y="607" width="161" height="28" rx="2"/>
-<text class="bLabel" x="129" y="621">A6</text>
+<text class="bLabel" x="129" y="615.5">A6</text><text class="bName" x="129" y="626.5">차인연…</text>
 <rect class="booth-rect zA" id="b-A7" x="8" y="471" width="38" height="164" rx="2"/>
-<text class="bLabel" x="27" y="553">A7</text>
+<text class="bLabel" x="27" y="547.5">A7</text><text class="bName" x="27" y="558.5">(사)…</text>
 <rect class="booth-rect zA" id="b-A8" x="8" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="27" y="411">A8</text>
+<text class="bLabel" x="27" y="405.5">A8</text><text class="bName" x="27" y="416.5">휘계차</text>
 <rect class="booth-rect zA" id="b-A9" x="90" y="533" width="79" height="28" rx="2"/>
-<text class="bLabel" x="129" y="547">A9</text>
+<text class="bLabel" x="129" y="541.5">A9</text><text class="bName" x="129" y="552.5">공부차…</text>
 <rect class="booth-rect zB" id="b-B1" x="336" y="848" width="79" height="28" rx="2"/>
-<text class="bLabel" x="375" y="862">B1</text>
+<text class="bLabel" x="375" y="856.5">B1</text><text class="bName" x="375" y="867.5">보성군…</text>
 <rect class="booth-rect zB" id="b-B10" x="336" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="621">B10</text>
+<text class="bLabel" x="355" y="615.5">B10</text><text class="bName" x="355" y="626.5">소아다원</text>
 <rect class="booth-rect zB" id="b-B11" x="377" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="621">B11</text>
+<text class="bLabel" x="396" y="615.5">B11</text><text class="bName" x="396" y="626.5">다채</text>
 <rect class="booth-rect zB" id="b-B12" x="336" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="547">B12</text>
+<text class="bLabel" x="355" y="541.5">B12</text><text class="bName" x="355" y="552.5">보성녹…</text>
 <rect class="booth-rect zB" id="b-B13" x="377" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="547">B13</text>
+<text class="bLabel" x="396" y="541.5">B13</text><text class="bName" x="396" y="552.5">섬진다원</text>
 <rect class="booth-rect zB" id="b-B14" x="336" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="516">B14</text>
+<text class="bLabel" x="355" y="510.5">B14</text><text class="bName" x="355" y="521.5">한국티…</text>
 <rect class="booth-rect zB" id="b-B15" x="377" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="516">B15</text>
+<text class="bLabel" x="396" y="510.5">B15</text><text class="bName" x="396" y="521.5">티 팔…</text>
 <rect class="booth-rect zB" id="b-B16" x="336" y="397" width="79" height="59" rx="2"/>
-<text class="bLabel" x="375" y="426">B16</text>
+<text class="bLabel" x="375" y="420.5">B16</text><text class="bName" x="375" y="431.5">효월</text>
 <rect class="booth-rect zB" id="b-B17" x="336" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="337">B17</text>
+<text class="bLabel" x="355" y="331.5">B17</text><text class="bName" x="355" y="342.5">토정가…</text>
 <rect class="booth-rect zB" id="b-B18" x="377" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="337">B18</text>
+<text class="bLabel" x="396" y="331.5">B18</text><text class="bName" x="396" y="342.5">황우요</text>
 <rect class="booth-rect zB" id="b-B19" x="336" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="306">B19</text>
+<text class="bLabel" x="355" y="300.5">B19</text><text class="bName" x="355" y="311.5">청자,…</text>
 <rect class="booth-rect zB" id="b-B2" x="336" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="831">B2</text>
+<text class="bLabel" x="355" y="825.5">B2</text><text class="bName" x="355" y="836.5">보성제다</text>
 <rect class="booth-rect zB" id="b-B20" x="377" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="306">B20</text>
+<text class="bLabel" x="396" y="300.5">B20</text><text class="bName" x="396" y="311.5">무결</text>
 <rect class="booth-rect zB" id="b-B21" x="336" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="232">B21</text>
+<text class="bLabel" x="355" y="226.5">B21</text><text class="bName" x="355" y="237.5">몽탄갤…</text>
 <rect class="booth-rect zB" id="b-B22" x="377" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="232">B22</text>
+<text class="bLabel" x="396" y="226.5">B22</text><text class="bName" x="396" y="237.5">욱산도헌</text>
 <rect class="booth-rect zB" id="b-B23" x="336" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="201">B23</text>
+<text class="bLabel" x="355" y="195.5">B23</text><text class="bName" x="355" y="206.5">뚜띨로…</text>
 <rect class="booth-rect zB" id="b-B24" x="377" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="201">B24</text>
+<text class="bLabel" x="396" y="195.5">B24</text><text class="bName" x="396" y="206.5">가마공방</text>
 <rect class="booth-rect zB" id="b-B25" x="336" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="127">B25</text>
+<text class="bLabel" x="355" y="121.5">B25</text><text class="bName" x="355" y="132.5">도정요</text>
 <rect class="booth-rect zB" id="b-B26" x="377" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="127">B26</text>
+<text class="bLabel" x="396" y="121.5">B26</text><text class="bName" x="396" y="132.5">대광도요</text>
 <rect class="booth-rect zB" id="b-B27" x="336" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="96">B27</text>
+<text class="bLabel" x="355" y="90.5">B27</text><text class="bName" x="355" y="101.5">도농도예</text>
 <rect class="booth-rect zB" id="b-B28" x="377" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="96">B28</text>
+<text class="bLabel" x="396" y="90.5">B28</text><text class="bName" x="396" y="101.5">한세은…</text>
 <rect class="booth-rect zB" id="b-B3" x="377" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="831">B3</text>
+<text class="bLabel" x="396" y="825.5">B3</text><text class="bName" x="396" y="836.5">천보다원</text>
 <rect class="booth-rect zB" id="b-B4" x="336" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="757">B4</text>
+<text class="bLabel" x="355" y="751.5">B4</text><text class="bName" x="355" y="762.5">보성 …</text>
 <rect class="booth-rect zB" id="b-B5" x="377" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="757">B5</text>
+<text class="bLabel" x="396" y="751.5">B5</text><text class="bName" x="396" y="762.5">유기농…</text>
 <rect class="booth-rect zB" id="b-B6" x="336" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="726">B6</text>
+<text class="bLabel" x="355" y="720.5">B6</text><text class="bName" x="355" y="731.5">징광잎차</text>
 <rect class="booth-rect zB" id="b-B7" x="377" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="726">B7</text>
+<text class="bLabel" x="396" y="720.5">B7</text><text class="bName" x="396" y="731.5">보성(…</text>
 <rect class="booth-rect zB" id="b-B8" x="336" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="355" y="652">B8</text>
+<text class="bLabel" x="355" y="646.5">B8</text><text class="bName" x="355" y="657.5">죽림다원</text>
 <rect class="booth-rect zB" id="b-B9" x="377" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="396" y="652">B9</text>
+<text class="bLabel" x="396" y="646.5">B9</text><text class="bName" x="396" y="657.5">보성 …</text>
 <rect class="booth-rect zC" id="b-C1" x="459" y="817" width="79" height="59" rx="2"/>
-<text class="bLabel" x="498" y="846">C1</text>
+<text class="bLabel" x="498" y="840.5">C1</text><text class="bName" x="498" y="851.5">나주</text>
 <rect class="booth-rect zC" id="b-C10" x="459" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="547">C10</text>
+<text class="bLabel" x="478" y="541.5">C10</text><text class="bName" x="478" y="552.5">찻잎마…</text>
 <rect class="booth-rect zC" id="b-C11" x="500" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="547">C11</text>
+<text class="bLabel" x="519" y="541.5">C11</text><text class="bName" x="519" y="552.5">수제차…</text>
 <rect class="booth-rect zC" id="b-C12" x="459" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="516">C12</text>
+<text class="bLabel" x="478" y="510.5">C12</text><text class="bName" x="478" y="521.5">백학제다</text>
 <rect class="booth-rect zC" id="b-C13" x="500" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="516">C13</text>
+<text class="bLabel" x="519" y="510.5">C13</text><text class="bName" x="519" y="521.5">붓당골…</text>
 <rect class="booth-rect zC" id="b-C14" x="459" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="442">C14</text>
+<text class="bLabel" x="478" y="436.5">C14</text><text class="bName" x="478" y="447.5">노전요</text>
 <rect class="booth-rect zC" id="b-C15" x="500" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="442">C15</text>
+<text class="bLabel" x="519" y="436.5">C15</text><text class="bName" x="519" y="447.5">청학도방</text>
 <rect class="booth-rect zC" id="b-C16" x="459" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="411">C16</text>
+<text class="bLabel" x="478" y="405.5">C16</text><text class="bName" x="478" y="416.5">황매산…</text>
 <rect class="booth-rect zC" id="b-C17" x="500" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="411">C17</text>
+<text class="bLabel" x="519" y="405.5">C17</text><text class="bName" x="519" y="416.5">도자기…</text>
 <rect class="booth-rect zC" id="b-C18" x="459" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="337">C18</text>
+<text class="bLabel" x="478" y="331.5">C18</text><text class="bName" x="478" y="342.5">누보도예</text>
 <rect class="booth-rect zC" id="b-C19" x="500" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="337">C19</text>
+<text class="bLabel" x="519" y="331.5">C19</text><text class="bName" x="519" y="342.5">산이리</text>
 <rect class="booth-rect zC" id="b-C2" x="459" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="757">C2</text>
+<text class="bLabel" x="478" y="751.5">C2</text><text class="bName" x="478" y="762.5">연우제다</text>
 <rect class="booth-rect zC" id="b-C20" x="459" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="306">C20</text>
+<text class="bLabel" x="478" y="300.5">C20</text><text class="bName" x="478" y="311.5">오름오…</text>
 <rect class="booth-rect zC" id="b-C21" x="500" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="306">C21</text>
+<text class="bLabel" x="519" y="300.5">C21</text><text class="bName" x="519" y="311.5">보니다</text>
 <rect class="booth-rect zC" id="b-C22" x="459" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="232">C22</text>
+<text class="bLabel" x="478" y="226.5">C22</text><text class="bName" x="478" y="237.5">조선백자</text>
 <rect class="booth-rect zC" id="b-C23" x="500" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="232">C23</text>
+<text class="bLabel" x="519" y="226.5">C23</text><text class="bName" x="519" y="237.5">정요</text>
 <rect class="booth-rect zC" id="b-C24" x="459" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="201">C24</text>
+<text class="bLabel" x="478" y="195.5">C24</text><text class="bName" x="478" y="206.5">소산도예</text>
 <rect class="booth-rect zC" id="b-C25" x="500" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="201">C25</text>
+<text class="bLabel" x="519" y="195.5">C25</text><text class="bName" x="519" y="206.5">삐딱한…</text>
 <rect class="booth-rect zC" id="b-C26" x="459" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="127">C26</text>
+<text class="bLabel" x="478" y="121.5">C26</text><text class="bName" x="478" y="132.5">문경 …</text>
 <rect class="booth-rect zC" id="b-C27" x="500" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="127">C27</text>
+<text class="bLabel" x="519" y="121.5">C27</text><text class="bName" x="519" y="132.5">라키모</text>
 <rect class="booth-rect zC" id="b-C28" x="459" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="96">C28</text>
+<text class="bLabel" x="478" y="90.5">C28</text><text class="bName" x="478" y="101.5">채담요</text>
 <rect class="booth-rect zC" id="b-C29" x="500" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="96">C29</text>
+<text class="bLabel" x="519" y="90.5">C29</text><text class="bName" x="519" y="101.5">봉정요</text>
 <rect class="booth-rect zC" id="b-C3" x="500" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="757">C3</text>
+<text class="bLabel" x="519" y="751.5">C3</text><text class="bName" x="519" y="762.5">티후</text>
 <rect class="booth-rect zC" id="b-C4" x="459" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="726">C4</text>
+<text class="bLabel" x="478" y="720.5">C4</text><text class="bName" x="478" y="731.5">하동아…</text>
 <rect class="booth-rect zC" id="b-C5" x="500" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="726">C5</text>
+<text class="bLabel" x="519" y="720.5">C5</text><text class="bName" x="519" y="731.5">청석골…</text>
 <rect class="booth-rect zC" id="b-C6" x="459" y="638" width="79" height="28" rx="2"/>
-<text class="bLabel" x="498" y="652">C6</text>
+<text class="bLabel" x="498" y="646.5">C6</text><text class="bName" x="498" y="657.5">로전</text>
 <rect class="booth-rect zC" id="b-C8" x="459" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="478" y="621">C8</text>
+<text class="bLabel" x="478" y="615.5">C8</text><text class="bName" x="478" y="626.5">쟈드리…</text>
 <rect class="booth-rect zC" id="b-C9" x="500" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="519" y="621">C9</text>
+<text class="bLabel" x="519" y="615.5">C9</text><text class="bName" x="519" y="626.5">웃차</text>
 <rect class="booth-rect zD" id="b-D1" x="582" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="862">D1</text>
+<text class="bLabel" x="601" y="856.5">D1</text><text class="bName" x="601" y="867.5">일구다…</text>
 <rect class="booth-rect zD" id="b-D10" x="623" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="652">D10</text>
+<text class="bLabel" x="642" y="646.5">D10</text><text class="bName" x="642" y="657.5">한밭제…</text>
 <rect class="booth-rect zD" id="b-D11" x="582" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="621">D11</text>
+<text class="bLabel" x="601" y="615.5">D11</text><text class="bName" x="601" y="626.5">도재명차</text>
 <rect class="booth-rect zD" id="b-D12" x="623" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="621">D12</text>
+<text class="bLabel" x="642" y="615.5">D12</text><text class="bName" x="642" y="626.5">관아수…</text>
 <rect class="booth-rect zD" id="b-D13" x="582" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="547">D13</text>
+<text class="bLabel" x="601" y="541.5">D13</text><text class="bName" x="601" y="552.5">농업회…</text>
 <rect class="booth-rect zD" id="b-D14" x="623" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="547">D14</text>
+<text class="bLabel" x="642" y="541.5">D14</text><text class="bName" x="642" y="552.5">무애(…</text>
 <rect class="booth-rect zD" id="b-D15" x="582" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="516">D15</text>
+<text class="bLabel" x="601" y="510.5">D15</text><text class="bName" x="601" y="521.5">금향다원</text>
 <rect class="booth-rect zD" id="b-D16" x="623" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="516">D16</text>
+<text class="bLabel" x="642" y="510.5">D16</text><text class="bName" x="642" y="521.5">차살림</text>
 <rect class="booth-rect zD" id="b-D17" x="582" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="442">D17</text>
+<text class="bLabel" x="601" y="436.5">D17</text><text class="bName" x="601" y="447.5">산도방</text>
 <rect class="booth-rect zD" id="b-D18" x="623" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="442">D18</text>
+<text class="bLabel" x="642" y="436.5">D18</text><text class="bName" x="642" y="447.5">설도예</text>
 <rect class="booth-rect zD" id="b-D19" x="582" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="411">D19</text>
+<text class="bLabel" x="601" y="405.5">D19</text><text class="bName" x="601" y="416.5">해너울</text>
 <rect class="booth-rect zD" id="b-D2" x="623" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="862">D2</text>
+<text class="bLabel" x="642" y="856.5">D2</text><text class="bName" x="642" y="867.5">곡천다원</text>
 <rect class="booth-rect zD" id="b-D20" x="623" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="411">D20</text>
+<text class="bLabel" x="642" y="405.5">D20</text><text class="bName" x="642" y="416.5">민토(…</text>
 <rect class="booth-rect zD" id="b-D21" x="582" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="337">D21</text>
+<text class="bLabel" x="601" y="331.5">D21</text><text class="bName" x="601" y="342.5">우곡요</text>
 <rect class="booth-rect zD" id="b-D22" x="623" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="337">D22</text>
+<text class="bLabel" x="642" y="331.5">D22</text><text class="bName" x="642" y="342.5">녹주요</text>
 <rect class="booth-rect zD" id="b-D23" x="582" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="306">D23</text>
+<text class="bLabel" x="601" y="300.5">D23</text><text class="bName" x="601" y="311.5">도유가</text>
 <rect class="booth-rect zD" id="b-D24" x="623" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="306">D24</text>
+<text class="bLabel" x="642" y="300.5">D24</text><text class="bName" x="642" y="311.5">소랑요</text>
 <rect class="booth-rect zD" id="b-D25" x="582" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="232">D25</text>
+<text class="bLabel" x="601" y="226.5">D25</text><text class="bName" x="601" y="237.5">공림요</text>
 <rect class="booth-rect zD" id="b-D26" x="623" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="232">D26</text>
+<text class="bLabel" x="642" y="226.5">D26</text><text class="bName" x="642" y="237.5">알천도예</text>
 <rect class="booth-rect zD" id="b-D27" x="582" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="201">D27</text>
+<text class="bLabel" x="601" y="195.5">D27</text><text class="bName" x="601" y="206.5">현암요</text>
 <rect class="booth-rect zD" id="b-D29" x="623" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="201">D29</text>
+<text class="bLabel" x="642" y="195.5">D29</text><text class="bName" x="642" y="206.5">김동인</text>
 <rect class="booth-rect zD" id="b-D3" x="582" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="831">D3</text>
+<text class="bLabel" x="601" y="825.5">D3</text><text class="bName" x="601" y="836.5">황아차…</text>
 <rect class="booth-rect zD" id="b-D30" x="582" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="127">D30</text>
+<text class="bLabel" x="601" y="121.5">D30</text><text class="bName" x="601" y="132.5">청림도요</text>
 <rect class="booth-rect zD" id="b-D31" x="623" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="127">D31</text>
+<text class="bLabel" x="642" y="121.5">D31</text><text class="bName" x="642" y="132.5">영남요</text>
 <rect class="booth-rect zD" id="b-D32" x="582" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="96">D32</text>
+<text class="bLabel" x="601" y="90.5">D32</text><text class="bName" x="601" y="101.5">포암요</text>
 <rect class="booth-rect zD" id="b-D33" x="623" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="96">D33</text>
+<text class="bLabel" x="642" y="90.5">D33</text><text class="bName" x="642" y="101.5">기린공방</text>
 <rect class="booth-rect zD" id="b-D4" x="623" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="831">D4</text>
+<text class="bLabel" x="642" y="825.5">D4</text><text class="bName" x="642" y="836.5">혜림茶…</text>
 <rect class="booth-rect zD" id="b-D5" x="582" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="757">D5</text>
+<text class="bLabel" x="601" y="751.5">D5</text><text class="bName" x="601" y="762.5">죽로은침</text>
 <rect class="booth-rect zD" id="b-D6" x="623" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="757">D6</text>
+<text class="bLabel" x="642" y="751.5">D6</text><text class="bName" x="642" y="762.5">삼신차…</text>
 <rect class="booth-rect zD" id="b-D7" x="582" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="726">D7</text>
+<text class="bLabel" x="601" y="720.5">D7</text><text class="bName" x="601" y="731.5">명성다원</text>
 <rect class="booth-rect zD" id="b-D8" x="623" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="642" y="726">D8</text>
+<text class="bLabel" x="642" y="720.5">D8</text><text class="bName" x="642" y="731.5">하동 …</text>
 <rect class="booth-rect zD" id="b-D9" x="582" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="601" y="652">D9</text>
+<text class="bLabel" x="601" y="646.5">D9</text><text class="bName" x="601" y="657.5">조태연…</text>
 <rect class="booth-rect zE" id="b-E1" x="705" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="862">E1</text>
+<text class="bLabel" x="724" y="856.5">E1</text><text class="bName" x="724" y="867.5">대통령…</text>
 <rect class="booth-rect zE" id="b-E10" x="746" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="652">E10</text>
+<text class="bLabel" x="765" y="646.5">E10</text><text class="bName" x="765" y="657.5">여송도예</text>
 <rect class="booth-rect zE" id="b-E11" x="705" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="621">E11</text>
+<text class="bLabel" x="724" y="615.5">E11</text><text class="bName" x="724" y="626.5">우림도예</text>
 <rect class="booth-rect zE" id="b-E12" x="746" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="621">E12</text>
+<text class="bLabel" x="765" y="615.5">E12</text><text class="bName" x="765" y="626.5">효원도예</text>
 <rect class="booth-rect zE" id="b-E13" x="705" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="547">E13</text>
+<text class="bLabel" x="724" y="541.5">E13</text><text class="bName" x="724" y="552.5">무무요</text>
 <rect class="booth-rect zE" id="b-E14" x="746" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="547">E14</text>
+<text class="bLabel" x="765" y="541.5">E14</text><text class="bName" x="765" y="552.5">청욱요</text>
 <rect class="booth-rect zE" id="b-E15" x="705" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="516">E15</text>
+<text class="bLabel" x="724" y="510.5">E15</text><text class="bName" x="724" y="521.5">김해예…</text>
 <rect class="booth-rect zE" id="b-E16" x="746" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="516">E16</text>
+<text class="bLabel" x="765" y="510.5">E16</text><text class="bName" x="765" y="521.5">다솜공방</text>
 <rect class="booth-rect zE" id="b-E17" x="705" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="442">E17</text>
+<text class="bLabel" x="724" y="436.5">E17</text><text class="bName" x="724" y="447.5">예인요</text>
 <rect class="booth-rect zE" id="b-E18" x="746" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="442">E18</text>
+<text class="bLabel" x="765" y="436.5">E18</text><text class="bName" x="765" y="447.5">부산광…</text>
 <rect class="booth-rect zE" id="b-E19" x="705" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="411">E19</text>
+<text class="bLabel" x="724" y="405.5">E19</text><text class="bName" x="724" y="416.5">슬우재</text>
 <rect class="booth-rect zE" id="b-E2" x="746" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="862">E2</text>
+<text class="bLabel" x="765" y="856.5">E2</text><text class="bName" x="765" y="867.5">김천방…</text>
 <rect class="booth-rect zE" id="b-E20" x="746" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="411">E20</text>
+<text class="bLabel" x="765" y="405.5">E20</text><text class="bName" x="765" y="416.5">부산광…</text>
 <rect class="booth-rect zE" id="b-E21" x="705" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="337">E21</text>
+<text class="bLabel" x="724" y="331.5">E21</text><text class="bName" x="724" y="342.5">김묘진</text>
 <rect class="booth-rect zE" id="b-E22" x="746" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="337">E22</text>
+<text class="bLabel" x="765" y="331.5">E22</text><text class="bName" x="765" y="342.5">청담요</text>
 <rect class="booth-rect zE" id="b-E23" x="705" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="306">E23</text>
+<text class="bLabel" x="724" y="300.5">E23</text><text class="bName" x="724" y="311.5">긍정공방</text>
 <rect class="booth-rect zE" id="b-E24" x="746" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="306">E24</text>
+<text class="bLabel" x="765" y="300.5">E24</text><text class="bName" x="765" y="311.5">도예명…</text>
 <rect class="booth-rect zE" id="b-E25" x="705" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="232">E25</text>
+<text class="bLabel" x="724" y="226.5">E25</text><text class="bName" x="724" y="237.5">더셰드</text>
 <rect class="booth-rect zE" id="b-E26" x="705" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="201">E26</text>
+<text class="bLabel" x="724" y="195.5">E26</text><text class="bName" x="724" y="206.5">효향요</text>
 <rect class="booth-rect zE" id="b-E27" x="746" y="187" width="38" height="59" rx="2"/>
-<text class="bLabel" x="765" y="216">E27</text>
+<text class="bLabel" x="765" y="210.5">E27</text><text class="bName" x="765" y="221.5">백암요</text>
 <rect class="booth-rect zE" id="b-E28" x="705" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="127">E28</text>
+<text class="bLabel" x="724" y="121.5">E28</text><text class="bName" x="724" y="132.5">도동요</text>
 <rect class="booth-rect zE" id="b-E29" x="746" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="127">E29</text>
+<text class="bLabel" x="765" y="121.5">E29</text><text class="bName" x="765" y="132.5">송하요</text>
 <rect class="booth-rect zE" id="b-E3" x="705" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="831">E3</text>
+<text class="bLabel" x="724" y="825.5">E3</text><text class="bName" x="724" y="836.5">이아뜰…</text>
 <rect class="booth-rect zE" id="b-E30" x="705" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="96">E30</text>
+<text class="bLabel" x="724" y="90.5">E30</text><text class="bName" x="724" y="101.5">수도예</text>
 <rect class="booth-rect zE" id="b-E31" x="746" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="96">E31</text>
+<text class="bLabel" x="765" y="90.5">E31</text><text class="bName" x="765" y="101.5">화경도요</text>
 <rect class="booth-rect zE" id="b-E4" x="746" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="831">E4</text>
+<text class="bLabel" x="765" y="825.5">E4</text><text class="bName" x="765" y="836.5">경기한…</text>
 <rect class="booth-rect zE" id="b-E5" x="705" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="757">E5</text>
+<text class="bLabel" x="724" y="751.5">E5</text><text class="bName" x="724" y="762.5">엄기순…</text>
 <rect class="booth-rect zE" id="b-E6" x="746" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="757">E6</text>
+<text class="bLabel" x="765" y="751.5">E6</text><text class="bName" x="765" y="762.5">스튜디…</text>
 <rect class="booth-rect zE" id="b-E7" x="705" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="726">E7</text>
+<text class="bLabel" x="724" y="720.5">E7</text><text class="bName" x="724" y="731.5">따티 …</text>
 <rect class="booth-rect zE" id="b-E8" x="746" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="765" y="726">E8</text>
+<text class="bLabel" x="765" y="720.5">E8</text><text class="bName" x="765" y="731.5">수니공방</text>
 <rect class="booth-rect zE" id="b-E9" x="705" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="724" y="652">E9</text>
+<text class="bLabel" x="724" y="646.5">E9</text><text class="bName" x="724" y="657.5">백산도…</text>
 <rect class="booth-rect zF" id="b-F1" x="828" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="862">F1</text>
+<text class="bLabel" x="847" y="856.5">F1</text><text class="bName" x="847" y="867.5">자연을…</text>
 <rect class="booth-rect zF" id="b-F10" x="869" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="652">F10</text>
+<text class="bLabel" x="888" y="646.5">F10</text><text class="bName" x="888" y="657.5">청기백기</text>
 <rect class="booth-rect zF" id="b-F11" x="828" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="621">F11</text>
+<text class="bLabel" x="847" y="615.5">F11</text><text class="bName" x="847" y="626.5">무유</text>
 <rect class="booth-rect zF" id="b-F12" x="869" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="621">F12</text>
+<text class="bLabel" x="888" y="615.5">F12</text><text class="bName" x="888" y="626.5">삼정공방</text>
 <rect class="booth-rect zF" id="b-F13" x="828" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="547">F13</text>
+<text class="bLabel" x="847" y="541.5">F13</text><text class="bName" x="847" y="552.5">송화도예</text>
 <rect class="booth-rect zF" id="b-F14" x="869" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="547">F14</text>
+<text class="bLabel" x="888" y="541.5">F14</text><text class="bName" x="888" y="552.5">가람도예</text>
 <rect class="booth-rect zF" id="b-F15" x="828" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="516">F15</text>
+<text class="bLabel" x="847" y="510.5">F15</text><text class="bName" x="847" y="521.5">고도산방</text>
 <rect class="booth-rect zF" id="b-F16" x="869" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="516">F16</text>
+<text class="bLabel" x="888" y="510.5">F16</text><text class="bName" x="888" y="521.5">라세라…</text>
 <rect class="booth-rect zF" id="b-F17" x="828" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="442">F17</text>
+<text class="bLabel" x="847" y="436.5">F17</text><text class="bName" x="847" y="447.5">김해요</text>
 <rect class="booth-rect zF" id="b-F18" x="869" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="442">F18</text>
+<text class="bLabel" x="888" y="436.5">F18</text><text class="bName" x="888" y="447.5">다경요</text>
 <rect class="booth-rect zF" id="b-F19" x="828" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="411">F19</text>
+<text class="bLabel" x="847" y="405.5">F19</text><text class="bName" x="847" y="416.5">정호요</text>
 <rect class="booth-rect zF" id="b-F2" x="869" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="862">F2</text>
+<text class="bLabel" x="888" y="856.5">F2</text><text class="bName" x="888" y="867.5">경위복…</text>
 <rect class="booth-rect zF" id="b-F20" x="869" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="411">F20</text>
+<text class="bLabel" x="888" y="405.5">F20</text><text class="bName" x="888" y="416.5">연화도방</text>
 <rect class="booth-rect zF" id="b-F21" x="828" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="337">F21</text>
+<text class="bLabel" x="847" y="331.5">F21</text><text class="bName" x="847" y="342.5">언양도예</text>
 <rect class="booth-rect zF" id="b-F22" x="869" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="337">F22</text>
+<text class="bLabel" x="888" y="331.5">F22</text><text class="bName" x="888" y="342.5">임의섭…</text>
 <rect class="booth-rect zF" id="b-F23" x="828" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="306">F23</text>
+<text class="bLabel" x="847" y="300.5">F23</text><text class="bName" x="847" y="311.5">이치헌…</text>
 <rect class="booth-rect zF" id="b-F24" x="869" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="306">F24</text>
+<text class="bLabel" x="888" y="300.5">F24</text><text class="bName" x="888" y="311.5">박달요</text>
 <rect class="booth-rect zF" id="b-F25" x="828" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="232">F25</text>
+<text class="bLabel" x="847" y="226.5">F25</text><text class="bName" x="847" y="237.5">모동도예</text>
 <rect class="booth-rect zF" id="b-F26" x="869" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="232">F26</text>
+<text class="bLabel" x="888" y="226.5">F26</text><text class="bName" x="888" y="237.5">소월백자</text>
 <rect class="booth-rect zF" id="b-F27" x="828" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="201">F27</text>
+<text class="bLabel" x="847" y="195.5">F27</text><text class="bName" x="847" y="206.5">진곡요</text>
 <rect class="booth-rect zF" id="b-F28" x="869" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="201">F28</text>
+<text class="bLabel" x="888" y="195.5">F28</text><text class="bName" x="888" y="206.5">드내뜰…</text>
 <rect class="booth-rect zF" id="b-F29" x="828" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="127">F29</text>
+<text class="bLabel" x="847" y="121.5">F29</text><text class="bName" x="847" y="132.5">심곡요</text>
 <rect class="booth-rect zF" id="b-F3" x="828" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="831">F3</text>
+<text class="bLabel" x="847" y="825.5">F3</text><text class="bName" x="847" y="836.5">Tea…</text>
 <rect class="booth-rect zF" id="b-F30" x="869" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="127">F30</text>
+<text class="bLabel" x="888" y="121.5">F30</text><text class="bName" x="888" y="132.5">침향나무</text>
 <rect class="booth-rect zF" id="b-F31" x="828" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="96">F31</text>
+<text class="bLabel" x="847" y="90.5">F31</text><text class="bName" x="847" y="101.5">모을 …</text>
 <rect class="booth-rect zF" id="b-F32" x="869" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="96">F32</text>
+<text class="bLabel" x="888" y="90.5">F32</text><text class="bName" x="888" y="101.5">HaD…</text>
 <rect class="booth-rect zF" id="b-F4" x="869" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="831">F4</text>
+<text class="bLabel" x="888" y="825.5">F4</text><text class="bName" x="888" y="836.5">묘차</text>
 <rect class="booth-rect zF" id="b-F5" x="828" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="757">F5</text>
+<text class="bLabel" x="847" y="751.5">F5</text><text class="bName" x="847" y="762.5">교문공방</text>
 <rect class="booth-rect zF" id="b-F6" x="869" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="757">F6</text>
+<text class="bLabel" x="888" y="751.5">F6</text><text class="bName" x="888" y="762.5">강동현</text>
 <rect class="booth-rect zF" id="b-F7" x="828" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="726">F7</text>
+<text class="bLabel" x="847" y="720.5">F7</text><text class="bName" x="847" y="731.5">연세라믹</text>
 <rect class="booth-rect zF" id="b-F8" x="869" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="888" y="726">F8</text>
+<text class="bLabel" x="888" y="720.5">F8</text><text class="bName" x="888" y="731.5">우기세…</text>
 <rect class="booth-rect zF" id="b-F9" x="828" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="847" y="652">F9</text>
+<text class="bLabel" x="847" y="646.5">F9</text><text class="bName" x="847" y="657.5">날빛</text>
 <rect class="booth-rect zG" id="b-G1" x="951" y="817" width="120" height="59" rx="2"/>
-<text class="bLabel" x="1011" y="846">G1</text>
+<text class="bLabel" x="1011" y="840.5">G1</text><text class="bName" x="1011" y="851.5">대익코…</text>
 <rect class="booth-rect zG" id="b-G10" x="951" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="547">G10</text>
+<text class="bLabel" x="970" y="541.5">G10</text><text class="bName" x="970" y="552.5">다견원</text>
 <rect class="booth-rect zG" id="b-G11" x="992" y="533" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="547">G11</text>
+<text class="bLabel" x="1031" y="541.5">G11</text><text class="bName" x="1031" y="552.5">향적당</text>
 <rect class="booth-rect zG" id="b-G12" x="951" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="516">G12</text>
+<text class="bLabel" x="970" y="510.5">G12</text><text class="bName" x="970" y="521.5">랑카티…</text>
 <rect class="booth-rect zG" id="b-G13" x="992" y="502" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="516">G13</text>
+<text class="bLabel" x="1031" y="510.5">G13</text><text class="bName" x="1031" y="521.5">틴지오…</text>
 <rect class="booth-rect zG" id="b-G14" x="951" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="442">G14</text>
+<text class="bLabel" x="970" y="436.5">G14</text><text class="bName" x="970" y="447.5">사계다향</text>
 <rect class="booth-rect zG" id="b-G15" x="951" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="411">G15</text>
+<text class="bLabel" x="970" y="405.5">G15</text><text class="bName" x="970" y="416.5">동정보…</text>
 <rect class="booth-rect zG" id="b-G16" x="992" y="397" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1031" y="426">G16</text>
+<text class="bLabel" x="1031" y="420.5">G16</text><text class="bName" x="1031" y="431.5">차세상…</text>
 <rect class="booth-rect zG" id="b-G17" x="951" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="337">G17</text>
+<text class="bLabel" x="970" y="331.5">G17</text><text class="bName" x="970" y="342.5">宜興永…</text>
 <rect class="booth-rect zG" id="b-G18" x="951" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="306">G18</text>
+<text class="bLabel" x="970" y="300.5">G18</text><text class="bName" x="970" y="311.5">北京妙…</text>
 <rect class="booth-rect zG" id="b-G19" x="992" y="292" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1031" y="321">G19</text>
+<text class="bLabel" x="1031" y="315.5">G19</text><text class="bName" x="1031" y="326.5">동심명차</text>
 <rect class="booth-rect zG" id="b-G2" x="951" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="757">G2</text>
+<text class="bLabel" x="970" y="751.5">G2</text><text class="bName" x="970" y="762.5">티하우…</text>
 <rect class="booth-rect zG" id="b-G20" x="951" y="218" width="79" height="28" rx="2"/>
-<text class="bLabel" x="990" y="232">G20</text>
+<text class="bLabel" x="990" y="226.5">G20</text><text class="bName" x="990" y="237.5">포담 …</text>
 <rect class="booth-rect zG" id="b-G21" x="1033" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1052" y="232">G21</text>
+<text class="bLabel" x="1052" y="226.5">G21</text><text class="bName" x="1052" y="237.5">尹茶人…</text>
 <rect class="booth-rect zG" id="b-G22" x="951" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="201">G22</text>
+<text class="bLabel" x="970" y="195.5">G22</text><text class="bName" x="970" y="206.5">상해구…</text>
 <rect class="booth-rect zG" id="b-G23" x="992" y="187" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="201">G23</text>
+<text class="bLabel" x="1031" y="195.5">G23</text><text class="bName" x="1031" y="206.5">아람드리</text>
 <rect class="booth-rect zG" id="b-G24" x="951" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="127">G24</text>
+<text class="bLabel" x="970" y="121.5">G24</text><text class="bName" x="970" y="132.5">바이에…</text>
 <rect class="booth-rect zG" id="b-G25" x="992" y="113" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="127">G25</text>
+<text class="bLabel" x="1031" y="121.5">G25</text><text class="bName" x="1031" y="132.5">다심헌…</text>
 <rect class="booth-rect zG" id="b-G26" x="951" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="96">G26</text>
+<text class="bLabel" x="970" y="90.5">G26</text><text class="bName" x="970" y="101.5">보림원…</text>
 <rect class="booth-rect zG" id="b-G27" x="992" y="82" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="96">G27</text>
+<text class="bLabel" x="1031" y="90.5">G27</text><text class="bName" x="1031" y="101.5">여원</text>
 <rect class="booth-rect zG" id="b-G3" x="992" y="743" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1031" y="757">G3</text>
+<text class="bLabel" x="1031" y="751.5">G3</text><text class="bName" x="1031" y="762.5">정산당</text>
 <rect class="booth-rect zG" id="b-G4" x="951" y="712" width="79" height="28" rx="2"/>
-<text class="bLabel" x="990" y="726">G4</text>
+<text class="bLabel" x="990" y="720.5">G4</text><text class="bName" x="990" y="731.5">재단법…</text>
 <rect class="booth-rect zG" id="b-G5" x="1033" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1052" y="726">G5</text>
+<text class="bLabel" x="1052" y="720.5">G5</text><text class="bName" x="1052" y="731.5">글림피스</text>
 <rect class="booth-rect zG" id="b-G6" x="951" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="652">G6</text>
+<text class="bLabel" x="970" y="646.5">G6</text><text class="bName" x="970" y="657.5">천년보…</text>
 <rect class="booth-rect zG" id="b-G7" x="951" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="970" y="621">G7</text>
+<text class="bLabel" x="970" y="615.5">G7</text><text class="bName" x="970" y="626.5">다연재</text>
 <rect class="booth-rect zG" id="b-G9" x="992" y="607" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1031" y="636">G9</text>
+<text class="bLabel" x="1031" y="630.5">G9</text><text class="bName" x="1031" y="641.5">지유명차</text>
 <rect class="booth-rect zH" id="b-H1" x="1115" y="817" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1154" y="846">H1</text>
+<text class="bLabel" x="1154" y="840.5">H1</text><text class="bName" x="1154" y="851.5">보이차…</text>
 <rect class="booth-rect zH" id="b-H10" x="1115" y="502" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1154" y="531">H10</text>
+<text class="bLabel" x="1154" y="525.5">H10</text><text class="bName" x="1154" y="536.5">석가명…</text>
 <rect class="booth-rect zH" id="b-H11" x="1197" y="533" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="547">H11</text>
+<text class="bLabel" x="1216" y="541.5">H11</text><text class="bName" x="1216" y="552.5">ㄷㅓㄱ…</text>
 <rect class="booth-rect zH" id="b-H12" x="1197" y="502" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="516">H12</text>
+<text class="bLabel" x="1216" y="510.5">H12</text><text class="bName" x="1216" y="521.5">아망시…</text>
 <rect class="booth-rect zH" id="b-H13" x="1115" y="397" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1154" y="426">H13</text>
+<text class="bLabel" x="1154" y="420.5">H13</text><text class="bName" x="1154" y="431.5">茗扬天…</text>
 <rect class="booth-rect zH" id="b-H14" x="1197" y="428" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="442">H14</text>
+<text class="bLabel" x="1216" y="436.5">H14</text><text class="bName" x="1216" y="447.5">취죽진…</text>
 <rect class="booth-rect zH" id="b-H15" x="1197" y="397" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="411">H15</text>
+<text class="bLabel" x="1216" y="405.5">H15</text><text class="bName" x="1216" y="416.5">휴다인</text>
 <rect class="booth-rect zH" id="b-H16" x="1115" y="323" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="337">H16</text>
+<text class="bLabel" x="1134" y="331.5">H16</text><text class="bName" x="1134" y="342.5">宜興知…</text>
 <rect class="booth-rect zH" id="b-H17" x="1115" y="292" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="306">H17</text>
+<text class="bLabel" x="1134" y="300.5">H17</text><text class="bName" x="1134" y="311.5">일삼차…</text>
 <rect class="booth-rect zH" id="b-H18" x="1156" y="292" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1195" y="321">H18</text>
+<text class="bLabel" x="1195" y="315.5">H18</text><text class="bName" x="1195" y="326.5">하나실…</text>
 <rect class="booth-rect zH" id="b-H19" x="1115" y="218" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="232">H19</text>
+<text class="bLabel" x="1134" y="226.5">H19</text><text class="bName" x="1134" y="237.5">森桦陶…</text>
 <rect class="booth-rect zH" id="b-H2" x="1197" y="848" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="862">H2</text>
+<text class="bLabel" x="1216" y="856.5">H2</text><text class="bName" x="1216" y="867.5">차우림…</text>
 <rect class="booth-rect zH" id="b-H20" x="1156" y="218" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1195" y="232">H20</text>
+<text class="bLabel" x="1195" y="226.5">H20</text><text class="bName" x="1195" y="237.5">주식회…</text>
 <rect class="booth-rect zH" id="b-H21" x="1115" y="187" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1154" y="201">H21</text>
+<text class="bLabel" x="1154" y="195.5">H21</text><text class="bName" x="1154" y="206.5">(주)…</text>
 <rect class="booth-rect zH" id="b-H22" x="1197" y="187" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="201">H22</text>
+<text class="bLabel" x="1216" y="195.5">H22</text><text class="bName" x="1216" y="206.5">청도 …</text>
 <rect class="booth-rect zH" id="b-H23" x="1115" y="113" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="127">H23</text>
+<text class="bLabel" x="1134" y="121.5">H23</text><text class="bName" x="1134" y="132.5">나은크…</text>
 <rect class="booth-rect zH" id="b-H24" x="1156" y="113" width="79" height="28" rx="2"/>
-<text class="bLabel" x="1195" y="127">H24</text>
+<text class="bLabel" x="1195" y="121.5">H24</text><text class="bName" x="1195" y="132.5">수향(…</text>
 <rect class="booth-rect zH" id="b-H25" x="1115" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1134" y="96">H25</text>
+<text class="bLabel" x="1134" y="90.5">H25</text><text class="bName" x="1134" y="101.5">고전문화</text>
 <rect class="booth-rect zH" id="b-H26" x="1156" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1175" y="96">H26</text>
+<text class="bLabel" x="1175" y="90.5">H26</text><text class="bName" x="1175" y="101.5">계절사…</text>
 <rect class="booth-rect zH" id="b-H27" x="1197" y="82" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="96">H27</text>
+<text class="bLabel" x="1216" y="90.5">H27</text><text class="bName" x="1216" y="101.5">반짇고리</text>
 <rect class="booth-rect zH" id="b-H3" x="1197" y="817" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="831">H3</text>
+<text class="bLabel" x="1216" y="825.5">H3</text><text class="bName" x="1216" y="836.5">한차원</text>
 <rect class="booth-rect zH" id="b-H4" x="1115" y="712" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1154" y="741">H4</text>
+<text class="bLabel" x="1154" y="735.5">H4</text><text class="bName" x="1154" y="746.5">예평</text>
 <rect class="booth-rect zH" id="b-H5" x="1197" y="743" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="757">H5</text>
+<text class="bLabel" x="1216" y="751.5">H5</text><text class="bName" x="1216" y="762.5">선묘당…</text>
 <rect class="booth-rect zH" id="b-H6" x="1197" y="712" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="726">H6</text>
+<text class="bLabel" x="1216" y="720.5">H6</text><text class="bName" x="1216" y="731.5">복향명차</text>
 <rect class="booth-rect zH" id="b-H7" x="1115" y="607" width="79" height="59" rx="2"/>
-<text class="bLabel" x="1154" y="636">H7</text>
+<text class="bLabel" x="1154" y="630.5">H7</text><text class="bName" x="1154" y="641.5">상명</text>
 <rect class="booth-rect zH" id="b-H8" x="1197" y="638" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="652">H8</text>
+<text class="bLabel" x="1216" y="646.5">H8</text><text class="bName" x="1216" y="657.5">죽평</text>
 <rect class="booth-rect zH" id="b-H9" x="1197" y="607" width="38" height="28" rx="2"/>
-<text class="bLabel" x="1216" y="621">H9</text>
+<text class="bLabel" x="1216" y="615.5">H9</text><text class="bName" x="1216" y="626.5">밀밀홍</text>
 <line x1="336" y1="150" x2="1235" y2="150" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
 <line x1="336" y1="255" x2="1235" y2="255" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
 <line x1="336" y1="360" x2="1235" y2="360" stroke="#ccc" stroke-width="0.8" stroke-dasharray="4,3"/>
@@ -865,6 +925,24 @@
   <div class="booth-id" id="tooltip-id"></div>
   <div class="booth-name" id="tooltip-name"></div>
   <div class="tooltip-hint"></div>
+</div>
+
+<!-- 부스 상세 모달 -->
+<div class="booth-modal-overlay" id="boothModal" onclick="if(event.target===this) closeBoothModal()">
+  <div class="booth-modal">
+    <div class="bm-header">
+      <span class="bm-zone-tag" id="bmZoneTag"></span>
+      <span class="bm-id" id="bmId"></span>
+    </div>
+    <div class="bm-name" id="bmName"></div>
+    <div class="bm-actions">
+      <button class="bm-btn" id="bmWishBtn" onclick="modalToggleWish()"></button>
+      <button class="bm-btn" id="bmVisitBtn" onclick="modalToggleVisit()"></button>
+    </div>
+    <div class="bm-memo-label">메모</div>
+    <textarea class="bm-memo" id="bmMemo" placeholder="이 부스에 대한 메모를 남겨보세요" oninput="modalSaveMemo()"></textarea>
+    <button class="bm-close" onclick="closeBoothModal()">닫기</button>
+  </div>
 </div>
 
 <script>
@@ -1138,10 +1216,28 @@ const boothData = {
 // STATE
 // ============================================================
 const wishlist = new Map(); // boothId -> name (insertion-ordered)
+const visited  = new Set(); // boothId
+const memos    = new Map(); // boothId -> text
+
+const ZONE_COLORS = {
+  A:'#a8d08d', B:'#9ec8e0', C:'#f4b8b8', D:'#c8e0a8',
+  E:'#b8d4f0', F:'#f8d8a0', G:'#d4c8e8', H:'#b8e0d4'
+};
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
 
 function saveWishlist() {
   localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
 }
+function saveVisited() {
+  localStorage.setItem('visited', JSON.stringify([...visited]));
+}
+function saveMemos() {
+  localStorage.setItem('memos', JSON.stringify([...memos]));
+}
+
 function loadWishlist() {
   try {
     const saved = JSON.parse(localStorage.getItem('wishlist') || '[]');
@@ -1150,10 +1246,63 @@ function loadWishlist() {
       const el = document.getElementById('b-' + id);
       if (el) el.classList.add('selected');
     });
-    if (wishlist.size > 0) renderWishlist();
   } catch(e) {}
+  try {
+    JSON.parse(localStorage.getItem('visited') || '[]').forEach(id => {
+      visited.add(id);
+      const el = document.getElementById('b-' + id);
+      if (el) el.classList.add('visited');
+    });
+  } catch(e) {}
+  try {
+    JSON.parse(localStorage.getItem('memos') || '[]').forEach(([id, text]) => {
+      if (text) memos.set(id, text);
+    });
+  } catch(e) {}
+  new Set([...visited, ...memos.keys()]).forEach(updateBoothMarkers);
+  if (wishlist.size > 0) renderWishlist();
 }
 loadWishlist();
+
+// 부스 위 방문완료 ✓ 배지 + 메모 점 마커를 그린다
+function updateBoothMarkers(id) {
+  const rect = document.getElementById('b-' + id);
+  if (!rect) return;
+  const svg = rect.ownerSVGElement;
+  // 기존 마커 제거
+  svg.querySelectorAll(`[data-marker-for="${id}"]`).forEach(m => m.remove());
+
+  const x = parseFloat(rect.getAttribute('x'));
+  const y = parseFloat(rect.getAttribute('y'));
+  const w = parseFloat(rect.getAttribute('width'));
+  const NS = 'http://www.w3.org/2000/svg';
+
+  if (visited.has(id)) {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('class', 'visited-badge');
+    c.setAttribute('cx', x + w - 6); c.setAttribute('cy', y + 6);
+    c.setAttribute('r', 6); c.setAttribute('fill', '#2e8b57');
+    c.setAttribute('data-marker-for', id);
+    svg.appendChild(c);
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('class', 'visited-badge');
+    t.setAttribute('x', x + w - 6); t.setAttribute('y', y + 6.5);
+    t.setAttribute('font-size', '8'); t.setAttribute('fill', 'white');
+    t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('data-marker-for', id);
+    t.textContent = '✓';
+    svg.appendChild(t);
+  }
+  if (memos.has(id)) {
+    const d = document.createElementNS(NS, 'circle');
+    d.setAttribute('class', 'memo-dot');
+    d.setAttribute('cx', x + 6); d.setAttribute('cy', y + 6);
+    d.setAttribute('r', 3.5); d.setAttribute('fill', '#e8a13e');
+    d.setAttribute('stroke', 'white'); d.setAttribute('stroke-width', '1');
+    d.setAttribute('data-marker-for', id);
+    svg.appendChild(d);
+  }
+}
 
 // ============================================================
 // TOOLTIP
@@ -1168,7 +1317,14 @@ function showTooltip(e, boothId) {
   tooltipId.textContent = '부스 ' + boothId;
   tooltipName.textContent = name;
   const hint = tooltip.querySelector('.tooltip-hint');
-  if (hint) hint.textContent = wishlist.has(boothId) ? '클릭하면 찜 해제' : '클릭하면 찜 추가';
+  if (hint) {
+    const tags = [];
+    if (wishlist.has(boothId)) tags.push('찜');
+    if (visited.has(boothId)) tags.push('방문완료');
+    if (memos.has(boothId)) tags.push('메모');
+    const base = '클릭=찜 · 더블클릭=메모·방문완료';
+    hint.textContent = tags.length ? tags.join(' · ') + ' | ' + base : base;
+  }
   tooltip.style.display = 'block';
   moveTooltip(e);
 }
@@ -1186,6 +1342,69 @@ function moveTooltip(e) {
 
 function hideTooltip() {
   tooltip.style.display = 'none';
+}
+
+// ============================================================
+// BOOTH MODAL (상세: 찜 / 방문완료 / 메모)
+// ============================================================
+let modalBoothId = null;
+
+function openBoothModal(boothId) {
+  if (!boothData[boothId]) return;
+  modalBoothId = boothId;
+  const zone = boothId[0];
+  const tag = document.getElementById('bmZoneTag');
+  tag.textContent = zone + '존';
+  tag.style.background = ZONE_COLORS[zone] || '#aaa';
+  document.getElementById('bmId').textContent = '부스 ' + boothId;
+  document.getElementById('bmName').textContent = boothData[boothId];
+  document.getElementById('bmMemo').value = memos.get(boothId) || '';
+  refreshModalButtons();
+  document.getElementById('boothModal').classList.add('open');
+}
+
+function closeBoothModal() {
+  document.getElementById('boothModal').classList.remove('open');
+  modalBoothId = null;
+}
+
+function refreshModalButtons() {
+  const id = modalBoothId;
+  const wb = document.getElementById('bmWishBtn');
+  const vb = document.getElementById('bmVisitBtn');
+  if (wishlist.has(id)) { wb.textContent = '★ 찜 해제'; wb.className = 'bm-btn wish-on'; }
+  else                  { wb.textContent = '☆ 찜하기'; wb.className = 'bm-btn wish-off'; }
+  if (visited.has(id))  { vb.textContent = '✓ 방문완료'; vb.className = 'bm-btn visit-on'; }
+  else                  { vb.textContent = '방문완료'; vb.className = 'bm-btn visit-off'; }
+}
+
+function modalToggleWish() {
+  if (!modalBoothId) return;
+  toggleBooth(modalBoothId);
+  refreshModalButtons();
+}
+
+function modalToggleVisit() {
+  if (!modalBoothId) return;
+  const id = modalBoothId;
+  const el = document.getElementById('b-' + id);
+  if (visited.has(id)) { visited.delete(id); if (el) el.classList.remove('visited'); }
+  else                 { visited.add(id);    if (el) el.classList.add('visited'); }
+  saveVisited();
+  updateBoothMarkers(id);
+  refreshModalButtons();
+  renderWishlist();
+}
+
+function modalSaveMemo() {
+  if (!modalBoothId) return;
+  const id = modalBoothId;
+  const text = document.getElementById('bmMemo').value.trim();
+  if (text) memos.set(id, text);
+  else      memos.delete(id);
+  saveMemos();
+  updateBoothMarkers(id);
+  renderWishlist();
 }
 
 // ============================================================
@@ -1214,12 +1433,17 @@ function removeBooth(boothId) {
 }
 
 function clearAll() {
-  wishlist.forEach((_, id) => {
-    const el = document.getElementById('b-' + id);
-    if (el) el.classList.remove('selected');
-  });
+  if (wishlist.size + visited.size + memos.size === 0) return;
+  if (!confirm('찜 · 방문완료 · 메모를 모두 지울까요?')) return;
+  document.querySelectorAll('.booth-rect.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.booth-rect.visited').forEach(el => el.classList.remove('visited'));
+  document.querySelectorAll('#mapSvg [data-marker-for]').forEach(m => m.remove());
   wishlist.clear();
+  visited.clear();
+  memos.clear();
   saveWishlist();
+  saveVisited();
+  saveMemos();
   renderWishlist();
 }
 
@@ -1240,7 +1464,7 @@ function renderWishlist() {
 
   badge.textContent = wishlist.size;
   btnSave.disabled = wishlist.size === 0;
-  btnClear.disabled = wishlist.size === 0;
+  btnClear.disabled = (wishlist.size + visited.size + memos.size) === 0;
 
   if (wishlist.size === 0) {
     container.innerHTML = '';
@@ -1258,10 +1482,19 @@ function renderWishlist() {
   let html = '';
   let i = 1;
   sortedWishlist().forEach(([id, name]) => {
-    html += `<div class="wishlist-item" onclick="scrollToBooth('${id}')">
+    let status = '';
+    if (visited.has(id)) status += '<span class="item-status" title="방문완료" style="color:#2e8b57">✓</span>';
+    if (memos.has(id))   status += '<span class="item-status" title="메모 있음" style="color:#e8a13e">●</span>';
+    const memo = memos.get(id);
+    const memoHtml = memo ? `<div class="item-memo">${escapeHtml(memo)}</div>` : '';
+    html += `<div class="wishlist-item" onclick="openBoothModal('${id}')">
       <span class="item-num">${i++}</span>
       <span class="item-id">${id}</span>
-      <span class="item-name">${name}</span>
+      <div class="item-body">
+        <span class="item-name">${name}</span>
+        ${memoHtml}
+      </div>
+      ${status}
       <span class="item-remove" title="제거" onclick="event.stopPropagation(); removeBooth('${id}')">✕</span>
     </div>`;
   });
@@ -1302,7 +1535,8 @@ async function saveAsImage() {
     const panelX = svgW + 10;
     const panelW = 300;
     const totalW = svgW + panelW + 20;
-    const totalH = Math.max(svgH, wishlist.size * 20 + 80);
+    const memoCount = [...wishlist.keys()].filter(id => memos.has(id)).length;
+    const totalH = Math.max(svgH, wishlist.size * 20 + memoCount * 14 + 80);
 
     svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
     svgClone.setAttribute('width', totalW);
@@ -1356,9 +1590,30 @@ async function saveAsImage() {
       nameText.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
       const shortName = name.length > 16 ? name.slice(0, 15) + '…' : name;
       nameText.textContent = shortName;
+      // 방문완료 표시
+      if (visited.has(id)) {
+        const chk = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        chk.setAttribute('x', panelX + panelW - 16); chk.setAttribute('y', yPos);
+        chk.setAttribute('font-size', '11'); chk.setAttribute('fill', '#2e8b57');
+        chk.setAttribute('font-weight', 'bold');
+        chk.textContent = '✓';
+        svgClone.appendChild(chk);
+      }
       svgClone.appendChild(nameText);
 
       yPos += 20;
+      // 메모 한 줄 표시
+      const memo = memos.get(id);
+      if (memo) {
+        const memoText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        memoText.setAttribute('x', panelX + 32); memoText.setAttribute('y', yPos - 6);
+        memoText.setAttribute('font-size', '9'); memoText.setAttribute('fill', '#999');
+        memoText.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+        const oneLine = memo.replace(/\s*\n\s*/g, ' ');
+        memoText.textContent = '✎ ' + (oneLine.length > 26 ? oneLine.slice(0, 25) + '…' : oneLine);
+        svgClone.appendChild(memoText);
+        yPos += 14;
+      }
       idx++;
     });
 
@@ -1417,9 +1672,19 @@ document.querySelectorAll('.booth-rect[id^="b-"]').forEach(el => {
   el.addEventListener('mouseenter', (e) => showTooltip(e, boothId));
   el.addEventListener('mousemove', moveTooltip);
   el.addEventListener('mouseleave', hideTooltip);
+  let clickTimer = null;
   el.addEventListener('click', () => {
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; return; } // 더블클릭의 두 번째 클릭 무시
+    clickTimer = setTimeout(() => {
+      clickTimer = null;
+      hideTooltip();
+      toggleBooth(boothId);   // 1클릭 = 찜 토글 (다시 누르면 해제)
+    }, 230);
+  });
+  el.addEventListener('dblclick', () => {
+    if (clickTimer) { clearTimeout(clickTimer); clickTimer = null; }
     hideTooltip();
-    toggleBooth(boothId);
+    openBoothModal(boothId); // 더블클릭 = 상세(메모·방문완료)
   });
 });
 

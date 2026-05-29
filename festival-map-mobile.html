@@ -82,6 +82,12 @@
     stroke-width: 2.5 !important;
     filter: brightness(0.75) saturate(1.5);
   }
+  .booth-rect.visited {
+    stroke: #2e8b57 !important;
+    stroke-width: 2.5 !important;
+    opacity: 0.55;
+  }
+  .visited-badge, .memo-dot { pointer-events: none; }
 
   /* ── 바텀 시트 ── */
   .bottom-sheet {
@@ -117,6 +123,20 @@
   .bs-btn:active { opacity: 0.82; transform: scale(0.98); }
   .bs-btn.add  { background: #ff6b35; color: white; }
   .bs-btn.remove { background: #f0f0f0; color: #888; }
+  .bs-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+  .bs-actions .bs-btn { flex: 1; padding: 13px; font-size: 14px; }
+  .bs-btn.wish-off  { background: #fff0e8; color: #e8651e; border: 1.5px solid #f3c4a8; }
+  .bs-btn.wish-on   { background: #ff6b35; color: white; }
+  .bs-btn.visit-off { background: #eef7f0; color: #2e8b57; border: 1.5px solid #b8ddc4; }
+  .bs-btn.visit-on  { background: #2e8b57; color: white; }
+  .bs-memo-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+  .bs-memo {
+    width: 100%; min-height: 64px; padding: 11px 13px;
+    border: 1px solid #ddd; border-radius: 12px;
+    font-size: 14px; font-family: inherit; resize: none; outline: none;
+    -webkit-appearance: none;
+  }
+  .bs-memo:focus { border-color: #6aaa6a; }
 
   /* ── FAB ── */
   .fab {
@@ -178,6 +198,10 @@
   .wd-info { flex: 1; min-width: 0; }
   .wd-item-id { font-size: 11px; color: #6aaa6a; font-weight: bold; margin-bottom: 2px; }
   .wd-item-name { font-size: 13px; color: #2c2c2c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wd-item-memo {
+    font-size: 11.5px; color: #999; line-height: 1.35; margin-top: 3px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
   .wd-remove { color: #ccc; font-size: 18px; padding: 4px; flex-shrink: 0; line-height: 1; }
   .wd-empty { text-align: center; color: #bbb; font-size: 14px; padding: 60px 20px; line-height: 2.2; }
   .wd-actions {
@@ -230,12 +254,17 @@
   html.dark .bs-id { color: #666; }
   html.dark .bs-name { color: #e0e0e0; }
   html.dark .bs-btn.remove { background: #333; color: #888; }
+  html.dark .bs-btn.wish-off  { background: #3a2a20; color: #e8965e; border-color: #5a4030; }
+  html.dark .bs-btn.visit-off { background: #1f2e24; color: #6abb8a; border-color: #355040; }
+  html.dark .bs-memo-label { color: #777; }
+  html.dark .bs-memo { background: #2e2e2e; border-color: #444; color: #e0e0e0; }
   html.dark .wishlist-drawer { background: #1a1a1a; }
   html.dark .wd-header { background: #242424; border-bottom-color: #333; }
   html.dark .wd-title { color: #e0e0e0; }
   html.dark .wd-close { color: #555; }
   html.dark .wd-item { background: #2e2e2e; }
   html.dark .wd-item-name { color: #d0d0d0; }
+  html.dark .wd-item-memo { color: #888; }
   html.dark .wd-remove { color: #444; }
   html.dark .wd-empty { color: #555; }
   html.dark .wd-actions { background: #242424; border-top-color: #333; }
@@ -248,7 +277,7 @@
   /* SVG 다크 오버라이드 (fetch 후 주입된 SVG에 적용) */
   html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
   html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
-  html.dark #mapSvg text:not(.bLabel) { fill: #aaa !important; }
+  html.dark #mapSvg text:not(.bLabel):not(.bName) { fill: #aaa !important; }
 
   /* ── 온보딩 팝업 ── */
   .onboarding-overlay {
@@ -313,7 +342,12 @@
     <span class="bs-id" id="bsId">A1</span>
   </div>
   <div class="bs-name" id="bsName">부스명</div>
-  <button class="bs-btn add" id="bsBtn" onclick="toggleFromSheet()">+ 방문 추가</button>
+  <div class="bs-actions">
+    <button class="bs-btn" id="bsBtn" onclick="toggleFromSheet()">☆ 찜하기</button>
+    <button class="bs-btn" id="bsVisitBtn" onclick="toggleVisitFromSheet()">방문완료</button>
+  </div>
+  <div class="bs-memo-label">메모</div>
+  <textarea class="bs-memo" id="bsMemo" placeholder="이 부스에 대한 메모를 남겨보세요" oninput="saveMemoFromSheet()"></textarea>
 </div>
 
 <!-- FAB -->
@@ -328,7 +362,7 @@
     <div class="onboarding-title">사용 안내</div>
     <div class="ob-item">
       <span class="ob-icon">👆</span>
-      <span>부스를 <b>탭</b>하면 업체명을 확인하고 방문 리스트에 추가할 수 있습니다.</span>
+      <span>부스를 <b>탭</b>하면 업체명과 함께 <b>찜 · 방문완료 · 메모</b>를 남길 수 있습니다.</span>
     </div>
     <div class="ob-item">
       <span class="ob-icon">🤏</span>
@@ -342,7 +376,7 @@
       <span class="ob-icon">🍵</span>
       <span>하단 <b>찻잔 버튼</b>으로 방문 리스트를 확인하고 이미지로 저장합니다.</span>
     </div>
-    <button class="ob-close-btn" onclick="closeOnboarding()">닫기</button>
+    <button class="ob-close-btn" onclick="closeOnboarding()">시작하기</button>
   </div>
 </div>
 
@@ -372,14 +406,14 @@ const boothData = {
   "A8":"휘계차","A9":"공부차파크 복합치유공간 (과천 청계산점)","A10":"국제통상",
   "A11":"무유장작가마 살래요","A12":"명인신광수차_무드를 즐기는차(moocha)",
   "A13":"모후실에서만난차","A14":"백자일상","A15":"문경칠봉산농원",
-  "A16":"동국대학교 불교대학원 차문화콘텐츠학과","A17":"가현아트",
+  "A16":"동국대학교 불교대학원 차문화콘텐츠학과","A17":"가헌아트",
   "A18":"순천대학교 (사)고려천태국제선차 연구보존회","A19":"장흥청태전(장흥다원)",
   "A20":"동원공방","A21":"한국토기","A22":"헬스베버리지","A23":"문재필 옻칠갤러리",
   "A24":"경주 남촌도예","A25":"트임&김진욱도예원","A26":"매원초가",
   "A27":"연으로 만드는 힐링푸드 두레연구품당","A28":"귀단요 성탄송운",
   "A29":"토라","A30":"언담","A31":"정가로이","A32":"우기원",
   "A33":"안동착한농장 프로폴리스 茶","A34":"옻칠채","A35":"와락공방",
-  "A36":"대림목공예","A37":"자연으로 웅크씨","A38":"주앤안 (이든갤러리)",
+  "A36":"대림목공예","A37":"자연으로 옹크씨","A38":"주앤안 (이든갤러리)",
   "A39":"청도천연염색연구회 감물드리","A40":"꼬매",
   "A41":"보성천연염색협동조합 (자연담은 하늘수)","A42":"천연염색 미주사랑",
   "A43":"풀과빛 (청도군 천연염색 연구회)","A44":"승설재·무이성",
@@ -390,15 +424,15 @@ const boothData = {
   "B9":"보성 영천다원","B10":"소아다원","B11":"다채","B12":"보성녹차 선다원",
   "B13":"섬진다원","B14":"한국티산업경영연구원 - 차그리다","B15":"티 팔래트",
   "B16":"효월","B17":"토정가 (이조요) since1940","B18":"황우요",
-  "B19":"청자, 더 공유 / the0u","B20":"무결","B21":"몽탄갤러리","B22":"육산도헌",
+  "B19":"청자, 더 공유 / the0u","B20":"무결","B21":"몽탄갤러리","B22":"욱산도헌",
   "B23":"뚜띨로공방","B24":"가마공방","B25":"도정요","B26":"대광도요",
   "B27":"도농도예","B28":"한세은 도예공방",
   "C1":"나주","C2":"연우제다","C3":"티후","C4":"하동아낙(LADY HADONG)",
-  "C5":"청석골감로다원","C6":"로전","C8":"자드리 TEA SHOP","C9":"웃차",
+  "C5":"청석골감로다원","C6":"로전","C8":"쟈드리 TEA SHOP","C9":"웃차",
   "C10":"찻잎마술/소암 茶","C11":"수제차전수관","C12":"백학제다","C13":"붓당골제다",
   "C14":"노전요","C15":"청학도방","C16":"황매산다원 허굴산방","C17":"도자기마을(빛살)",
   "C18":"누보도예","C19":"산이리","C20":"오름오르다","C21":"보니다",
-  "C22":"조선백자","C23":"정요","C24":"소산도예","C25":"삐닥한 도자기 황제요",
+  "C22":"조선백자","C23":"정요","C24":"소산도예","C25":"삐딱한 도자기 황제요",
   "C26":"문경 경북요","C27":"라키모","C28":"채담요","C29":"봉정요",
   "D1":"일구다&요산당","D2":"곡천다원","D3":"황아차 용강 녹차","D4":"혜림茶. 혜림농원",
   "D5":"죽로은침","D6":"삼신차 (발효차 전문다원)","D7":"명성다원",
@@ -416,17 +450,17 @@ const boothData = {
   "E13":"무무요","E14":"청욱요","E15":"김해예인요","E16":"다솜공방",
   "E17":"예인요","E18":"부산광역시 공예협동조합 토산요","E19":"슬우재",
   "E20":"부산광역시 공예협동조합 다솔도예","E21":"김묘진","E22":"청담요",
-  "E23":"긍정공방","E24":"도예명장2023-01호 영산요","E25":"더세드",
+  "E23":"긍정공방","E24":"도예명장2023-01호 영산요","E25":"더셰드",
   "E26":"효향요","E27":"백암요","E28":"도동요","E29":"송하요",
   "E30":"수도예","E31":"화경도요",
   "F1":"자연을담다","F2":"경위복차 (가인갤러리)","F3":"Tea진공밀폐용기 에스락",
-  "F4":"모차","F5":"교문공방","F6":"강동현","F7":"연세라믹","F8":"우기세라믹",
+  "F4":"묘차","F5":"교문공방","F6":"강동현","F7":"연세라믹","F8":"우기세라믹",
   "F9":"날빛","F10":"청기백기","F11":"무유","F12":"삼정공방","F13":"송화도예",
   "F14":"가람도예","F15":"고도산방","F16":"라세라미스타","F17":"김해요",
   "F18":"다경요","F19":"정호요","F20":"연화도방","F21":"언양도예",
   "F22":"임의섭도예작업장","F23":"이치헌도예연구소","F24":"박달요",
   "F25":"모동도예","F26":"소월백자","F27":"진곡요","F28":"드내뜰(이종주의 도자기)",
-  "F29":"심곡요","F30":"침향나무","F31":"모을 황선희도방","F32":"HaDa design(하다디자인)",
+  "F29":"심곡요","F30":"침향나무","F31":"모을 황선회도방","F32":"HaDa design(하다디자인)",
   "G1":"대익코리아","G2":"티하우스 나니","G3":"정산당",
   "G4":"재단법인 하동차&바이오진흥원","G5":"글림피스","G6":"천년보이차",
   "G7":"다연재","G9":"지유명차","G10":"다견원","G11":"향적당",
@@ -445,7 +479,7 @@ const boothData = {
   "H20":"주식회사 인센스윌드","H21":"(주)차모아",
   "H22":"청도 천연염색연구회 쪽빛나라","H23":"나은크래프트",
   "H24":"수향(대경팔공공예협동조합)","H25":"고전문화",
-  "H26":"계절사이로(이오순 금침명인)","H27":"반짐고리",
+  "H26":"계절사이로(이오순 금침명인)","H27":"반짇고리",
 };
 
 const ZONE_COLORS = {
@@ -457,22 +491,82 @@ const ZONE_COLORS = {
 // STATE
 // ============================================================
 const wishlist = new Map();
+const visited  = new Set();
+const memos    = new Map();
 let currentBoothId = null;
 let svgReady = false;
 
 function saveWishlist() {
   localStorage.setItem('wishlist', JSON.stringify([...wishlist]));
 }
+function saveVisited() {
+  localStorage.setItem('visited', JSON.stringify([...visited]));
+}
+function saveMemos() {
+  localStorage.setItem('memos', JSON.stringify([...memos]));
+}
+
 function loadWishlist() {
   try {
-    const saved = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    saved.forEach(([id, name]) => {
+    JSON.parse(localStorage.getItem('wishlist') || '[]').forEach(([id, name]) => {
       wishlist.set(id, name);
       const el = document.getElementById('b-' + id);
       if (el) el.classList.add('selected');
     });
-    if (wishlist.size > 0) refreshFab();
   } catch(e) {}
+  try {
+    JSON.parse(localStorage.getItem('visited') || '[]').forEach(id => {
+      visited.add(id);
+      const el = document.getElementById('b-' + id);
+      if (el) el.classList.add('visited');
+    });
+  } catch(e) {}
+  try {
+    JSON.parse(localStorage.getItem('memos') || '[]').forEach(([id, text]) => {
+      if (text) memos.set(id, text);
+    });
+  } catch(e) {}
+  new Set([...visited, ...memos.keys()]).forEach(updateBoothMarkers);
+  if (wishlist.size > 0) refreshFab();
+}
+
+// 부스 위 방문완료 ✓ 배지 + 메모 점 마커
+function updateBoothMarkers(id) {
+  const rect = document.getElementById('b-' + id);
+  if (!rect) return;
+  const svg = rect.ownerSVGElement;
+  svg.querySelectorAll(`[data-marker-for="${id}"]`).forEach(m => m.remove());
+
+  const x = parseFloat(rect.getAttribute('x'));
+  const y = parseFloat(rect.getAttribute('y'));
+  const w = parseFloat(rect.getAttribute('width'));
+  const NS = 'http://www.w3.org/2000/svg';
+
+  if (visited.has(id)) {
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('class', 'visited-badge');
+    c.setAttribute('cx', x + w - 6); c.setAttribute('cy', y + 6);
+    c.setAttribute('r', 6); c.setAttribute('fill', '#2e8b57');
+    c.setAttribute('data-marker-for', id);
+    svg.appendChild(c);
+    const t = document.createElementNS(NS, 'text');
+    t.setAttribute('class', 'visited-badge');
+    t.setAttribute('x', x + w - 6); t.setAttribute('y', y + 6.5);
+    t.setAttribute('font-size', '8'); t.setAttribute('fill', 'white');
+    t.setAttribute('text-anchor', 'middle'); t.setAttribute('dominant-baseline', 'middle');
+    t.setAttribute('data-marker-for', id);
+    t.textContent = '✓';
+    svg.appendChild(t);
+  }
+  if (memos.has(id)) {
+    const d = document.createElementNS(NS, 'circle');
+    d.setAttribute('class', 'memo-dot');
+    d.setAttribute('cx', x + 6); d.setAttribute('cy', y + 6);
+    d.setAttribute('r', 3.5); d.setAttribute('fill', '#e8a13e');
+    d.setAttribute('stroke', 'white'); d.setAttribute('stroke-width', '1');
+    d.setAttribute('data-marker-for', id);
+    svg.appendChild(d);
+  }
 }
 
 // ============================================================
@@ -653,7 +747,9 @@ function showBottomSheet(id) {
   document.getElementById('bsZoneTag').style.background = color;
   document.getElementById('bsId').textContent = '부스 ' + id;
   document.getElementById('bsName').textContent = boothData[id] || id;
+  document.getElementById('bsMemo').value = memos.get(id) || '';
   refreshBsBtn(id);
+  refreshBsVisitBtn(id);
   document.getElementById('bottomSheet').classList.add('open');
   document.getElementById('fab').style.opacity = '0';
   document.getElementById('fab').style.pointerEvents = 'none';
@@ -669,12 +765,44 @@ function hideBottomSheet() {
 function refreshBsBtn(id) {
   const btn = document.getElementById('bsBtn');
   if (wishlist.has(id)) {
-    btn.textContent = '방문 취소';
-    btn.className = 'bs-btn remove';
+    btn.textContent = '★ 찜 해제';
+    btn.className = 'bs-btn wish-on';
   } else {
-    btn.textContent = '+ 방문 추가';
-    btn.className = 'bs-btn add';
+    btn.textContent = '☆ 찜하기';
+    btn.className = 'bs-btn wish-off';
   }
+}
+
+function refreshBsVisitBtn(id) {
+  const btn = document.getElementById('bsVisitBtn');
+  if (visited.has(id)) {
+    btn.textContent = '✓ 방문완료';
+    btn.className = 'bs-btn visit-on';
+  } else {
+    btn.textContent = '방문완료';
+    btn.className = 'bs-btn visit-off';
+  }
+}
+
+function toggleVisitFromSheet() {
+  if (!currentBoothId) return;
+  const id = currentBoothId;
+  const el = document.getElementById('b-' + id);
+  if (visited.has(id)) { visited.delete(id); if (el) el.classList.remove('visited'); }
+  else                 { visited.add(id);    if (el) el.classList.add('visited'); }
+  saveVisited();
+  updateBoothMarkers(id);
+  refreshBsVisitBtn(id);
+}
+
+function saveMemoFromSheet() {
+  if (!currentBoothId) return;
+  const id = currentBoothId;
+  const text = document.getElementById('bsMemo').value.trim();
+  if (text) memos.set(id, text);
+  else      memos.delete(id);
+  saveMemos();
+  updateBoothMarkers(id);
 }
 
 function toggleFromSheet() {
@@ -719,12 +847,16 @@ function sortedWishlist() {
   });
 }
 
+function escapeHtml(s) {
+  return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
 function renderWishlistDrawer() {
   const list   = document.getElementById('wdList');
   const btnSav = document.getElementById('wdBtnSave');
   const btnClr = document.getElementById('wdBtnClear');
   btnSav.disabled = wishlist.size === 0;
-  btnClr.disabled = wishlist.size === 0;
+  btnClr.disabled = (wishlist.size + visited.size + memos.size) === 0;
 
   if (wishlist.size === 0) {
     list.innerHTML = '<div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>';
@@ -735,11 +867,17 @@ function renderWishlistDrawer() {
   sortedWishlist().forEach(([id, name]) => {
     const zone  = id[0];
     const color = ZONE_COLORS[zone] || '#aaa';
+    let status = '';
+    if (visited.has(id)) status += '<span style="color:#2e8b57;font-size:12px;margin-right:4px">✓</span>';
+    if (memos.has(id))   status += '<span style="color:#e8a13e;font-size:12px">●</span>';
+    const memo = memos.get(id);
+    const memoHtml = memo ? `<div class="wd-item-memo">${escapeHtml(memo)}</div>` : '';
     html += `<div class="wd-item" onclick="panToBoothFromDrawer('${id}')">
       <div class="wd-zone-dot" style="background:${color}">${zone}</div>
       <div class="wd-info">
-        <div class="wd-item-id">${id}</div>
+        <div class="wd-item-id">${id} ${status}</div>
         <div class="wd-item-name">${name}</div>
+        ${memoHtml}
       </div>
       <span class="wd-remove" onclick="event.stopPropagation();removeItem('${id}')">✕</span>
     </div>`;
@@ -758,12 +896,17 @@ function removeItem(id) {
 }
 
 function clearAll() {
-  wishlist.forEach((_, id) => {
-    const el = document.getElementById('b-' + id);
-    if (el) el.classList.remove('selected');
-  });
+  if (wishlist.size + visited.size + memos.size === 0) return;
+  if (!confirm('찜 · 방문완료 · 메모를 모두 지울까요?')) return;
+  document.querySelectorAll('.booth-rect.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.booth-rect.visited').forEach(el => el.classList.remove('visited'));
+  document.querySelectorAll('#mapSvg [data-marker-for]').forEach(m => m.remove());
   wishlist.clear();
+  visited.clear();
+  memos.clear();
   saveWishlist();
+  saveVisited();
+  saveMemos();
   refreshFab();
   renderWishlistDrawer();
   hideBottomSheet();
@@ -968,6 +1111,11 @@ async function saveAsImage() {
 // ONBOARDING
 // ============================================================
 function closeOnboarding() {
+  document.getElementById('onboardingOverlay').style.display = 'none';
+  localStorage.setItem('onboardingSeen', '1');
+}
+// 재방문 시 온보딩 자동 숨김 (부스 탭을 가리지 않도록)
+if (localStorage.getItem('onboardingSeen')) {
   document.getElementById('onboardingOverlay').style.display = 'none';
 }
 
