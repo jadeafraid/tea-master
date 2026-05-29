@@ -205,16 +205,18 @@
   .wd-remove { color: #ccc; font-size: 18px; padding: 4px; flex-shrink: 0; line-height: 1; }
   .wd-empty { text-align: center; color: #bbb; font-size: 14px; padding: 60px 20px; line-height: 2.2; }
   .wd-actions {
-    padding: 12px 14px 36px; display: flex; gap: 8px;
+    padding: 12px 14px 36px; display: flex; flex-wrap: wrap; gap: 8px;
     background: white; border-top: 1px solid #eee; flex-shrink: 0;
   }
   .wd-btn {
-    flex: 1; padding: 13px; border-radius: 10px; border: none;
+    flex: 1 1 calc(50% - 4px); padding: 13px; border-radius: 10px; border: none;
     font-size: 14px; font-weight: bold; font-family: inherit; cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     transition: opacity 0.12s;
   }
   .wd-btn:active:not(:disabled) { opacity: 0.8; }
+  .wd-btn-share { background: #6b5bd4; color: white; }
+  .wd-btn-copy { background: #eef0fb; color: #4a4a8a; border: 1px solid #d5d8f0; }
   .wd-btn-save { background: #4a90a4; color: white; }
   .wd-btn-clear { background: #f0f0f0; color: #999; }
   .wd-btn:disabled { opacity: 0.35; cursor: default; }
@@ -269,6 +271,8 @@
   html.dark .wd-empty { color: #555; }
   html.dark .wd-actions { background: #242424; border-top-color: #333; }
   html.dark .wd-btn-clear { background: #333; color: #888; }
+  html.dark .wd-btn-share { background: #5a4cc0; }
+  html.dark .wd-btn-copy { background: #2a2a3a; color: #aab; border-color: #3a3a50; }
   html.dark .desktop-notice { background: #252520; color: #7a7760; border-bottom-color: rgba(255,255,255,0.05); }
   html.dark .onboarding-overlay { background: rgba(0,0,0,0.72); }
   html.dark .onboarding-box { background: #242424; }
@@ -390,6 +394,8 @@
     <div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>
   </div>
   <div class="wd-actions">
+    <button class="wd-btn wd-btn-share" id="wdBtnShare" onclick="shareList()" disabled>📤 공유하기</button>
+    <button class="wd-btn wd-btn-copy" id="wdBtnCopy" onclick="copyList()" disabled>📋 텍스트 복사</button>
     <button class="wd-btn wd-btn-save" id="wdBtnSave" onclick="saveAsImage()" disabled>🖼 이미지 저장</button>
     <button class="wd-btn wd-btn-clear" id="wdBtnClear" onclick="clearAll()" disabled>전체 취소</button>
   </div>
@@ -892,7 +898,11 @@ function renderWishlistDrawer() {
   const list   = document.getElementById('wdList');
   const btnSav = document.getElementById('wdBtnSave');
   const btnClr = document.getElementById('wdBtnClear');
+  const btnShr = document.getElementById('wdBtnShare');
+  const btnCpy = document.getElementById('wdBtnCopy');
   btnSav.disabled = wishlist.size === 0;
+  btnShr.disabled = wishlist.size === 0;
+  btnCpy.disabled = wishlist.size === 0;
   btnClr.disabled = (wishlist.size + visited.size + memos.size) === 0;
 
   if (wishlist.size === 0) {
@@ -1031,6 +1041,60 @@ function handleSearch(q) {
     }
   }
   if (first) panToBooth(first, false);
+}
+
+// ============================================================
+// SHARE / COPY LIST
+// ============================================================
+function buildListText() {
+  const lines = ['🍵 제23회 국제차문화대전 방문 리스트', ''];
+  sortedWishlist().forEach(([id, name]) => {
+    lines.push(`[${id}] ${name}`);
+    const memo = memos.get(id);
+    if (memo) lines.push(memo);
+    lines.push('');
+  });
+  return lines.join('\n').trim();
+}
+
+function flashBtn(btn, msg) {
+  const orig = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+}
+
+async function copyList() {
+  if (wishlist.size === 0) return;
+  const ok = await copyToClipboard(buildListText());
+  flashBtn(document.getElementById('wdBtnCopy'), ok ? '✅ 복사됨!' : '복사 실패');
+}
+
+async function shareList() {
+  if (wishlist.size === 0) return;
+  const text = buildListText();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '국제차문화대전 방문 리스트', text });
+    } catch (e) { /* 사용자 취소 등은 무시 */ }
+  } else {
+    const ok = await copyToClipboard(text);
+    flashBtn(document.getElementById('wdBtnShare'), ok ? '✅ 복사됨!' : '복사 실패');
+  }
 }
 
 // ============================================================

@@ -166,6 +166,8 @@
   }
   .btn:hover:not(:disabled) { opacity: 0.85; }
   .btn:active:not(:disabled) { transform: scale(0.98); }
+  .btn-share { background: #6b5bd4; color: white; }
+  .btn-copy { background: #eef0fb; color: #4a4a8a; border: 1px solid #d5d8f0; }
   .btn-save { background: #4a90a4; color: white; }
   .btn-clear { background: #f0f0f0; color: #999; }
   .btn:disabled { opacity: 0.35; cursor: default; }
@@ -288,6 +290,8 @@
   html.dark .item-memo { color: #888; }
   html.dark .item-remove { color: #444; }
   html.dark .btn-clear { background: #2e2e2e; color: #888; }
+  html.dark .btn-share { background: #5a4cc0; }
+  html.dark .btn-copy { background: #2a2a3a; color: #aab; border-color: #3a3a50; }
   html.dark .map-container { background: #242424; box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
   html.dark #mapSvg > rect:first-child { fill: #1e1e1e; }
   html.dark #mapSvg > rect:nth-child(2) { stroke: #555; }
@@ -913,6 +917,8 @@
     </div>
   </div>
   <div class="panel-actions">
+    <button class="btn btn-share" id="btnShare" onclick="shareList()" disabled>📤 공유하기</button>
+    <button class="btn btn-copy" id="btnCopy" onclick="copyList()" disabled>📋 텍스트 복사</button>
     <button class="btn btn-save" id="btnSaveImage" onclick="saveAsImage()" disabled>🖼 이미지 저장</button>
     <button class="btn btn-clear" id="btnClear" onclick="clearAll()" disabled>전체 취소</button>
   </div>
@@ -1461,9 +1467,13 @@ function renderWishlist() {
   const badge = document.getElementById('wishlistBadge');
   const btnSave = document.getElementById('btnSaveImage');
   const btnClear = document.getElementById('btnClear');
+  const btnShare = document.getElementById('btnShare');
+  const btnCopy = document.getElementById('btnCopy');
 
   badge.textContent = wishlist.size;
   btnSave.disabled = wishlist.size === 0;
+  btnShare.disabled = wishlist.size === 0;
+  btnCopy.disabled = wishlist.size === 0;
   btnClear.disabled = (wishlist.size + visited.size + memos.size) === 0;
 
   if (wishlist.size === 0) {
@@ -1508,6 +1518,61 @@ function scrollToBooth(boothId) {
   // flash effect
   el.style.filter = 'brightness(0.5)';
   setTimeout(() => { el.style.filter = ''; }, 400);
+}
+
+// ============================================================
+// SHARE / COPY LIST
+// ============================================================
+function buildListText() {
+  const lines = ['🍵 제23회 국제차문화대전 방문 리스트', ''];
+  sortedWishlist().forEach(([id, name]) => {
+    lines.push(`[${id}] ${name}`);
+    const memo = memos.get(id);
+    if (memo) lines.push(memo);
+    lines.push('');
+  });
+  return lines.join('\n').trim();
+}
+
+function flashBtn(btn, msg) {
+  const orig = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    // 비보안 컨텍스트 폴백
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    document.body.removeChild(ta);
+    return ok;
+  }
+}
+
+async function copyList() {
+  if (wishlist.size === 0) return;
+  const ok = await copyToClipboard(buildListText());
+  flashBtn(document.getElementById('btnCopy'), ok ? '✅ 복사됨!' : '복사 실패');
+}
+
+async function shareList() {
+  if (wishlist.size === 0) return;
+  const text = buildListText();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: '국제차문화대전 방문 리스트', text });
+    } catch (e) { /* 사용자 취소 등은 무시 */ }
+  } else {
+    const ok = await copyToClipboard(text);
+    flashBtn(document.getElementById('btnShare'), ok ? '✅ 복사됨!' : '복사 실패');
+  }
 }
 
 // ============================================================
