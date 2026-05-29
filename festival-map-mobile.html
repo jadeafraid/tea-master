@@ -47,6 +47,7 @@
     -webkit-appearance: none;
   }
   .search-panel input:focus { border-color: #6aaa6a; }
+  .search-feedback { font-size: 12px; color: #888; min-height: 15px; margin-top: 7px; padding-left: 6px; }
 
   /* ── 지도 영역 ── */
   .map-area {
@@ -55,7 +56,7 @@
     cursor: grab;
   }
   .map-area.active { cursor: grabbing; }
-  .map-area.search-open { top: calc(133px + var(--safe-top)); }
+  .map-area.search-open { top: calc(162px + var(--safe-top)); }
 
   /* ── 지도 무버 ── */
   .map-mover {
@@ -179,6 +180,20 @@
     flex-shrink: 0;
   }
   .wd-title { font-size: 17px; font-weight: bold; color: #1a1a1a; }
+  .wd-summary {
+    font-size: 12.5px; color: #6aaa6a; font-weight: bold; text-align: center;
+    padding: 10px 14px 0; background: white; flex-shrink: 0;
+  }
+  .wd-tabs {
+    display: flex; gap: 6px; padding: 10px 14px;
+    background: white; border-bottom: 1px solid #eee; flex-shrink: 0;
+  }
+  .wd-tab {
+    flex: 1; padding: 8px 0; font-size: 13px; font-weight: bold;
+    border: none; background: #f0f0f0; border-radius: 8px; color: #888;
+    font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  .wd-tab.active { background: #6aaa6a; color: white; }
   .wd-close {
     background: none; border: none; font-size: 22px;
     cursor: pointer; color: #aaa; padding: 4px 6px; line-height: 1;
@@ -221,6 +236,14 @@
   .wd-btn-save { background: #4a90a4; color: white; }
   .wd-btn-clear { background: #f0f0f0; color: #999; }
   .wd-btn:disabled { opacity: 0.35; cursor: default; }
+  .wd-backup-row { flex: 1 1 100%; display: flex; gap: 8px; margin-top: 4px; }
+  .wd-btn-backup {
+    flex: 1; padding: 10px; font-size: 12px; font-weight: bold;
+    background: transparent; border: 1px solid #ccc; border-radius: 10px;
+    color: #888; font-family: inherit; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wd-btn-backup:disabled { opacity: 0.35; }
 
   /* ── 데스크톱 권장 배너 ── */
   .desktop-notice {
@@ -265,6 +288,9 @@
   html.dark .wd-header { background: #242424; border-bottom-color: #333; }
   html.dark .wd-title { color: #e0e0e0; }
   html.dark .wd-close { color: #555; }
+  html.dark .wd-tabs { background: #242424; border-bottom-color: #333; }
+  html.dark .wd-tab { background: #2e2e2e; color: #999; }
+  html.dark .wd-tab.active { background: #3e6a3e; color: #fff; }
   html.dark .wd-item { background: #2e2e2e; }
   html.dark .wd-item-name { color: #d0d0d0; }
   html.dark .wd-item-memo { color: #888; }
@@ -274,6 +300,7 @@
   html.dark .wd-btn-clear { background: #333; color: #888; }
   html.dark .wd-btn-share { background: #5a4cc0; }
   html.dark .wd-btn-copy { background: #2a2a3a; color: #aab; border-color: #3a3a50; }
+  html.dark .wd-btn-backup { border-color: #444; color: #999; }
   html.dark .desktop-notice { background: #252520; color: #7a7760; border-bottom-color: rgba(255,255,255,0.05); }
   html.dark .onboarding-overlay { background: rgba(0,0,0,0.72); }
   html.dark .onboarding-box { background: #242424; }
@@ -321,6 +348,7 @@
   <a href="index.html" class="top-back">← 홈</a>
   <span class="top-title">국제차문화대전 부스배치도</span>
   <button class="top-search-btn" id="searchToggle" title="검색">🔍</button>
+  <button class="top-search-btn" id="helpToggle" onclick="openOnboarding()" title="도움말" style="font-size:17px">❓</button>
   <button class="top-dark-btn" id="darkToggle" onclick="toggleDark()" title="다크 모드 전환"></button>
 </div>
 
@@ -330,6 +358,7 @@
 <!-- 검색 패널 -->
 <div class="search-panel" id="searchPanel">
   <input type="text" id="searchInput" placeholder="부스번호 또는 업체명 검색..." autocomplete="off" autocorrect="off" spellcheck="false">
+  <div class="search-feedback" id="searchFeedback"></div>
 </div>
 
 <!-- 지도 -->
@@ -367,19 +396,23 @@
     <div class="onboarding-title">사용 안내</div>
     <div class="ob-item">
       <span class="ob-icon">👆</span>
-      <span>부스를 <b>탭</b>하면 업체명과 함께 <b>찜 · 방문완료 · 메모</b>를 남길 수 있습니다.</span>
+      <span>부스를 <b>탭</b>하면 아래 시트가 열려 <b>★찜 · ✓방문완료 · ●메모</b>를 남길 수 있어요. 지도에 표시로 구분됩니다.</span>
     </div>
     <div class="ob-item">
       <span class="ob-icon">🤏</span>
-      <span><b>핀치 줌</b>으로 지도를 확대·축소하고, 드래그로 이동합니다.</span>
+      <span><b>핀치 줌</b>으로 확대·축소, 드래그로 이동. 시트는 <b>아래로 끌어</b> 닫을 수 있어요.</span>
     </div>
     <div class="ob-item">
       <span class="ob-icon">🔍</span>
-      <span>우측 상단 <b>검색</b> 아이콘을 눌러 부스 번호나 업체명으로 검색합니다.</span>
+      <span>상단 <b>검색</b>으로 부스번호·업체명을 찾고, 결과 개수를 확인합니다.</span>
     </div>
     <div class="ob-item">
       <span class="ob-icon">🍵</span>
-      <span>하단 <b>찻잔 버튼</b>으로 방문 리스트를 확인하고 이미지로 저장합니다.</span>
+      <span>하단 <b>찻잔 버튼</b>에서 방문 리스트를 <b>탭(전체·찜·방문·메모)</b>으로 필터하고 <b>공유 · 텍스트 복사 · 이미지 저장</b>할 수 있어요.</span>
+    </div>
+    <div class="ob-item">
+      <span class="ob-icon">💾</span>
+      <span>리스트의 <b>내보내기/가져오기</b>로 기록을 파일로 백업하고 복원하세요. (기기를 바꿔도 안전)</span>
     </div>
     <button class="ob-close-btn" onclick="closeOnboarding()">시작하기</button>
   </div>
@@ -391,6 +424,13 @@
     <span class="wd-title">방문 리스트</span>
     <button class="wd-close" onclick="closeWishlist()">✕</button>
   </div>
+  <div class="wd-summary" id="wdSummary" style="display:none"></div>
+  <div class="wd-tabs" id="wdTabs" style="display:none">
+    <button class="wd-tab active" data-filter="all" onclick="setListFilter('all')">전체</button>
+    <button class="wd-tab" data-filter="wish" onclick="setListFilter('wish')">★찜</button>
+    <button class="wd-tab" data-filter="visited" onclick="setListFilter('visited')">✓방문</button>
+    <button class="wd-tab" data-filter="memo" onclick="setListFilter('memo')">●메모</button>
+  </div>
   <div class="wd-list" id="wdList">
     <div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>
   </div>
@@ -399,6 +439,11 @@
     <button class="wd-btn wd-btn-copy" id="wdBtnCopy" onclick="copyList()" disabled>📋 텍스트 복사</button>
     <button class="wd-btn wd-btn-save" id="wdBtnSave" onclick="saveAsImage()" disabled>🖼 이미지 저장</button>
     <button class="wd-btn wd-btn-clear" id="wdBtnClear" onclick="clearAll()" disabled>전체 취소</button>
+    <div class="wd-backup-row">
+      <button class="wd-btn-backup" id="wdBtnExport" onclick="exportBackup()" disabled>⬇ 내보내기</button>
+      <button class="wd-btn-backup" onclick="document.getElementById('importFile').click()">⬆ 가져오기</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importBackupFile(this)">
+    </div>
   </div>
 </div>
 
@@ -780,12 +825,12 @@ function hideBottomSheet() {
 // 바텀 시트 끌어내려 닫기 (메모·버튼 영역은 제외)
 (function() {
   const sheet = document.getElementById('bottomSheet');
-  let startY = null, dy = 0, dragging = false;
+  let startY = null, startT = 0, dy = 0, dragging = false;
 
   sheet.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) { dragging = false; return; }
     if (e.target.closest('.bs-btn, .bs-memo')) { dragging = false; return; } // 입력/버튼 우선
-    startY = e.touches[0].clientY; dy = 0; dragging = true;
+    startY = e.touches[0].clientY; startT = performance.now(); dy = 0; dragging = true;
     sheet.style.transition = 'none';
   }, { passive: true });
 
@@ -801,7 +846,10 @@ function hideBottomSheet() {
     dragging = false;
     sheet.style.transition = '';
     sheet.style.transform = '';
-    if (dy > 80) hideBottomSheet(); // 충분히 내리면 닫기
+    // 거리(80px) 또는 빠른 아래 플릭(속도)이면 닫기
+    const dt = performance.now() - startT;
+    const vy = dt > 0 ? dy / dt : 0; // px/ms (아래 방향 양수)
+    if (dy > 80 || (dy > 24 && vy > 0.4)) hideBottomSheet();
     startY = null; dy = 0;
   });
 })();
@@ -837,6 +885,7 @@ function toggleVisitFromSheet() {
   saveVisited();
   updateBoothMarkers(id);
   refreshBsVisitBtn(id);
+  refreshFab();
 }
 
 function saveMemoFromSheet() {
@@ -847,6 +896,7 @@ function saveMemoFromSheet() {
   else      memos.delete(id);
   saveMemos();
   updateBoothMarkers(id);
+  refreshFab();
 }
 
 function toggleFromSheet() {
@@ -869,7 +919,7 @@ function toggleFromSheet() {
 // FAB & WISHLIST DRAWER
 // ============================================================
 function refreshFab() {
-  const n = wishlist.size;
+  const n = new Set([...wishlist.keys(), ...visited, ...memos.keys()]).size;
   const badge = document.getElementById('fabBadge');
   badge.textContent = n;
   badge.classList.toggle('visible', n > 0);
@@ -884,8 +934,10 @@ function closeWishlist() {
   document.getElementById('wishlistDrawer').classList.remove('open');
 }
 
+// 찜·방문완료·메모 중 하나라도 있는 부스(활동 부스) 목록
 function sortedWishlist() {
-  return [...wishlist.entries()].sort(([a], [b]) => {
+  const ids = new Set([...wishlist.keys(), ...visited, ...memos.keys()]);
+  return [...ids].map(id => [id, boothData[id]]).sort(([a], [b]) => {
     if (a[0] !== b[0]) return a[0].localeCompare(b[0]);
     return parseInt(a.slice(1)) - parseInt(b.slice(1));
   });
@@ -895,27 +947,61 @@ function escapeHtml(s) {
   return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 }
 
+let _listFilter = 'all'; // all | wish | visited | memo
+function setListFilter(f) {
+  _listFilter = f;
+  document.querySelectorAll('.wd-tab').forEach(t => t.classList.toggle('active', t.dataset.filter === f));
+  renderWishlistDrawer();
+}
+
 function renderWishlistDrawer() {
   const list   = document.getElementById('wdList');
   const btnSav = document.getElementById('wdBtnSave');
   const btnClr = document.getElementById('wdBtnClear');
   const btnShr = document.getElementById('wdBtnShare');
   const btnCpy = document.getElementById('wdBtnCopy');
-  btnSav.disabled = wishlist.size === 0;
-  btnShr.disabled = wishlist.size === 0;
-  btnCpy.disabled = wishlist.size === 0;
-  btnClr.disabled = (wishlist.size + visited.size + memos.size) === 0;
+  const allItems = sortedWishlist();
+  const n = allItems.length;
+  btnSav.disabled = n === 0;
+  btnShr.disabled = n === 0;
+  btnCpy.disabled = n === 0;
+  btnClr.disabled = n === 0;
+  const btnExp = document.getElementById('wdBtnExport');
+  if (btnExp) btnExp.disabled = n === 0;
 
-  if (wishlist.size === 0) {
+  const tabs = document.getElementById('wdTabs');
+  if (tabs) tabs.style.display = n === 0 ? 'none' : 'flex';
+  const summary = document.getElementById('wdSummary');
+  if (summary) {
+    summary.style.display = n === 0 ? 'none' : 'block';
+    summary.textContent = `★ 찜 ${wishlist.size} · ✓ 방문 ${visited.size} · ● 메모 ${memos.size}`;
+  }
+
+  if (n === 0) {
     list.innerHTML = '<div class="wd-empty">부스를 탭하면<br>여기에 추가돼요</div>';
     return;
   }
 
+  // 필터 적용
+  let items = allItems;
+  if (_listFilter === 'wish')         items = allItems.filter(([id]) => wishlist.has(id));
+  else if (_listFilter === 'visited') items = allItems.filter(([id]) => visited.has(id));
+  else if (_listFilter === 'memo')    items = allItems.filter(([id]) => memos.has(id));
+
+  if (items.length === 0) {
+    const msg = _listFilter === 'wish' ? '찜한 부스가 없어요'
+      : _listFilter === 'visited' ? '방문완료한 부스가 없어요'
+      : _listFilter === 'memo' ? '메모한 부스가 없어요' : '항목이 없어요';
+    list.innerHTML = `<div class="wd-empty">${msg}</div>`;
+    return;
+  }
+
   let html = '';
-  sortedWishlist().forEach(([id, name]) => {
+  items.forEach(([id, name]) => {
     const zone  = id[0];
     const color = ZONE_COLORS[zone] || '#aaa';
     let status = '';
+    if (wishlist.has(id)) status += '<span style="color:#ff6b35;font-size:12px;margin-right:4px">★</span>';
     if (visited.has(id)) status += '<span style="color:#2e8b57;font-size:12px;margin-right:4px">✓</span>';
     if (memos.has(id))   status += '<span style="color:#e8a13e;font-size:12px">●</span>';
     const memo = memos.get(id);
@@ -934,13 +1020,19 @@ function renderWishlistDrawer() {
 }
 
 function removeItem(id) {
+  // 리스트에서 제거 = 이 부스의 찜·방문완료·메모를 모두 해제
   wishlist.delete(id);
+  visited.delete(id);
+  memos.delete(id);
   const el = document.getElementById('b-' + id);
-  if (el) el.classList.remove('selected');
+  if (el) { el.classList.remove('selected'); el.classList.remove('visited'); }
+  updateBoothMarkers(id);
   saveWishlist();
+  saveVisited();
+  saveMemos();
   refreshFab();
   renderWishlistDrawer();
-  if (currentBoothId === id) refreshBsBtn(id);
+  if (currentBoothId === id) { refreshBsBtn(id); refreshBsVisitBtn(id); document.getElementById('bsMemo').value = ''; }
 }
 
 function clearAll() {
@@ -1028,20 +1120,97 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 
 function clearHighlights() {
   document.querySelectorAll('.booth-rect.highlight').forEach(el => el.classList.remove('highlight'));
+  const fb = document.getElementById('searchFeedback');
+  if (fb) fb.textContent = '';
 }
 
 function handleSearch(q) {
   clearHighlights();
-  if (!q.trim()) return;
+  const fb = document.getElementById('searchFeedback');
+  if (!q.trim()) { fb.textContent = ''; return; }
   const lq = q.trim().toLowerCase();
-  let first = null;
+  let first = null, count = 0;
   for (const [id, name] of Object.entries(boothData)) {
     if (id.toLowerCase().includes(lq) || name.toLowerCase().includes(lq)) {
       const el = document.getElementById('b-' + id);
-      if (el) { el.classList.add('highlight'); if (!first) first = id; }
+      if (el) { el.classList.add('highlight'); if (!first) first = id; count++; }
     }
   }
+  fb.textContent = count === 0 ? '검색 결과가 없습니다' : `${count}곳 찾음`;
   if (first) panToBooth(first, false);
+}
+
+// ============================================================
+// BACKUP / RESTORE (JSON 내보내기·가져오기)
+// ============================================================
+function buildBackup() {
+  return {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    wishlist: [...wishlist],
+    visited: [...visited],
+    memos: [...memos]
+  };
+}
+
+function exportBackup() {
+  if (wishlist.size + visited.size + memos.size === 0) return;
+  const blob = new Blob([JSON.stringify(buildBackup(), null, 2)], { type: 'application/json' });
+  const d = new Date();
+  const stamp = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tea-festival-mylist-' + stamp + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function applyBackup(obj) {
+  if (!obj || typeof obj !== 'object' ||
+      !Array.isArray(obj.wishlist) || !Array.isArray(obj.visited) || !Array.isArray(obj.memos)) {
+    return false;
+  }
+  document.querySelectorAll('.booth-rect.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.booth-rect.visited').forEach(el => el.classList.remove('visited'));
+  document.querySelectorAll('#mapSvg [data-marker-for]').forEach(m => m.remove());
+  wishlist.clear(); visited.clear(); memos.clear();
+  obj.wishlist.forEach(entry => {
+    if (!Array.isArray(entry)) return;
+    const id = entry[0]; if (!boothData[id]) return;
+    wishlist.set(id, boothData[id]);
+    const el = document.getElementById('b-' + id); if (el) el.classList.add('selected');
+  });
+  obj.visited.forEach(id => {
+    if (!boothData[id]) return;
+    visited.add(id);
+    const el = document.getElementById('b-' + id); if (el) el.classList.add('visited');
+  });
+  obj.memos.forEach(entry => {
+    if (!Array.isArray(entry)) return;
+    const id = entry[0], text = entry[1];
+    if (boothData[id] && text) memos.set(id, text);
+  });
+  new Set([...visited, ...memos.keys()]).forEach(updateBoothMarkers);
+  saveWishlist(); saveVisited(); saveMemos();
+  refreshFab();
+  renderWishlistDrawer();
+  return true;
+}
+
+function importBackupFile(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function() {
+    let obj;
+    try { obj = JSON.parse(reader.result); }
+    catch (e) { alert('백업 파일을 읽을 수 없어요. 올바른 JSON 파일인지 확인해 주세요.'); input.value = ''; return; }
+    const hasData = wishlist.size + visited.size + memos.size > 0;
+    if (hasData && !confirm('현재 기록을 가져온 내용으로 덮어쓸까요?')) { input.value = ''; return; }
+    if (!applyBackup(obj)) alert('백업 형식이 올바르지 않아요.');
+    input.value = '';
+  };
+  reader.readAsText(file);
 }
 
 // ============================================================
@@ -1055,7 +1224,8 @@ function buildListText() {
     if (memo) lines.push(memo);
     lines.push('');
   });
-  return lines.join('\n').trim() + '\n\n출처: linktr.ee/jadeafraid';
+  const mapUrl = location.origin + '/festival-map.html';
+  return lines.join('\n').trim() + '\n\n📍 부스배치도 보기: ' + mapUrl + '\n출처: linktr.ee/jadeafraid';
 }
 
 function flashBtn(btn, msg) {
@@ -1151,7 +1321,7 @@ async function saveAsImage() {
     sortedWishlist().forEach(([id, name]) => {
       const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       dot.setAttribute('cx', panelX+20); dot.setAttribute('cy', yPos-4);
-      dot.setAttribute('r', 5); dot.setAttribute('fill', '#ff6b35');
+      dot.setAttribute('r', 5); dot.setAttribute('fill', wishlist.has(id) ? '#ff6b35' : '#bbb');
       svgClone.appendChild(dot);
 
       const idText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -1249,6 +1419,9 @@ async function saveAsImage() {
 function closeOnboarding() {
   document.getElementById('onboardingOverlay').style.display = 'none';
   localStorage.setItem('onboardingSeen', '1');
+}
+function openOnboarding() {
+  document.getElementById('onboardingOverlay').style.display = 'flex';
 }
 // 재방문 시 온보딩 자동 숨김 (부스 탭을 가리지 않도록)
 if (localStorage.getItem('onboardingSeen')) {
