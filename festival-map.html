@@ -1805,6 +1805,7 @@ async function saveAsImage() {
     svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
     svgClone.setAttribute('width', totalW);
     svgClone.setAttribute('height', totalH);
+    svgClone.removeAttribute('style'); // 인라인 style이 width 속성보다 우선해 잘리는 것 방지
 
     // Panel background
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');

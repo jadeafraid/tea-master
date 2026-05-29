@@ -1296,6 +1296,8 @@ async function saveAsImage() {
     svgClone.setAttribute('viewBox', `0 0 ${totalW} ${totalH}`);
     svgClone.setAttribute('width',   totalW);
     svgClone.setAttribute('height',  totalH);
+    // 모바일 원본 SVG의 인라인 style(width:1325px 등)이 속성보다 우선해 이미지가 잘리는 문제 방지
+    svgClone.removeAttribute('style');
 
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('x', panelX); bg.setAttribute('y', 0);
