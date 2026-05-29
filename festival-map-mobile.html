@@ -2,10 +2,11 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>국제차문화대전 부스배치도</title>
 <script>if(localStorage.getItem('darkMode')==='1')document.documentElement.classList.add('dark');</script>
 <style>
+  :root { --safe-top: env(safe-area-inset-top, 0px); }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; overflow: hidden; background: #1c1c1c; }
   body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; touch-action: none; }
@@ -13,12 +14,12 @@
   /* ── 상단 바 ── */
   .top-bar {
     position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-    height: 52px;
+    height: calc(52px + var(--safe-top));
     background: rgba(245,240,232,0.97);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     display: flex; align-items: center;
-    padding: 0 4px 0 12px;
+    padding: var(--safe-top) 4px 0 12px;
     border-bottom: 1px solid rgba(0,0,0,0.08);
   }
   .top-back { color: #666; text-decoration: none; font-size: 13px; padding: 8px 8px 8px 0; white-space: nowrap; }
@@ -30,7 +31,7 @@
 
   /* ── 검색 패널 ── */
   .search-panel {
-    position: fixed; top: 81px; left: 0; right: 0; z-index: 110;
+    position: fixed; top: calc(81px + var(--safe-top)); left: 0; right: 0; z-index: 110;
     background: rgba(245,240,232,0.98);
     padding: 8px 14px 10px;
     border-bottom: 1px solid rgba(0,0,0,0.07);
@@ -49,12 +50,12 @@
 
   /* ── 지도 영역 ── */
   .map-area {
-    position: fixed; top: 81px; left: 0; right: 0; bottom: 0;
+    position: fixed; top: calc(81px + var(--safe-top)); left: 0; right: 0; bottom: 0;
     overflow: hidden; touch-action: none;
     cursor: grab;
   }
   .map-area.active { cursor: grabbing; }
-  .map-area.search-open { top: 133px; }
+  .map-area.search-open { top: calc(133px + var(--safe-top)); }
 
   /* ── 지도 무버 ── */
   .map-mover {
@@ -223,7 +224,7 @@
 
   /* ── 데스크톱 권장 배너 ── */
   .desktop-notice {
-    position: fixed; top: 52px; left: 0; right: 0; z-index: 48;
+    position: fixed; top: calc(52px + var(--safe-top)); left: 0; right: 0; z-index: 48;
     background: #fdf8ee;
     border-bottom: 1px solid rgba(0,0,0,0.07);
     text-align: center;
