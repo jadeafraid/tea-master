@@ -1054,7 +1054,7 @@ function buildListText() {
     if (memo) lines.push(memo);
     lines.push('');
   });
-  return lines.join('\n').trim();
+  return lines.join('\n').trim() + '\n\n출처: linktr.ee/jadeafraid';
 }
 
 function flashBtn(btn, msg) {
@@ -1193,6 +1193,14 @@ async function saveAsImage() {
         yPos += 14;
       }
     });
+
+    // 출처
+    const credit = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    credit.setAttribute('x', panelX + 14); credit.setAttribute('y', totalH - 16);
+    credit.setAttribute('font-size', '10'); credit.setAttribute('fill', '#aaa');
+    credit.setAttribute('font-family', 'Apple SD Gothic Neo, Malgun Gothic, sans-serif');
+    credit.textContent = '출처: linktr.ee/jadeafraid';
+    svgClone.appendChild(credit);
 
     const serializer = new XMLSerializer();
     const svgStr  = serializer.serializeToString(svgClone);
